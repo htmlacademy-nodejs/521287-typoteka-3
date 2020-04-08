@@ -1,6 +1,4 @@
-'use strict';
-
-const getRandomInt = (minimum, maximum) => {
+const getRandomInt = (minimum: number, maximum: number): number => {
   const min = Math.ceil(minimum);
   const max = Math.floor(maximum);
 
@@ -9,4 +7,4 @@ const getRandomInt = (minimum, maximum) => {
 
 module.exports = {
   getRandomInt,
-};
+}
