@@ -1,3 +1,5 @@
+export {}
+
 const help = require(`./help`);
 const version = require(`./version`);
 const generate = require(`./generate`);
@@ -9,5 +11,5 @@ const Cli = {
 };
 
 module.exports = {
-  root: Cli,
+  Cli,
 }

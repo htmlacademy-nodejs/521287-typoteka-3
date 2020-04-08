@@ -11,17 +11,15 @@ const FILE_NAME = `mocks.json`;
 const generateOffers = (count: number) => {
   const title = TITLES[getRandomInt(0, TITLES.length - 1)];
   const createdDate = new Date();
-  const announce = shuffle(SENTENCES)
-                  .filter((item: string, i: number) =>
-                      i < getRandomInt(0, 4)
-                    );
+  const announce = shuffle(SENTENCES).filter(
+    (item: string, i: number) => i < getRandomInt(0, 4)
+  );
   const fullText = shuffle(SENTENCES)
-                  .slice(0, getRandomInt(0, SENTENCES.length - 1))
-                  .join(` `);
-  const category = shuffle(CATEGORIES)
-                  .filter((item: string, i: number) =>
-                      i < getRandomInt(0, CATEGORIES.length - 1)
-                    );
+    .slice(0, getRandomInt(0, SENTENCES.length - 1))
+    .join(` `);
+  const category = shuffle(CATEGORIES).filter(
+    (item: string, i: number) => i < getRandomInt(0, CATEGORIES.length - 1)
+  );
 
   return Array(count)
     .fill({})
@@ -32,7 +30,7 @@ const generateOffers = (count: number) => {
       fullText,
       category,
     }));
-  }
+};
 
 module.exports = {
   name: `--generate`,
@@ -50,5 +48,3 @@ module.exports = {
     });
   },
 };
-
-
