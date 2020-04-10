@@ -11,7 +11,7 @@
   "scripts": {
     "start": "node ./src/service/service.js",
     "test": "npm run eslint",
-    "eslint": "eslint --ext .ts src/"
+    "eslint": "eslint --ext .js src/"
   },
   "repository": {
     "type": "git",
