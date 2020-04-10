@@ -1,9 +1,9 @@
 "use strict";
 
-const { writeFile } = require(`fs`);
+const {writeFile} = require(`fs`);
 
-const { getRandomInt, shuffle } = require(`../../utils`);
-const { TITLES, SENTENCES, CATEGORIES } = require(`../../data`);
+const {getRandomInt, shuffle} = require(`../../utils`);
+const {TITLES, SENTENCES, CATEGORIES} = require(`../../data`);
 
 const DEFAULT_COUNT = 1;
 const FILE_NAME = `mocks.json`;
