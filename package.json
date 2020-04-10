@@ -5,14 +5,11 @@
   "main": "./src/service/service.js",
   "dependencies": {},
   "devDependencies": {
-    "@types/node": "13.11.1",
     "eslint": "6.8.0",
-    "eslint-config-htmlacademy": "0.5.2",
-    "ts-node": "8.8.2",
-    "typescript": "3.8.3"
+    "eslint-config-htmlacademy": "0.5.2"
   },
   "scripts": {
-    "start": "ts-node ./src/service/service.ts",
+    "start": "node ./src/service/service.js",
     "test": "npm run eslint",
     "eslint": "eslint --ext .ts src/"
   },

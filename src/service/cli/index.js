@@ -1,4 +1,4 @@
-export {}
+'use strict';
 
 const help = require(`./help`);
 const version = require(`./version`);
@@ -12,4 +12,4 @@ const Cli = {
 
 module.exports = {
   Cli,
-}
+};

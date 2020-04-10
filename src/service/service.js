@@ -1,3 +1,5 @@
+'use strict';
+
 const {Cli} = require(`./cli`);
 const {
   DEFAULT_COMMAND,

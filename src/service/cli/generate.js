@@ -1,24 +1,24 @@
-export {};
+'use strict';
 
-const { writeFile } = require(`fs`);
+const {writeFile} = require(`fs`);
 
-const { getRandomInt, shuffle } = require(`../../utils`);
-const { TITLES, SENTENCES, CATEGORIES } = require(`../../data`);
+const {getRandomInt, shuffle} = require(`../../utils`);
+const {TITLES, SENTENCES, CATEGORIES} = require(`../../data`);
 
 const DEFAULT_COUNT = 1;
 const FILE_NAME = `mocks.json`;
 
-const generateOffers = (count: number) => {
+const generateOffers = (count) => {
   const title = TITLES[getRandomInt(0, TITLES.length - 1)];
   const createdDate = new Date();
   const announce = shuffle(SENTENCES).filter(
-    (item: string, i: number) => i < getRandomInt(0, 4)
+      (item, i) => i < getRandomInt(0, 4)
   );
   const fullText = shuffle(SENTENCES)
     .slice(0, getRandomInt(0, SENTENCES.length - 1))
     .join(` `);
   const category = shuffle(CATEGORIES).filter(
-    (item: string, i: number) => i < getRandomInt(0, CATEGORIES.length - 1)
+      (item, i) => i < getRandomInt(0, CATEGORIES.length - 1)
   );
 
   return Array(count)
@@ -34,12 +34,12 @@ const generateOffers = (count: number) => {
 
 module.exports = {
   name: `--generate`,
-  run(args: Array<string>) {
+  run(args) {
     const [count] = args;
     const countOffer = Number.parseInt(count, 10) || DEFAULT_COUNT;
     const content = JSON.stringify(generateOffers(countOffer), null, 2);
 
-    writeFile(FILE_NAME, content, (err: string) => {
+    writeFile(FILE_NAME, content, (err) => {
       if (err) {
         return console.error(`Can't write data to file...`);
       }
