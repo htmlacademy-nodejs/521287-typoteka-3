@@ -3,7 +3,8 @@
 const fs = require(`fs`).promises;
 const chalk = require(`chalk`);
 
-const {getRandomInt, shuffle} = require(`../../utils`);
+const {AnnounceRestrict} = require(`../../constants`);
+const {getRandomInt, shuffle, getDate} = require(`../../utils`);
 
 const DEFAULT_COUNT = 1;
 const FILE_NAME = `mocks.json`;
@@ -13,14 +14,17 @@ const FILE_CATEGORIES_PATH = `./data/categories.txt`;
 
 const generateOffers = (count, titles, sentences, categories) => {
   const title = titles[getRandomInt(0, titles.length - 1)];
-  const createdDate = new Date();
-  const announce = shuffle(sentences).slice(0, getRandomInt(1, 4));
+  const createdDate = getDate();
+  const announce = shuffle(sentences).slice(
+      0,
+      getRandomInt(AnnounceRestrict.MIN, AnnounceRestrict.MAX)
+  );
   const fullText = shuffle(sentences)
     .slice(0, getRandomInt(0, sentences.length - 1))
     .join(` `);
   const category = shuffle(categories).slice(0, getRandomInt(1, 4));
 
-  return Array(count)
+  return new Array(count)
     .fill({})
     .map(() => ({
       title,
