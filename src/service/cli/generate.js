@@ -13,33 +13,37 @@ const FILE_SENTENCES_PATH = `./data/sentences.txt`;
 const FILE_CATEGORIES_PATH = `./data/categories.txt`;
 
 const generateOffers = (count, titles, sentences, categories) => {
-  const title = titles[getRandomInt(0, titles.length - 1)];
-  const createdDate = getDate();
-  const announce = shuffle(sentences).slice(
-      0,
-      getRandomInt(AnnounceRestrict.MIN, AnnounceRestrict.MAX)
-  );
-  const fullText = shuffle(sentences)
+  const offers = [];
+
+  for (let i = 0; i < count; i++) {
+    const title = titles[getRandomInt(0, titles.length - 1)];
+    const createdDate = getDate();
+    const announce = shuffle(sentences).slice(
+        0,
+        getRandomInt(AnnounceRestrict.MIN, AnnounceRestrict.MAX)
+    );
+    const fullText = shuffle(sentences)
     .slice(0, getRandomInt(0, sentences.length - 1))
     .join(` `);
-  const category = shuffle(categories).slice(0, getRandomInt(1, 4));
+    const category = shuffle(categories).slice(0, getRandomInt(1, 4));
 
-  return new Array(count)
-    .fill({})
-    .map(() => ({
+    offers.push(({
       title,
       createdDate,
       announce,
       fullText,
       category,
     }));
+  }
+
+  return offers;
 };
 
 const readContent = async (filePath) => {
   try {
     const content = await readFile(filePath, `utf-8`);
 
-    return content.split(`\n`);
+    return content.split(`\n`).filter((item) => item !== ``);
   } catch (err) {
     console.error(chalk.red(err));
 
