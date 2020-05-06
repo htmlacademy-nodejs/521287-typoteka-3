@@ -39,8 +39,30 @@ const getDate = () => {
   return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
 };
 
+const sendResponse = (res, statusCode, message) => {
+  const template = `
+    <!DOCTYPE html>
+    <html lang="ru">
+      <head>
+        <title>With Love from Node</title>
+      </head>
+      <body>
+        ${message}
+      </body>
+    </html>
+  `.trim();
+
+  res.statusCode = statusCode;
+  res.writeHead(statusCode, {
+    'Content-Type': `text/html; charset = UTF-8`,
+  });
+
+  res.end(template);
+};
+
 module.exports = {
   getRandomInt,
   shuffle,
   getDate,
+  sendResponse,
 };
