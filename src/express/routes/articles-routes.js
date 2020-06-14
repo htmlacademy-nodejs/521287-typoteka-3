@@ -17,7 +17,7 @@ articlesRouter.get(`/:id`, (req, res) => {
 articlesRouter.get(`/edit/:id`, (req, res) => {
   const {id} = res.req.params;
 
-  res.send(`${ROOT}/edit/${id}`);
+  res.render(`articles/edit-post`, {id});
 });
 
 articlesRouter.get(`/category/:id`, (req, res) => {
