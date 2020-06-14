@@ -3,12 +3,13 @@
 const {Router} = require(`express`);
 
 const ROOT = `/articles`;
+
 const articlesRouter = new Router();
 
 articlesRouter.get(`/:id`, (req, res) => {
   const {id} = res.req.params;
 
-  res.send(`${ROOT}/${id}`);
+  res.render(`articles/post`, {id});
 });
 
 articlesRouter.get(`/add`, (req, res) => res.send(`${ROOT}/add`));
