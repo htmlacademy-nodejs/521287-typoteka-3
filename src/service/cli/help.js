@@ -11,8 +11,8 @@ module.exports = {
   server <command>
 
 Команды:
-  --version:          выводит номер версии
-  --help:             печатает этот текст
+  --version           выводит номер версии
+  --help              печатает этот текст
   --generate <count>  формирует файл mocks.json
   --server <port>     запускает ХТТП-сервер
     `;
