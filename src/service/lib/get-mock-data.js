@@ -21,3 +21,5 @@ const getMockData = async () => {
 
   return Promise.resolve(data);
 };
+
+module.exports = getMockData;
