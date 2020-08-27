@@ -4,7 +4,7 @@ const {readFile, writeFile} = require(`fs`).promises;
 const chalk = require(`chalk`);
 
 const {AnnounceRestrict} = require(`../../constants`);
-const {getRandomInt, shuffle, getDate} = require(`../../utils`);
+const {generateId, getRandomInt, shuffle, getDate} = require(`../../utils`);
 
 const DEFAULT_COUNT = 1;
 const FILE_NAME = `mocks.json`;
@@ -16,6 +16,7 @@ const generateOffers = (count, titles, sentences, categories) => {
   const offers = [];
 
   for (let i = 0; i < count; i++) {
+    const id = generateId();
     const title = titles[getRandomInt(0, titles.length - 1)];
     const createdDate = getDate();
     const announce = shuffle(sentences).slice(
@@ -28,6 +29,7 @@ const generateOffers = (count, titles, sentences, categories) => {
     const category = shuffle(categories).slice(0, getRandomInt(1, 4));
 
     offers.push(({
+      id,
       title,
       createdDate,
       announce,

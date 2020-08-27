@@ -1,6 +1,12 @@
-'use strict';
+"use strict";
+
+const {nanoid} = require(`nanoid`);
 
 const {DateRestrict} = require(`./constants`);
+
+const MAX_ID_LENGTH = 6;
+
+const generateId = () => nanoid(MAX_ID_LENGTH);
 
 const getRandomInt = (minimum, maximum) => {
   const min = Math.ceil(minimum);
@@ -40,6 +46,7 @@ const getDate = () => {
 };
 
 module.exports = {
+  generateId,
   getRandomInt,
   shuffle,
   getDate,
