@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 
 const {nanoid} = require(`nanoid`);
 
@@ -45,9 +45,18 @@ const getDate = () => {
   return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
 };
 
+const generateComments = (count, comments) =>
+  Array(count)
+    .fill({})
+    .map(() => ({
+      id: generateId(),
+      text: shuffle(comments).slice(0, getRandomInt(1, 3)).join(` `),
+    }));
+
 module.exports = {
   generateId,
   getRandomInt,
   shuffle,
   getDate,
+  generateComments,
 };
