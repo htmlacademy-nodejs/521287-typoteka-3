@@ -4,9 +4,11 @@ const {Router} = require(`express`);
 
 const getMockData = require(`../lib/get-mock-data`);
 const {
-  CategoryService
+  CategoryService,
+  SearchService,
 } = require(`../data-service`);
 const categories = require(`./categories`);
+const search = require(`./search`);
 
 const app = new Router();
 
@@ -14,6 +16,7 @@ const app = new Router();
   const mockData = await getMockData();
 
   categories(app, new CategoryService(mockData));
+  search(app, new SearchService(mockData));
 })();
 
 module.exports = app;
