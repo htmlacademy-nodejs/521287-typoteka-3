@@ -28,7 +28,7 @@ module.exports = (app, service) => {
     return res.status(HttpCode.CREATED).json(article);
   });
 
-  route.put(`/:articleId`, (req, res) => {
+  route.put(`/:articleId`, articleExist(service), (req, res) => {
     const {articleId} = req.params;
     const article = service.update(articleId);
 

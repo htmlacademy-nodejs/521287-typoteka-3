@@ -38,7 +38,7 @@ Content-Type: application/json
 }
 
 ###
-PUT http://localhost:3000/api/articles/testId HTTP/1.1
+PUT http://localhost:3000/api/articles/fOBLmT HTTP/1.1
 Content-Type: application/json
 
 {

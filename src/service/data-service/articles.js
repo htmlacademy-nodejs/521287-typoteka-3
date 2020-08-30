@@ -1,7 +1,6 @@
 'use strict';
 
 const {generateId} = require(`../../utils`);
-const articles = require(`../api/articles`);
 
 class ArticleService {
   constructor(articles) {
@@ -25,8 +24,7 @@ class ArticleService {
   }
 
   update(id, article) {
-    const oldArticle = this._articles
-      .find((item) => item.id === id);
+    const oldArticle = this.findOne(id);
 
     return Object.assign(oldArticle, article);
   }
