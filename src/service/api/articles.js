@@ -3,7 +3,7 @@
 const {Router} = require(`express`);
 
 const {HttpCode} = require(`../../constants`);
-const {articleExist} = require(`../middlewares`);
+const {articleExist, articleValidator} = require(`../middlewares`);
 
 const route = new Router();
 
@@ -20,5 +20,11 @@ module.exports = (app, service) => {
     const {article} = res.locals;
 
     return res.status(HttpCode.OK).json(article);
+  });
+
+  route.post(`/`, articleValidator, (req, res) => {
+    const article = service.create(req.body);
+
+    return res.status(HttpCode.CREATED).json(article);
   });
 };

@@ -3,5 +3,36 @@ GET http://localhost:3000/api/articles HTTP/1.1
 Content-Type: application/json
 
 ###
-GET http://localhost:3000/api/articles/hGaoZ8 HTTP/1.1
+GET http://localhost:3000/api/articles/Tzc1sc HTTP/1.1
 Content-Type: application/json
+
+###
+POST http://localhost:3000/api/articles HTTP/1.1
+Content-Type: application/json
+
+{
+  "title": "Обзор чайника с вай-фаем",
+  "createdDate": "2020-06-30 00:00:00",
+  "announce": [
+    "Не теряйте время — кипятите воду дистанционно",
+    "Выбор температурного режима, поддержание температуры, защита при включении без воды."
+  ],
+  "category": [
+    "Товары для дома",
+    "IT"
+  ],
+  "comments": [
+    {
+      "id": "AAAAA1",
+      "text": "Пустая трата денег!"
+    },
+    {
+      "id": "AAAAA2",
+      "text": "О, спасибо за обзор. Надо будет купить."
+    },
+    {
+      "id": "AAAAA3",
+      "text": "Это была моя мечта :-)"
+    }
+  ]
+}
