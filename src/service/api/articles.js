@@ -3,11 +3,15 @@
 const {Router} = require(`express`);
 
 const {HttpCode} = require(`../../constants`);
-const {articleExist, articleValidator} = require(`../middlewares`);
+const {
+  articleExist,
+  articleValidator,
+  commentValidator,
+} = require(`../middlewares`);
 
 const route = new Router();
 
-module.exports = (app, service) => {
+module.exports = (app, service, commentService) => {
   app.use(`/articles`, route);
 
   route.get(`/`, (req, res) => {
@@ -41,4 +45,34 @@ module.exports = (app, service) => {
 
     return res.status(HttpCode.OK).json(article);
   });
+
+  route.get(`/:articleId/comments`, articleExist(service), (req, res) => {
+    const {article} = res.locals;
+    const comments = commentService.findAll(article);
+
+    return res.status(HttpCode.OK).json(comments);
+  });
+
+  route.post(
+      `/:articleId/comments`,
+      [articleExist(service), commentValidator],
+      (req, res) => {
+        const {article, comment} = res.locals;
+        const newComment = commentService.create(article, comment);
+
+        return res.status(HttpCode.OK).json(newComment);
+      }
+  );
+
+  route.delete(
+      `/:articleId/comments/:commentId`,
+      articleExist(service),
+      (req, res) => {
+        const {commentId} = req.params;
+        const {article} = res.locals;
+        const newComment = commentService.drop(article, commentId);
+
+        return res.status(HttpCode.OK).json(newComment);
+      }
+  );
 };

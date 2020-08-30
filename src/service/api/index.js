@@ -7,6 +7,7 @@ const {
   ArticleService,
   CategoryService,
   SearchService,
+  CommentService,
 } = require(`../data-service`);
 const articles = require(`./articles`);
 const categories = require(`./categories`);
@@ -17,7 +18,7 @@ const app = new Router();
 (async () => {
   const mockData = await getMockData();
 
-  articles(app, new ArticleService(mockData));
+  articles(app, new ArticleService(mockData), new CommentService());
   categories(app, new CategoryService(mockData));
   search(app, new SearchService(mockData));
 })();
