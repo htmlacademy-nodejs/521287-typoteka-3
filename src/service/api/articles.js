@@ -40,4 +40,17 @@ module.exports = (app, service) => {
 
     return res.status(HttpCode.OK).json(article);
   });
+
+  route.delete(`/:articleId`, articleExist(service), (req, res) => {
+    const {articleId} = req.params;
+    const article = service.drop(articleId);
+
+    if (!article) {
+      return res
+        .status(HttpCode.BAD_REQUEST)
+        .send(`Article #${articleId} isn't found`);
+    }
+
+    return res.status(HttpCode.OK).json(article);
+  });
 };
