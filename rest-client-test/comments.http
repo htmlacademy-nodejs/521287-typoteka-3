@@ -1,0 +1,15 @@
+###
+POST http://localhost:3000/api/articles/fOBLmT/comments HTTP/1.1
+Content-Type: application/json
+
+{
+  "text": "Пустая трата денег!"
+}
+
+###
+GET http://localhost:3000/api/articles/fOBLmT/comments HTTP/1.1
+Content-Type: application/json
+
+###
+DELETE http://localhost:3000/api/articles/fOBLmT/comments/xNzpib HTTP/1.1
+Content-Type: application/json

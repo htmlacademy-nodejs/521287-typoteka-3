@@ -1,8 +1,8 @@
 'use strict';
 
 const DEFAULT_COMMAND = `--help`;
-
 const USER_ARGV_INDEX = 2;
+const API_PREFIX = `/api`;
 
 const ExitCode = {
   SUCCESS: 0,
@@ -11,6 +11,8 @@ const ExitCode = {
 
 const HttpCode = {
   OK: 200,
+  CREATED: 201,
+  BAD_REQUEST: 400,
   UNAUTHORIZED: 401,
   FORBIDDEN: 403,
   NOT_FOUND: 404,
@@ -30,6 +32,7 @@ const DateRestrict = {
 module.exports = {
   DEFAULT_COMMAND,
   USER_ARGV_INDEX,
+  API_PREFIX,
   ExitCode,
   HttpCode,
   AnnounceRestrict,
