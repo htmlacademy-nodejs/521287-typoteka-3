@@ -8,7 +8,7 @@ module.exports = (service) => (req, res, next) => {
 
   if (!article) {
     return res
-      .status(HttpCode.BAD_REQUEST)
+      .status(HttpCode.NOT_FOUND)
       .send(`Article #${articleId} isn't found`);
   }
 

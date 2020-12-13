@@ -9,7 +9,7 @@ const {
   SearchService,
   CommentService,
 } = require(`../data-service`);
-const articles = require(`./articles`);
+const articles = require(`./articles/articles`);
 const categories = require(`./categories/categories`);
 const search = require(`./search/search`);
 

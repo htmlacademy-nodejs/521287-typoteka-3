@@ -10,10 +10,12 @@ const commentValidator = (req, res, next) => {
   const keysExist = commentKeys.every((key) => keys.includes(key));
 
   if (!keysExist) {
-    res.status(HttpCode.BAD_REQUEST).send(`Bad request`);
+    return res.status(HttpCode.BAD_REQUEST).send(`Bad request`);
   }
 
-  next();
+  res.locals.comment = newComment;
+
+  return next();
 };
 
 module.exports = commentValidator;
