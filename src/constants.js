@@ -1,8 +1,9 @@
 'use strict';
 
-const DEFAULT_COMMAND = `--help`;
-const USER_ARGV_INDEX = 2;
-const API_PREFIX = `/api`;
+const Env = {
+  DEVELOPMENT: `development`,
+  PRODUCTION: `production`,
+};
 
 const ExitCode = {
   SUCCESS: 0,
@@ -29,12 +30,17 @@ const DateRestrict = {
   MAX: 3,
 };
 
+const DEFAULT_COMMAND = `--help`;
+const USER_ARGV_INDEX = 2;
+const API_PREFIX = `/api`;
+
 module.exports = {
-  DEFAULT_COMMAND,
-  USER_ARGV_INDEX,
-  API_PREFIX,
+  Env,
   ExitCode,
   HttpCode,
   AnnounceRestrict,
   DateRestrict,
+  DEFAULT_COMMAND,
+  USER_ARGV_INDEX,
+  API_PREFIX,
 };
