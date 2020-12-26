@@ -187,6 +187,15 @@ const mockData = [
   }
 ];
 
+const mockCategories = [
+  `За жизнь`,
+  `Программирование`,
+  `Железо`,
+  `Кино`,
+  `IT`,
+];
+
 module.exports = {
-  mockData
+  mockData,
+  mockCategories,
 };

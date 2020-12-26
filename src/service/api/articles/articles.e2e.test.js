@@ -4,6 +4,7 @@ const request = require(`supertest`);
 
 const {HttpCode} = require(`../../../constants`);
 const {createAPI} = require(`./utils`);
+const {mockData} = require(`./mockData`);
 
 describe(`GET /articles`, () => {
   const app = createAPI();
@@ -18,20 +19,25 @@ describe(`GET /articles`, () => {
   });
 
   it(`returns list of 5 articles`, () => {
-    expect(response.body.length).toBe(5);
+    const length = mockData.length;
+
+    expect(response.body.length).toBe(length);
   });
 
   it(`returns right data`, () => {
-    expect(response.body[0].id).toBe(`Qzw3gs`);
+    const {id} = mockData[0];
+
+    expect(response.body[0].id).toBe(id);
   });
 });
 
 describe(`GET /articles/{articleId}`, () => {
+  const ARTICLE_ID = `ghJIDB`;
   const app = createAPI();
   let response;
 
   beforeAll(async () => {
-    response = await request(app).get(`/articles/ghJIDB`);
+    response = await request(app).get(`/articles/${ARTICLE_ID}`);
   });
 
   it(`responds with 200 status code`, () => {
@@ -39,7 +45,9 @@ describe(`GET /articles/{articleId}`, () => {
   });
 
   it(`returns right data`, () => {
-    expect(response.body.title).toBe(`Борьба с прокрастинацией`);
+    const title = mockData[3].title;
+
+    expect(response.body.title).toBe(title);
   });
 });
 
@@ -70,7 +78,9 @@ describe(`POST /articles`, () => {
     it(`creates new article`, async () => {
       const articleResponse = await request(app).get(`/articles`);
 
-      expect(articleResponse.body.length).toBe(6);
+      const newLength = mockData.length + 1;
+
+      expect(articleResponse.body.length).toBe(newLength);
     });
   });
 
@@ -97,6 +107,8 @@ describe(`POST /articles`, () => {
 });
 
 describe(`PUT /articles/{articleId}`, () => {
+  const ARTICLE_ID = `Adjh2S`;
+
   describe(`+`, () => {
     const app = createAPI();
     const changedArticle = {
@@ -109,7 +121,9 @@ describe(`PUT /articles/{articleId}`, () => {
     let response;
 
     beforeAll(async () => {
-      response = await request(app).put(`/articles/Adjh2S`).send(changedArticle);
+      response = await request(app)
+        .put(`/articles/${ARTICLE_ID}`)
+        .send(changedArticle);
     });
 
     it(`responds with 200 status code`, () => {
@@ -121,9 +135,11 @@ describe(`PUT /articles/{articleId}`, () => {
     });
 
     it(`changes certain article`, async () => {
-      const articleResponse = await request(app).get(`/articles/Adjh2S`);
+      const articleResponse = await request(app).get(`/articles/${ARTICLE_ID}`);
 
-      expect(articleResponse.body.title).toBe(`Изменённый заголовок`);
+      const newTitle = changedArticle.title;
+
+      expect(articleResponse.body.title).toBe(newTitle);
     });
   });
 
@@ -153,7 +169,7 @@ describe(`PUT /articles/{articleId}`, () => {
         fullText: `Изменённый текст`,
       };
       const response = await request(app)
-        .put(`/articles/Adjh2S`)
+        .put(`/articles/${ARTICLE_ID}`)
         .send(invalidArticle);
 
       expect(response.statusCode).toBe(HttpCode.BAD_REQUEST);
@@ -163,11 +179,12 @@ describe(`PUT /articles/{articleId}`, () => {
 
 describe(`DELETE /articles/{articleId}`, () => {
   describe(`+`, () => {
+    const ARTICLE_ID = `Adjh2S`;
     const app = createAPI();
     let response;
 
     beforeAll(async () => {
-      response = await request(app).delete(`/articles/Adjh2S`);
+      response = await request(app).delete(`/articles/${ARTICLE_ID}`);
     });
 
     it(`responds with 200 status code`, () => {
@@ -175,20 +192,22 @@ describe(`DELETE /articles/{articleId}`, () => {
     });
 
     it(`returns deleted article`, () => {
-      expect(response.body.id).toBe(`Adjh2S`);
+      expect(response.body.id).toBe(ARTICLE_ID);
     });
 
     it(`deletes certain article`, async () => {
       const articleResponse = await request(app).get(`/articles`);
 
-      expect(articleResponse.body.length).toBe(4);
+      const newLength = mockData.length - 1;
+
+      expect(articleResponse.body.length).toBe(newLength);
     });
   });
 
   describe(`−`, () => {
     it(`responds with 404 status code when article doesn't exist`, async () => {
       const app = createAPI();
-      const response = await request(app).delete(`/articles/M3HI0J`);
+      const response = await request(app).delete(`/articles/NOEXIST`);
 
       expect(response.statusCode).toBe(HttpCode.NOT_FOUND);
     });
@@ -197,23 +216,29 @@ describe(`DELETE /articles/{articleId}`, () => {
 
 describe(`GET /articles/{articleId}/comments`, () => {
   describe(`+`, () => {
+    const ARTICLE_ID = `mSlg3L`;
     const app = createAPI();
+    const article = mockData[4];
     let response;
 
     beforeAll(async () => {
-      response = await request(app).get(`/articles/mSlg3L/comments`);
+      response = await request(app).get(`/articles/${ARTICLE_ID}/comments`);
     });
 
     it(`responds with 200 status code`, () => {
       expect(response.statusCode).toBe(HttpCode.OK);
     });
 
-    it(`returns changed article`, () => {
-      expect(response.body.length).toBe(5);
+    it(`returns certain article comments`, () => {
+      const {length} = article.comments;
+
+      expect(response.body.length).toBe(length);
     });
 
     it(`returns right data`, () => {
-      expect(response.body[0].id).toBe(`5KNBah`);
+      const {id} = article.comments[0];
+
+      expect(response.body[0].id).toBe(id);
     });
   });
 
@@ -228,16 +253,19 @@ describe(`GET /articles/{articleId}/comments`, () => {
 });
 
 describe(`POST /articles/{articleId}/comments`, () => {
+  const ARTICLE_ID = `mSlg3L`;
+
   describe(`+`, () => {
     const app = createAPI();
     const newComment = {
       text: `Валидному комментарию достаточно этого поля`,
     };
+    const article = mockData[4];
     let response;
 
     beforeAll(async () => {
       response = await request(app)
-        .post(`/articles/mSlg3L/comments`)
+        .post(`/articles/${ARTICLE_ID}/comments`)
         .send(newComment);
     });
 
@@ -250,9 +278,14 @@ describe(`POST /articles/{articleId}/comments`, () => {
     });
 
     it(`creates new comment`, async () => {
-      const articleResponse = await request(app).get(`/articles/mSlg3L/comments`);
+      const articleResponse = await request(app).get(
+          `/articles/${ARTICLE_ID}/comments`
+      );
 
-      expect(articleResponse.body.length).toBe(6);
+      const {length} = article.comments;
+      const newLength = length + 1;
+
+      expect(articleResponse.body.length).toBe(newLength);
     });
   });
 
@@ -280,7 +313,7 @@ describe(`POST /articles/{articleId}/comments`, () => {
       delete badComment.text;
 
       const response = await request(app)
-        .post(`/articles/mSlg3L/comments`)
+        .post(`/articles/${ARTICLE_ID}/comments`)
         .send(badComment);
 
       expect(response.statusCode).toBe(HttpCode.BAD_REQUEST);
@@ -290,11 +323,15 @@ describe(`POST /articles/{articleId}/comments`, () => {
 
 describe(`DELETE /articles/{articleId}/comments/{commentId}`, () => {
   describe(`+`, () => {
+    const ARTICLE_ID = `mSlg3L`;
+    const COMMENT_ID = `czZoLY`;
     const app = createAPI();
     let response;
 
     beforeAll(async () => {
-      response = await request(app).delete(`/articles/mSlg3L/comments/czZoLY`);
+      response = await request(app).delete(
+          `/articles/${ARTICLE_ID}/comments/${COMMENT_ID}`
+      );
     });
 
     it(`responds with 200 status code`, () => {
@@ -302,30 +339,23 @@ describe(`DELETE /articles/{articleId}/comments/{commentId}`, () => {
     });
 
     it(`returns deleted comment`, () => {
-      expect(response.body.id).toBe(`czZoLY`);
+      expect(response.body.id).toBe(COMMENT_ID);
     });
 
     it(`deletes certain comment`, async () => {
-      const commentResponse = await request(app).get(`/articles/mSlg3L/comments`);
+      const commentResponse = await request(app).get(
+          `/articles/${ARTICLE_ID}/comments`
+      );
 
       expect(commentResponse.body.length).toBe(4);
     });
   });
 
   describe(`−`, () => {
-    it(`responds with 404 status code when article doesn't exist`, async () => {
+    it(`responds with 404 status code when article with comment doesn't exist`, async () => {
       const app = createAPI();
       const response = await request(app).delete(
-          `/articles/NOEXIST/comments/hbitvV`
-      );
-
-      expect(response.statusCode).toBe(HttpCode.NOT_FOUND);
-    });
-
-    it(`responds with 404 status code when comment doesn't exist`, async () => {
-      const app = createAPI();
-      const response = await request(app).delete(
-          `/articles/NOdhjw/comments/NOEXIST`
+          `/articles/NOEXIST/comments/EXIST`
       );
 
       expect(response.statusCode).toBe(HttpCode.NOT_FOUND);
