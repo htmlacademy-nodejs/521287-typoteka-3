@@ -1,4 +1,3 @@
-
 'use strict';
 
 const express = require(`express`);
@@ -30,8 +29,10 @@ app.use((req, res) => {
   return res.status(HttpCode.NOT_FOUND).send(`Not Found`);
 });
 
-app.use((err, _req, _res, _next)=> {
+app.use((err, _req, _res, _next) => {
   logger.error(`An error's occured on processing request: ${err.message}`);
+
+  return _res.status(HttpCode.SERVICE_UNAVAILABLE).send(`Service Unavailable`);
 });
 
 module.exports = app;
