@@ -5,21 +5,28 @@
   "main": "./src/service/service.js",
   "dependencies": {
     "chalk": "4.0.0",
+    "cross-env": "7.0.3",
     "express": "4.17.1",
     "nanoid": "3.1.12",
+    "pino": "6.8.0",
     "pug": "3.0.0"
   },
   "devDependencies": {
     "eslint": "6.8.0",
     "eslint-config-htmlacademy": "0.5.2",
-    "nodemon": "2.0.3"
+    "jest": "26.6.3",
+    "nodemon": "2.0.3",
+    "pino-pretty": "4.3.0",
+    "supertest": "6.0.1"
   },
   "scripts": {
-    "start": "node ./src/service/service.js",
-    "start.dev": "nodemon ./src/service/service.js",
+    "start": "cross-env NODE_ENV=production node ./src/service/service.js",
+    "start.dev": "cross-env NODE_ENV=development nodemon ./src/service/service.js",
+    "start.dev::debug": "cross-env NODE_ENV=development LOG_LEVEL=debug nodemon ./src/service/service.js",
     "start-front-server": "nodemon ./src/express/index.js",
-    "test": "npm run eslint",
-    "eslint": "eslint --ext .js src/"
+    "eslint": "eslint --ext .js src/",
+    "test": "jest --watchAll",
+    "test::eslint": "npm run eslint"
   },
   "repository": {
     "type": "git",

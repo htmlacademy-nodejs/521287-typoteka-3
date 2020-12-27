@@ -15,10 +15,10 @@ const articleValidator = (req, res, next) => {
   const keysExist = articleKeys.every((key) => keys.includes(key));
 
   if (!keysExist) {
-    res.status(HttpCode.BAD_REQUEST).send(`Bad request`);
+    return res.status(HttpCode.BAD_REQUEST).send(`Bad request`);
   }
 
-  next();
+  return next();
 };
 
 module.exports = articleValidator;

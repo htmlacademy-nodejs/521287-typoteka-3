@@ -9,9 +9,9 @@ const {
   SearchService,
   CommentService,
 } = require(`../data-service`);
-const articles = require(`./articles`);
-const categories = require(`./categories`);
-const search = require(`./search`);
+const articles = require(`./articles/articles`);
+const categories = require(`./categories/categories`);
+const search = require(`./search/search`);
 
 const app = new Router();
 

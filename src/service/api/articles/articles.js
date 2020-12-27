@@ -2,16 +2,16 @@
 
 const {Router} = require(`express`);
 
-const {HttpCode} = require(`../../constants`);
+const {HttpCode} = require(`../../../constants`);
 const {
   articleExist,
   articleValidator,
   commentValidator,
-} = require(`../middlewares`);
-
-const route = new Router();
+} = require(`../../middlewares`);
 
 module.exports = (app, service, commentService) => {
+  const route = new Router();
+
   app.use(`/articles`, route);
 
   route.get(`/`, (req, res) => {
@@ -32,12 +32,16 @@ module.exports = (app, service, commentService) => {
     return res.status(HttpCode.CREATED).json(article);
   });
 
-  route.put(`/:articleId`, articleExist(service), (req, res) => {
-    const {articleId} = req.params;
-    const article = service.update(articleId);
+  route.put(
+      `/:articleId`,
+      [articleExist(service), articleValidator],
+      (req, res) => {
+        const {articleId} = req.params;
+        const article = service.update(articleId, req.body);
 
-    return res.status(HttpCode.OK).json(article);
-  });
+        return res.status(HttpCode.OK).json(article);
+      }
+  );
 
   route.delete(`/:articleId`, articleExist(service), (req, res) => {
     const {articleId} = req.params;
@@ -60,7 +64,7 @@ module.exports = (app, service, commentService) => {
         const {article, comment} = res.locals;
         const newComment = commentService.create(article, comment);
 
-        return res.status(HttpCode.OK).json(newComment);
+        return res.status(HttpCode.CREATED).json(newComment);
       }
   );
 
