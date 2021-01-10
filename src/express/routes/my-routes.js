@@ -14,6 +14,10 @@ myRouter.get(`/`, async (req, res) => {
   res.render(`${ROOT}/my`, {articles});
 });
 
-myRouter.get(`/comments`, (req, res) => res.render(`${ROOT}/comments`));
+myRouter.get(`/comments`, async (req, res) => {
+  const articles = await api.getArticles();
+
+  res.render(`${ROOT}/comments`, {articles: articles.slice(0, 3)});
+});
 
 module.exports = myRouter;
