@@ -6,7 +6,7 @@ const path = require(`path`);
 const {nanoid} = require(`nanoid`);
 
 const HttpCode = require(`../../constants`);
-const {getTime} = require(`../../utils`);
+const {getTime, buildQueryString} = require(`../../utils`);
 const api = require(`../api`).getAPI();
 
 const ROOT = `articles`;
@@ -27,7 +27,19 @@ const storage = multer.diskStorage({
 
 const upload = multer({storage});
 
-articlesRouter.get(`/add`, (req, res) => res.render(`${ROOT}/add`));
+articlesRouter.get(`/add`, async (req, res) => {
+  const {query} = req;
+  const article = Object.keys(query).length ? query : null;
+  const categories = await api.getCategories();
+  const date = new Date();
+
+  res.render(`${ROOT}/add`, {
+    article,
+    categories,
+    date,
+  });
+});
+
 articlesRouter.post(`/add`, upload.single(`picture`), async (req, res) => {
   const {body, file} = req;
   const {
@@ -35,25 +47,33 @@ articlesRouter.post(`/add`, upload.single(`picture`), async (req, res) => {
     announce,
     fullText,
     date,
-    category,
+    category = [],
   } = body;
   const time = getTime(new Date());
+  const createdDate = `${date}, ${time}`;
   const picture = file ? file.filename : null;
 
   const articleData = {
     title,
     announce,
     fullText,
-    createdDate: `${date}, ${time}`,
-    category: category || [],
+    createdDate,
+    category,
     picture,
   };
 
   try {
     await api.createArticle(articleData);
+
     return res.redirect(`../my`);
   } catch (error) {
-    return res.redirect(`back`);
+    const savedArticle = {
+      ...articleData,
+      createdDate: date,
+    };
+    const query = buildQueryString(savedArticle);
+
+    return res.redirect(`/articles/add${query}`);
   }
 });
 
