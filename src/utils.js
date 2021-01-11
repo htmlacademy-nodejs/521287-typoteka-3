@@ -45,6 +45,13 @@ const getDate = () => {
   return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
 };
 
+const getTime = (date) => {
+  const hours = date.getHours() < 10 ? `0${date.getHours()}` : date.getHours();
+  const minutes = date.getMinutes() < 10 ? `0${date.getMinutes()}` : date.getMinutes();
+
+  return `${hours}:${minutes}`;
+};
+
 const generateComments = (count, comments) =>
   Array(count)
     .fill({})
@@ -58,5 +65,6 @@ module.exports = {
   getRandomInt,
   shuffle,
   getDate,
+  getTime,
   generateComments,
 };
