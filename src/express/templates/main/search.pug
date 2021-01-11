@@ -15,6 +15,6 @@ block content
             each article in result
               .search__result
                 time.search__date(datetime=`${article.createdDate}`) #{article.createdDate}
-                a.search__link #{article.title}
+                a.search__link(href=`/articles/${article.id}`) #{article.title}
           if notFound
             p.search-page__empty Ничего не нашлось
