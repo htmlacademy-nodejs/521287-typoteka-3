@@ -45,6 +45,13 @@ const getDate = () => {
   return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
 };
 
+const getTime = (date) => {
+  const hours = date.getHours() < 10 ? `0${date.getHours()}` : date.getHours();
+  const minutes = date.getMinutes() < 10 ? `0${date.getMinutes()}` : date.getMinutes();
+
+  return `${hours}:${minutes}`;
+};
+
 const generateComments = (count, comments) =>
   Array(count)
     .fill({})
@@ -53,10 +60,37 @@ const generateComments = (count, comments) =>
       text: shuffle(comments).slice(0, getRandomInt(1, 3)).join(` `),
     }));
 
+const buildQueryString = (o) => {
+  const keys = Object.keys(o);
+
+  let queryString = `?`;
+
+  if (keys.length === 0) {
+    return queryString;
+  }
+
+  keys.forEach((key) => {
+    let value = o[key];
+    let arrayString = ``;
+    if (Array.isArray(value)) {
+      value.forEach((arrayValue) => {
+        arrayString = `${arrayString}${key}=${arrayValue}&`;
+      });
+      queryString = `${queryString}${arrayString}`;
+      return;
+    }
+    queryString = `${queryString}${key}=${value}&`;
+  });
+
+  return queryString.slice(0, -1);
+};
+
 module.exports = {
   generateId,
   getRandomInt,
   shuffle,
   getDate,
+  getTime,
   generateComments,
+  buildQueryString,
 };
