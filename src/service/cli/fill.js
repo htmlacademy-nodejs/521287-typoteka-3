@@ -13,7 +13,7 @@ const {
 } = require(`../../utils`);
 
 const DEFAULT_COUNT = 1;
-const FILE_NAME = `fill-db.sql`;
+const FILE_NAME = `db/fill-db.sql`;
 const FILE_SENTENCES_PATH = `./data/sentences.txt`;
 const FILE_TITLES_PATH = `./data/titles.txt`;
 const FILE_CATEGORIES_PATH = `./data/categories.txt`;
