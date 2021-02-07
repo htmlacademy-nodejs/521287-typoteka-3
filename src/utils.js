@@ -1,6 +1,15 @@
 'use strict';
 
+/**
+ * @todo (ilyasidorchik)
+ * Разбить остальные функции по файлам,
+ * так как их становится много
+ */
+
 const {nanoid} = require(`nanoid`);
+
+const {getPictureFileName} = require(`./utils/getPictureFileName`);
+const {readContent} = require(`./utils/readContent`);
 
 const {DateRestrict} = require(`./constants`);
 
@@ -52,13 +61,19 @@ const getTime = (date) => {
   return `${hours}:${minutes}`;
 };
 
-const generateComments = (count, comments) =>
+const generateComments = (count, articleId, userCount, comments) =>
   Array(count)
     .fill({})
-    .map(() => ({
-      id: generateId(),
-      text: shuffle(comments).slice(0, getRandomInt(1, 3)).join(` `),
-    }));
+    .map(() => {
+      const userId = getRandomInt(1, userCount);
+      const text = shuffle(comments).slice(0, getRandomInt(1, 3)).join(` `);
+
+      return {
+        userId,
+        articleId,
+        text,
+      };
+    });
 
 const buildQueryString = (o) => {
   const keys = Object.keys(o);
@@ -91,6 +106,8 @@ module.exports = {
   shuffle,
   getDate,
   getTime,
+  getPictureFileName,
   generateComments,
   buildQueryString,
+  readContent,
 };
