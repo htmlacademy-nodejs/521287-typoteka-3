@@ -21,8 +21,8 @@ CREATE TABLE categories(
 CREATE TABLE articles(
   id integer PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
   title varchar(255) NOT NULL,
+  announce varchar(100) NOT NULL,
   description text NOT NULL,
-  type varchar(5) NOT NULL,
   picture varchar(50),
   user_id integer NOT NULL,
   created_at timestamp DEFAULT current_timestamp,
