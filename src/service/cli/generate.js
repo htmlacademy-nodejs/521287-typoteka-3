@@ -2,8 +2,8 @@
 
 const {writeFile} = require(`fs`).promises;
 
-const {AnnounceRestrict} = require(`../../constants`);
-const {getLogger} = require(`../lib/logger`);
+const {AnnounceRestrict} = require(`~/constants`);
+const {getLogger} = require(`~/service/lib/logger`);
 const {
   generateId,
   getRandomInt,
@@ -11,7 +11,7 @@ const {
   getDate,
   generateComments,
   readContent,
-} = require(`../../utils`);
+} = require(`~/utils`);
 
 const DEFAULT_COUNT = 1;
 const FILE_NAME = `mocks.json`;

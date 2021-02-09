@@ -1,9 +1,9 @@
 'use strict';
 
-const {ExitCode} = require(`../../constants`);
-const {getLogger} = require(`../lib/logger`);
-const sequelize = require(`../lib/sequelize`);
-const app = require(`../app`);
+const {ExitCode} = require(`~/constants`);
+const {getLogger} = require(`~/service/lib/logger`);
+const sequelize = require(`~/service/lib/sequelize`);
+const app = require(`~/service/app`);
 
 const DEFAULT_PORT = 3000;
 

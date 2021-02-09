@@ -2,9 +2,9 @@
 
 const express = require(`express`);
 
-const {HttpCode, API_PREFIX} = require(`../constants`);
-const {getLogger} = require(`./lib/logger`);
-const routes = require(`./api`);
+const {HttpCode, API_PREFIX} = require(`~/constants`);
+const {getLogger} = require(`~/service/lib/logger`);
+const routes = require(`~/service/api`);
 
 const app = express();
 const logger = getLogger({name: `api`});

@@ -2,12 +2,12 @@
 
 const {Router} = require(`express`);
 
-const {HttpCode} = require(`../../../constants`);
+const {HttpCode} = require(`~/constants`);
 const {
   articleExist,
   articleValidator,
   commentValidator,
-} = require(`../../middlewares`);
+} = require(`~/service/middlewares`);
 
 module.exports = (app, service, commentService) => {
   const route = new Router();

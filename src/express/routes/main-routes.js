@@ -2,7 +2,7 @@
 
 const {Router} = require(`express`);
 
-const api = require(`../api`).getAPI();
+const api = require(`~/express/api`).getAPI();
 
 const ROOT = `main`;
 
