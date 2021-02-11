@@ -3,10 +3,11 @@
 const express = require(`express`);
 const request = require(`supertest`);
 
-const {HttpCode} = require(`../../../constants`);
+const {HttpCode} = require(`~/constants`);
+const DataService = require(`~/service/data-service/search`);
+
 const {mockData} = require(`./mockData`);
 const search = require(`./search`);
-const DataService = require(`../../data-service/search`);
 
 const app = express();
 app.use(express.json());

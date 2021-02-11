@@ -2,10 +2,11 @@
 
 const express = require(`express`);
 
+const DataService = require(`~/service/data-service/articles`);
+const CommentService = require(`~/service/data-service/comments`);
+
 const {mockData} = require(`./mockData`);
 const articles = require(`./articles`);
-const DataService = require(`../../data-service/articles`);
-const CommentService = require(`../../data-service/comments`);
 
 const createAPI = () => {
   const app = express();

@@ -5,9 +5,10 @@ const multer = require(`multer`);
 const path = require(`path`);
 const {nanoid} = require(`nanoid`);
 
-const HttpCode = require(`../../constants`);
-const {getTime, buildQueryString} = require(`../../utils`);
-const api = require(`../api`).getAPI();
+const HttpCode = require(`~/constants`);
+const {getTime, buildQueryString} = require(`~/utils`);
+
+const api = require(`~/express/api`).getAPI();
 
 const ROOT = `articles`;
 const UPLOAD_DIR = `../upload/img`;

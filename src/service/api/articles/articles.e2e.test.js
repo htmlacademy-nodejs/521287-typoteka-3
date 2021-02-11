@@ -2,7 +2,8 @@
 
 const request = require(`supertest`);
 
-const {HttpCode} = require(`../../../constants`);
+const {HttpCode} = require(`~/constants`);
+
 const {createAPI} = require(`./utils`);
 const {mockData} = require(`./mockData`);
 

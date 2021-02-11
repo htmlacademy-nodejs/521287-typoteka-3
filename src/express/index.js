@@ -2,8 +2,9 @@
 
 const express = require(`express`);
 const path = require(`path`);
+require(`module-alias/register`);
 
-const router = require(`./routes`);
+const router = require(`~/express/routes`);
 
 const DEFAULT_PORT = 8080;
 const PUBLIC_DIR = `public`;

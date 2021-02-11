@@ -1,6 +1,6 @@
 'use strict';
 
-const {generateId} = require(`../../utils`);
+const {generateId} = require(`~/utils`);
 
 class CommentService {
   create(article, comment) {

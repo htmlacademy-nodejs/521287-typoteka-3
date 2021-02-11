@@ -8,10 +8,9 @@
 
 const {nanoid} = require(`nanoid`);
 
-const {getPictureFileName} = require(`./utils/getPictureFileName`);
-const {readContent} = require(`./utils/readContent`);
-
-const {DateRestrict} = require(`./constants`);
+const {DateRestrict} = require(`~/constants`);
+const {getPictureFileName} = require(`~/utils/getPictureFileName`);
+const {readContent} = require(`~/utils/readContent`);
 
 const MAX_ID_LENGTH = 6;
 

@@ -2,15 +2,15 @@
 
 const {writeFile} = require(`fs`).promises;
 
-const {AnnounceRestrict, ANNOUNCE_MAX_LENGTH, PictureRestrict} = require(`../../constants`);
-const {getLogger} = require(`../lib/logger`);
+const {AnnounceRestrict, ANNOUNCE_MAX_LENGTH, PictureRestrict} = require(`~/constants`);
+const {getLogger} = require(`~/service/lib//logger`);
 const {
   getRandomInt,
   shuffle,
   getPictureFileName,
   generateComments,
   readContent,
-} = require(`../../utils`);
+} = require(`~/utils`);
 
 const DEFAULT_COUNT = 1;
 const FILE_NAME = `db/fill-db.sql`;
