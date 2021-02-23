@@ -1,44 +1,55 @@
 'use strict';
 
-const {generateId} = require(`~/utils`);
+const Aliase = require(`~/service/models/aliase`);
 
 class ArticleService {
-  constructor(articles) {
-    this._articles = articles;
+  constructor(sequelize) {
+    this._Article = sequelize.models.Article;
+    this._Comment = sequelize.models.Comment;
+    this._Category = sequelize.models.Category;
   }
 
-  create(article) {
-    const newArticle = Object.assign({id: generateId()}, article);
+  async create(articleData) {
+    const article = await this._Article.create(articleData);
+    await article.addCategories(articleData.categories);
 
-    this._articles.push(newArticle);
-
-    return newArticle;
+    return article.get();
   }
 
-  findAll() {
-    return this._articles;
+  async findOne(id) {
+    const result = await this._Article.findByPk(id, {
+      include: [Aliase.CATEGORIES],
+    });
+
+    return result;
   }
 
-  findOne(id) {
-    return this._articles.find((item) => item.id === id);
-  }
-
-  update(id, article) {
-    const oldArticle = this.findOne(id);
-
-    return Object.assign(oldArticle, article);
-  }
-
-  drop(id) {
-    const article = this.findOne(id);
-
-    if (!article) {
-      return null;
+  async findAll(needComments) {
+    const include = [Aliase.CATEGORIES];
+    if (needComments) {
+      include.push(Aliase.COMMENTS);
     }
 
-    this._articles = this._articles.filter((item) => item.id !== id);
+    const articles = await this._Article.findAll({include});
+    const result = articles.map((item) => item.get());
 
-    return article;
+    return result;
+  }
+
+  async update(id, article) {
+    const [updatedRows] = await this._Article.update(article, {
+      where: {id}
+    });
+
+    return Boolean(updatedRows);
+  }
+
+  async drop(id) {
+    const deletedRows = await this._Article.destroy({
+      where: {id},
+    });
+
+    return Boolean(deletedRows);
   }
 }
 
