@@ -23,6 +23,18 @@ const getRandomInt = (minimum, maximum) => {
   return Math.floor(Math.random() * (max - min + 1)) + min;
 };
 
+const getRandomSubarray = (items) => {
+  const newItems = items.slice();
+  const result = [];
+  let count = getRandomInt(1, newItems.length - 1);
+
+  while (count--) {
+    result.push(...newItems.splice(getRandomInt(0, newItems.length - 1), 1));
+  }
+
+  return result;
+};
+
 const shuffle = (someArray) => {
   for (let i = someArray.length - 1; i > 0; i--) {
     const randomPosition = Math.floor(Math.random() * i);
@@ -74,6 +86,15 @@ const generateComments = (count, articleId, userCount, comments) =>
       };
     });
 
+const generateCommentsWithoutIds = (count, comments) =>
+  Array(count)
+    .fill({})
+    .map(() => ({
+      text: shuffle(comments)
+        .slice(0, getRandomInt(1, 3))
+        .join(` `),
+    }));
+
 const buildQueryString = (o) => {
   const keys = Object.keys(o);
 
@@ -102,11 +123,13 @@ const buildQueryString = (o) => {
 module.exports = {
   generateId,
   getRandomInt,
+  getRandomSubarray,
   shuffle,
   getDate,
   getTime,
   getPictureFileName,
   generateComments,
+  generateCommentsWithoutIds,
   buildQueryString,
   readContent,
 };

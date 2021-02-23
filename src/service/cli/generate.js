@@ -22,7 +22,7 @@ const FILE_COMMENTS_PATH = `./data/comments.txt`;
 
 const logger = getLogger({name: `generate`});
 
-const generateOffers = (count, titles, sentences, categories, comments) => {
+const generateArticles = (count, titles, sentences, categories, comments) => {
   const offers = [];
 
   for (let i = 0; i < count; i++) {
@@ -66,7 +66,7 @@ module.exports = {
     const [count] = args;
     const countOffer = Number.parseInt(count, 10) || DEFAULT_COUNT;
     const content = JSON.stringify(
-        generateOffers(countOffer, titles, sentences, categories, comments),
+        generateArticles(countOffer, titles, sentences, categories, comments),
         null,
         2
     );
