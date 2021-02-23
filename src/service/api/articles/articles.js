@@ -1,4 +1,4 @@
-'use strict';
+"use strict";
 
 const {Router} = require(`express`);
 
@@ -14,8 +14,13 @@ module.exports = (app, service, commentService) => {
 
   app.use(`/articles`, route);
 
-  route.get(`/`, (req, res) => {
-    const articles = service.findAll();
+  /**
+   * Статья
+   */
+  route.get(`/`, async (req, res) => {
+    const {comments} = req.query;
+
+    const articles = await service.findAll(comments);
 
     return res.status(HttpCode.OK).json(articles);
   });
@@ -26,8 +31,8 @@ module.exports = (app, service, commentService) => {
     return res.status(HttpCode.OK).json(article);
   });
 
-  route.post(`/`, articleValidator, (req, res) => {
-    const article = service.create(req.body);
+  route.post(`/`, articleValidator, async (req, res) => {
+    const article = await service.create(req.body);
 
     return res.status(HttpCode.CREATED).json(article);
   });
@@ -35,48 +40,73 @@ module.exports = (app, service, commentService) => {
   route.put(
       `/:articleId`,
       [articleExist(service), articleValidator],
-      (req, res) => {
+      async (req, res) => {
         const {articleId} = req.params;
-        const article = service.update(articleId, req.body);
 
-        return res.status(HttpCode.OK).json(article);
+        const updated = await service.update(articleId, req.body);
+
+        if (!updated) {
+          return res
+            .status(HttpCode.NOT_FOUND)
+            .send(`Article #${articleId} wasn't found`);
+        }
+
+        return res.status(HttpCode.OK).json(`Offer was updated`);
       }
   );
 
-  route.delete(`/:articleId`, articleExist(service), (req, res) => {
+  route.delete(`/:articleId`, articleExist(service), async (req, res) => {
     const {articleId} = req.params;
-    const article = service.drop(articleId);
 
-    return res.status(HttpCode.OK).json(article);
+    const deletedOffer = await service.drop(articleId);
+
+    if (!deletedOffer) {
+      return res
+        .status(HttpCode.NOT_FOUND)
+        .send(`Article #${articleId} wasn't found`);
+    }
+
+    return res.status(HttpCode.OK).json(deletedOffer);
   });
 
-  route.get(`/:articleId/comments`, articleExist(service), (req, res) => {
-    const {article} = res.locals;
-    const comments = commentService.findAll(article);
+  /**
+   * Комментарии к статье
+   */
+  route.post(
+      `/:articleId/comments`,
+      [articleExist(service), commentValidator],
+      async (req, res) => {
+        const {articleId} = req.params;
+
+        const comment = await commentService.create(articleId, req.body);
+
+        return res.status(HttpCode.CREATED).json(comment);
+      }
+  );
+
+  route.get(`/:articleId/comments`, articleExist(service), async (req, res) => {
+    const {articleId} = req.params;
+
+    const comments = await commentService.findAll(articleId);
 
     return res.status(HttpCode.OK).json(comments);
   });
 
-  route.post(
-      `/:articleId/comments`,
-      [articleExist(service), commentValidator],
-      (req, res) => {
-        const {article, comment} = res.locals;
-        const newComment = commentService.create(article, comment);
-
-        return res.status(HttpCode.CREATED).json(newComment);
-      }
-  );
-
   route.delete(
       `/:articleId/comments/:commentId`,
       articleExist(service),
-      (req, res) => {
+      async (req, res) => {
         const {commentId} = req.params;
-        const {article} = res.locals;
-        const newComment = commentService.drop(article, commentId);
 
-        return res.status(HttpCode.OK).json(newComment);
+        const deletedComment = await commentService.drop(commentId);
+
+        if (!deletedComment) {
+          return res
+            .status(HttpCode.NOT_FOUND)
+            .send(`Comment with ${commentId} wasn't found`);
+        }
+
+        return res.status(HttpCode.OK).json(deletedComment);
       }
   );
 };
