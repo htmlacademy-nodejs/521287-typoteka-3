@@ -1,4 +1,4 @@
-'use strict';
+"use strict";
 
 const {Router} = require(`express`);
 const multer = require(`multer`);
@@ -23,7 +23,7 @@ const storage = multer.diskStorage({
     const extension = file.originalname.split(`.`).pop();
 
     cb(null, `${uniqueName}.${extension}`);
-  }
+  },
 });
 
 const upload = multer({storage});
@@ -43,13 +43,7 @@ articlesRouter.get(`/add`, async (req, res) => {
 
 articlesRouter.post(`/add`, upload.single(`picture`), async (req, res) => {
   const {body, file} = req;
-  const {
-    title,
-    announce,
-    fullText,
-    date,
-    category = [],
-  } = body;
+  const {title, announce, fullText, date, category = []} = body;
   const time = getTime(new Date());
   const createdDate = `${date}, ${time}`;
   const picture = file ? file.filename : null;
@@ -59,7 +53,7 @@ articlesRouter.post(`/add`, upload.single(`picture`), async (req, res) => {
     announce,
     fullText,
     createdDate,
-    category,
+    categories: category,
     picture,
   };
 
@@ -93,7 +87,11 @@ articlesRouter.get(`/edit/:id`, async (req, res) => {
       api.getCategories(),
     ]);
 
-    res.render(`${ROOT}/edit`, {article, categories});
+    const articleCategories = article.categories.map(
+        (category) => category.name
+    );
+
+    res.render(`${ROOT}/edit`, {article, categories, articleCategories});
   } catch (error) {
     return res.render(`errors/404`).status(HttpCode.NOT_FOUND);
   }

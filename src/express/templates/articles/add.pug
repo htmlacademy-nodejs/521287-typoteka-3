@@ -57,7 +57,7 @@ block content
                           name=`category-${i}`
                           id=`checkbox-${i}`
                           checked=article && article.category.includes(category))
-                      label(for=`category-${i}`) #{category}
+                      label(for=`category-${i}`) #{category.name}
                   a.new-publication__form-link.button.button--transparent(href='#') Добавить категорию
 
               .form__wrapper.form__wrapper--text
