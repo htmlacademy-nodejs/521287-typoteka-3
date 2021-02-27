@@ -7,7 +7,7 @@ const Aliase = require(`~/service/models/aliase`);
 class CategoryService {
   constructor(sequelize) {
     this._Category = sequelize.models.Category;
-    this._OfferCategory = sequelize.models.OfferCategory;
+    this._ArticleCategory = sequelize.models.ArticleCategory;
   }
 
   async findOne(id) {
@@ -34,8 +34,8 @@ class CategoryService {
         ],
         group: [Sequelize.col(`Category.id`)],
         include: [{
-          model: this._OfferCategory,
-          as: Aliase.OFFER_CATEGORIES,
+          model: this._ArticleCategory,
+          as: Aliase.ARTICLE_CATEGORIES,
           attributes: [],
         }],
       });

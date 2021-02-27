@@ -72,10 +72,16 @@ articlesRouter.post(`/add`, upload.single(`picture`), async (req, res) => {
   }
 });
 
-articlesRouter.get(`/:id`, (req, res) => {
+articlesRouter.get(`/:id`, async (req, res) => {
   const {id} = res.req.params;
 
-  res.render(`${ROOT}/post`, {id});
+  const [article, categories] = await Promise.all([
+    api.getArticle(id, true),
+    api.getCategories(true),
+  ]);
+  const selectedCategoriesIds = article.categories.map((category) => category.id);
+
+  res.render(`${ROOT}/article`, {article, categories, selectedCategoriesIds});
 });
 
 articlesRouter.get(`/edit/:id`, async (req, res) => {
@@ -99,10 +105,24 @@ articlesRouter.get(`/edit/:id`, async (req, res) => {
   return null;
 });
 
-articlesRouter.get(`/category/:id`, (req, res) => {
-  const {id} = res.req.params;
+articlesRouter.get(`/category/:id`, async (req, res) => {
+  const {id} = req.params;
 
-  res.render(`${ROOT}/articles-by-category`, {id});
+  const [selectedCategory, categories, articles] = await Promise.all([
+    api.getCategory(id),
+    api.getCategories(true),
+    api.getArticles({comments: true}),
+  ]);
+  const articlesWithCategory = articles.filter((article) =>
+    article.categories.some((category) => category.id === selectedCategory.id)
+  );
+  const selectedCategoriesIds = [selectedCategory.id];
+
+  res.render(`${ROOT}/articles-with-category`, {
+    categories,
+    selectedCategoriesIds,
+    articlesWithCategory,
+  });
 });
 
 module.exports = articlesRouter;

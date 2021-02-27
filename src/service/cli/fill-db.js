@@ -1,6 +1,12 @@
-'use strict';
+"use strict";
 
-const {ExitCode, AnnounceRestrict, PictureRestrict} = require(`~/constants`);
+const {
+  ExitCode,
+  AnnounceRestrict,
+  PictureRestrict,
+  ANNOUNCE_MAX_LENGTH,
+  DESCRIPTION_MAX_LENGTH,
+} = require(`~/constants`);
 const {getLogger} = require(`~/service/lib/logger`);
 const sequelize = require(`~/service/lib/sequelize`);
 const initDatabase = require(`~/service/lib/init-db`);
@@ -35,18 +41,17 @@ const generateArticles = (
       const title = titles[getRandomInt(0, titles.length - 1)];
       const announce = shuffle(sentences)
         .slice(0, getRandomInt(AnnounceRestrict.MIN, AnnounceRestrict.MAX))
-        .join(` `);
+        .join(` `)
+        .substring(0, ANNOUNCE_MAX_LENGTH);
       const description = shuffle(sentences)
         .slice(0, getRandomInt(0, sentences.length - 1))
-        .join(` `);
+        .join(` `)
+        .substring(0, DESCRIPTION_MAX_LENGTH);
       const picture = getPictureFileName(
           getRandomInt(PictureRestrict.MIN, PictureRestrict.MAX)
       );
       const categories = getRandomSubarray(categoryList);
       const comments = generateCommentsWithoutIds(count, commentList);
-
-      console.log(`announce in fill-db`);
-      console.log(announce);
 
       return {
         title,

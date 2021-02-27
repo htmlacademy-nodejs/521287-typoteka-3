@@ -16,10 +16,14 @@ class ArticleService {
     return article.get();
   }
 
-  async findOne(id) {
-    const result = await this._Article.findByPk(id, {
-      include: [Aliase.CATEGORIES],
-    });
+  async findOne(id, needComments) {
+    const include = [Aliase.CATEGORIES];
+
+    if (needComments) {
+      include.push(Aliase.COMMENTS);
+    }
+
+    const result = await this._Article.findByPk(id, {include});
 
     return result;
   }
