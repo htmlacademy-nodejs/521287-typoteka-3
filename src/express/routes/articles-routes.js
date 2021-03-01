@@ -1,4 +1,4 @@
-'use strict';
+"use strict";
 
 const {Router} = require(`express`);
 const multer = require(`multer`);
@@ -23,7 +23,7 @@ const storage = multer.diskStorage({
     const extension = file.originalname.split(`.`).pop();
 
     cb(null, `${uniqueName}.${extension}`);
-  }
+  },
 });
 
 const upload = multer({storage});
@@ -43,13 +43,7 @@ articlesRouter.get(`/add`, async (req, res) => {
 
 articlesRouter.post(`/add`, upload.single(`picture`), async (req, res) => {
   const {body, file} = req;
-  const {
-    title,
-    announce,
-    fullText,
-    date,
-    category = [],
-  } = body;
+  const {title, announce, fullText, date, category = []} = body;
   const time = getTime(new Date());
   const createdDate = `${date}, ${time}`;
   const picture = file ? file.filename : null;
@@ -59,7 +53,7 @@ articlesRouter.post(`/add`, upload.single(`picture`), async (req, res) => {
     announce,
     fullText,
     createdDate,
-    category,
+    categories: category,
     picture,
   };
 
@@ -78,10 +72,16 @@ articlesRouter.post(`/add`, upload.single(`picture`), async (req, res) => {
   }
 });
 
-articlesRouter.get(`/:id`, (req, res) => {
+articlesRouter.get(`/:id`, async (req, res) => {
   const {id} = res.req.params;
 
-  res.render(`${ROOT}/post`, {id});
+  const [article, categories] = await Promise.all([
+    api.getArticle(id, true),
+    api.getCategories(true),
+  ]);
+  const selectedCategoriesIds = article.categories.map((category) => category.id);
+
+  res.render(`${ROOT}/article`, {article, categories, selectedCategoriesIds});
 });
 
 articlesRouter.get(`/edit/:id`, async (req, res) => {
@@ -93,7 +93,11 @@ articlesRouter.get(`/edit/:id`, async (req, res) => {
       api.getCategories(),
     ]);
 
-    res.render(`${ROOT}/edit`, {article, categories});
+    const articleCategories = article.categories.map(
+        (category) => category.name
+    );
+
+    res.render(`${ROOT}/edit`, {article, categories, articleCategories});
   } catch (error) {
     return res.render(`errors/404`).status(HttpCode.NOT_FOUND);
   }
@@ -101,10 +105,24 @@ articlesRouter.get(`/edit/:id`, async (req, res) => {
   return null;
 });
 
-articlesRouter.get(`/category/:id`, (req, res) => {
-  const {id} = res.req.params;
+articlesRouter.get(`/category/:id`, async (req, res) => {
+  const {id} = req.params;
 
-  res.render(`${ROOT}/articles-by-category`, {id});
+  const [selectedCategory, categories, articles] = await Promise.all([
+    api.getCategory(id),
+    api.getCategories(true),
+    api.getArticles({comments: true}),
+  ]);
+  const articlesWithCategory = articles.filter((article) =>
+    article.categories.some((category) => category.id === selectedCategory.id)
+  );
+  const selectedCategoriesIds = [selectedCategory.id];
+
+  res.render(`${ROOT}/articles-with-category`, {
+    categories,
+    selectedCategoriesIds,
+    articlesWithCategory,
+  });
 });
 
 module.exports = articlesRouter;

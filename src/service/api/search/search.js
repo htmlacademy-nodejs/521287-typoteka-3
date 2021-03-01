@@ -9,14 +9,14 @@ module.exports = (app, service) => {
 
   app.use(`/search`, route);
 
-  route.get(`/`, (req, res) => {
+  route.get(`/`, async (req, res) => {
     const {query = ``} = req.query;
 
     if (!query) {
       return res.status(HttpCode.BAD_REQUEST).json([]);
     }
 
-    const searchResult = service.findAll(query);
+    const searchResult = await service.findAll(query);
     const searchStatus = (searchResult.length)
       ? HttpCode.OK
       : HttpCode.NOT_FOUND;
