@@ -18,7 +18,6 @@ class ArticleService {
 
   async findOne(id, needComments) {
     const include = [Aliase.CATEGORIES];
-
     if (needComments) {
       include.push(Aliase.COMMENTS);
     }
@@ -38,6 +37,17 @@ class ArticleService {
     const result = articles.map((item) => item.get());
 
     return result;
+  }
+
+  async findPage({limit, offset}) {
+    const {count, rows} = await this._Article.findAndCountAll({
+      limit,
+      offset,
+      include: [Aliase.CATEGORIES],
+      distinct: true,
+    });
+
+    return {count, articles: rows};
   }
 
   async update(id, article) {
