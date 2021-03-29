@@ -41,6 +41,7 @@ const USER_ARGV_INDEX = 2;
 const API_PREFIX = `/api`;
 const ANNOUNCE_MAX_LENGTH = 100;
 const DESCRIPTION_MAX_LENGTH = 1000;
+const ARTICLES_PER_PAGE = 8;
 
 module.exports = {
   Env,
@@ -54,4 +55,5 @@ module.exports = {
   API_PREFIX,
   ANNOUNCE_MAX_LENGTH,
   DESCRIPTION_MAX_LENGTH,
+  ARTICLES_PER_PAGE,
 };

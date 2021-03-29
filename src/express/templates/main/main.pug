@@ -72,17 +72,6 @@ block content
                   | Комментарии
                   span.preview__cloud
                   b.preview__comment-count #{article.comments && article.comments.length}
-
-    .preview__toggle-wrapper
-      ul.preview__pagination.pagination
-        li
-          a.pagination__button.button.button--backwards.button--disabled(href='#', aria-label='Страница назад') Назад
-
-        - var pageI = 1
-        while pageI <= 5
-          li(class={'pagination__item': true, 'pagination__item--active': pageI === 1})
-            a(href='#')= pageI++
-
-        li
-          a.pagination__button.button.button--forward(href='#', aria-label='Страница вперед') Вперед
-
+      
+      .preview__toggle-wrapper
+        +pagination(page, totalPages, 2, `?`, 'preview__pagination')
