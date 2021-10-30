@@ -1,0 +1,22 @@
+version: "0.7.1"
+
+services:
+  server:
+    build: .
+    depends_on:
+      - db
+    ports:
+      - "3000:3000"
+      - "8080:8080"
+  db:
+    image: "postgres:12-alpine"
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: typoteka
+      POSTGRES_USER: postgres
+    volumes:
+      - data:/var/lib/postgresql/data
+
+volumes:
+  data:
