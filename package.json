@@ -10,6 +10,7 @@
   "dependencies": {
     "axios": "0.21.1",
     "chalk": "4.0.0",
+    "concurrently": "6.3.0",
     "cross-env": "7.0.3",
     "dotenv": "8.2.0",
     "express": "4.17.1",
@@ -30,9 +31,13 @@
     "supertest": "6.0.1"
   },
   "scripts": {
-    "start": "cross-env NODE_ENV=production node -r dotenv/config ./src/service/service.js",
-    "start::debug": "cross-env NODE_ENV=development LOG_LEVEL=debug nodemon -r dotenv/config ./src/service/service.js",
-    "start-front-server": "nodemon ./src/express/index.js",
+    "start": "npm run start-all-servers",
+    "start-all-servers": "concurrently \"npm run start-back-server::debug\" \"npm run start-front-server::debug\"",
+    "back-server-cli": "cross-env NODE_ENV=development LOG_LEVEL=debug nodemon -r dotenv/config ./src/service/service.js",
+    "start-back-server": "cross-env NODE_ENV=production node -r dotenv/config ./src/service/service.js --server",
+    "start-back-server::debug": "cross-env NODE_ENV=development LOG_LEVEL=debug nodemon -r dotenv/config ./src/service/service.js --server",
+    "start-front-server": "node ./src/express/index.js",
+    "start-front-server::debug": "nodemon ./src/express/index.js",
     "eslint": "eslint --ext .js src/",
     "test": "jest --watchAll",
     "test::eslint": "npm run eslint"

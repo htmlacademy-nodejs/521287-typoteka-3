@@ -1,13 +1,22 @@
-version: "0.7.1"
+version: "3.9"
 
 services:
-  server:
-    build: .
+  nodejs:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: nodejs
+    container_name: nodejs
+    restart: unless-stopped
+    env_file: .env
     depends_on:
       - db
     ports:
       - "3000:3000"
       - "8080:8080"
+    networks:
+      - app-network
+
   db:
     image: "postgres:12-alpine"
     ports:
@@ -17,6 +26,12 @@ services:
       POSTGRES_USER: postgres
     volumes:
       - data:/var/lib/postgresql/data
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
 
 volumes:
   data:
