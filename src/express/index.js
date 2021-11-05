@@ -14,6 +14,7 @@ const app = express();
 
 app.use(router);
 
+// app.use(express.urlencoded({extended: false}));
 app.use(express.static(path.resolve(__dirname, PUBLIC_DIR)));
 app.use(express.static(path.resolve(__dirname, UPLOAD_DIR)));
 

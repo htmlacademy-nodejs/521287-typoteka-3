@@ -105,6 +105,33 @@ articlesRouter.get(`/edit/:id`, async (req, res) => {
   return null;
 });
 
+articlesRouter.post(
+    `/:id/comments`,
+    async (req, res) => {
+      const {id} = req.params;
+
+      console.log(`req.body:`);
+      console.log(req.body);
+      console.log(`\n`);
+      const {text} = req.body;
+
+      try {
+        await api.createComment(id, {
+          text,
+        });
+
+        return res.redirect(`/${ROOT}/${id}`);
+      } catch (error) {
+        const errorMessage = encodeURIComponent(
+            error.response && error.response.data
+        );
+        const errorPath = `/${ROOT}/${id}/?error=${errorMessage}`;
+
+        return res.redirect(errorPath);
+      }
+    }
+);
+
 articlesRouter.get(`/category/:id`, async (req, res) => {
   const {id} = req.params;
 

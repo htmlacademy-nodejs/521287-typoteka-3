@@ -47,6 +47,13 @@ class API {
       data,
     });
   }
+
+  createComment(id, data) {
+    return this._load(`/articles/${id}/comments`, {
+      method: `POST`,
+      data,
+    });
+  }
 }
 
 const defaultAPI = new API(defaultURL, TIMEOUT);
