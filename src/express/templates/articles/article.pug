@@ -44,12 +44,12 @@ block content
             form(
               action=`/articles/${article.id}/comments`
               method='POST'
-              //- enctype='application/x-www-form-urlencoded'
+              enctype='application/x-www-form-urlencoded'
               autocomplete='off'
             )
               .comments__avatar.avatar
                 img(src='/img/avatar-2.png' alt='аватар пользователя')
               label
-                textarea(name='text' rows='1' placeholder='Присоединиться к обсуждению') 
+                textarea(name='text' rows='1' placeholder='Присоединиться к обсуждению')
               button.comments__button.button.button--colored(type='submit').
                 Опубликовать
