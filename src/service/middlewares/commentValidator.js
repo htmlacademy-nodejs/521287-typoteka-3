@@ -1,19 +1,39 @@
 'use strict';
 
+const Joi = require(`joi`);
+
 const {HttpCode} = require(`~/constants`);
+const {
+  buildValidationErrorMessage,
+} = require(`~/utils`);
 
-const commentKeys = [`text`];
+const ErrorCommentMessage = {
+  TEXT: `Комментарий содержит меньше 20 символов`
+};
 
-const commentValidator = (req, res, next) => {
-  const newComment = req.body;
-  const keys = Object.keys(newComment);
-  const keysExist = commentKeys.every((key) => keys.includes(key));
+const schema = Joi.object({
+  text: Joi.string().min(20).required().messages({
+    'string.min': ErrorCommentMessage.TEXT,
+  }),
+});
 
-  if (!keysExist) {
-    return res.status(HttpCode.BAD_REQUEST).send(`Bad request`);
+const commentValidator = async (req, res, next) => {
+  const comment = req.body;
+
+  const {error} = await schema.validate(
+      comment,
+      {abortEarly: false}
+  );
+
+  if (error) {
+    const errorMessage = buildValidationErrorMessage(error);
+
+    console.log(errorMessage);
+
+    return res
+      .status(HttpCode.BAD_REQUEST)
+      .send(errorMessage);
   }
-
-  res.locals.comment = newComment;
 
   return next();
 };
