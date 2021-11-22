@@ -20,7 +20,7 @@ module.exports = async (req, res, next) => {
   if (error) {
     const errorMessage = buildValidationErrorMessage(error);
 
-    console.log(errorMessage);
+    console.error(errorMessage);
 
     return res
       .status(HttpCode.BAD_REQUEST)
