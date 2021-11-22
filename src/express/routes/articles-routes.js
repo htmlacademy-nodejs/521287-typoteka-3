@@ -43,17 +43,23 @@ articlesRouter.get(`/add`, async (req, res) => {
 
 articlesRouter.post(`/add`, upload.single(`picture`), async (req, res) => {
   const {body, file} = req;
-  const {title, announce, fullText, date, category = []} = body;
-  const time = getTime(new Date());
-  const createdDate = `${date}, ${time}`;
+
+  const {title, announce, description, createdAt} = body;
+  const categories = Object.entries(body)
+    .map(([key, value]) => {
+      if (value === `on`) {
+        return Number(key.split(`-`)[1]);
+      }
+    })
+    .filter((item) => item !== undefined);
   const picture = file ? file.filename : null;
 
   const articleData = {
     title,
     announce,
-    fullText,
-    createdDate,
-    categories: category,
+    description,
+    createdAt,
+    categories,
     picture,
   };
 
@@ -64,7 +70,6 @@ articlesRouter.post(`/add`, upload.single(`picture`), async (req, res) => {
   } catch (error) {
     const savedArticle = {
       ...articleData,
-      createdDate: date,
     };
     const query = buildQueryString(savedArticle);
 
@@ -109,10 +114,6 @@ articlesRouter.post(
     `/:id/comments`,
     async (req, res) => {
       const {id} = req.params;
-
-      console.log(`req.body:`);
-      console.log(req.body);
-      console.log(`\n`);
       const {text} = req.body;
 
       try {
