@@ -29,6 +29,8 @@ block content
               | Закрыть
               | окно
 
+            +insertErrorMessages(validationMessages)
+
             .new-publication__form.form
               .form__wrapper.form__wrapper--intro
                 .form__field
@@ -61,27 +63,26 @@ block content
 
                 .new-publication__category-wrapper
                   -
-                    const articleCategories =
-                      (article && article.categories)
-                        ? article.categories.filter(item => item !== 'undefined')
+                    const articleCategories = article
+                        ? article.categories
                         : [];
-                  each category, i in categories
+                  each category in categories
                     .new-publication__checkbox.new-publication__checkbox--auto
-                      - const categoryId = category.id.toString();
+                      - const categoryId = category.id;
                       - const checked = articleCategories.includes(categoryId);
                       input(
                           type='checkbox'
-                          name=`category-${i}`
-                          id=`category-${i}`
+                          name=`category-${categoryId}`
+                          id=`category-${categoryId}`
                           checked=checked
                         )
-                      label(for=`category-${i}`) #{category.name}
+                      label(for=`category-${categoryId}`) #{category.name}
                   a.new-publication__form-link.button.button--transparent(href='#') Добавить категорию
 
               .form__wrapper.form__wrapper--text
                 .form__field.form__field--publication-text
                   label
-                    textarea(rows='5' name='announce' placeholder='Анонс публикации')
+                    textarea(rows='5' name='announce' placeholder='Анонс публикации' required)
                       | #{article ? article.announce : ''}
                 .form__field.form__field--publication-text
                   label

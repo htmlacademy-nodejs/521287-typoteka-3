@@ -6,7 +6,7 @@ const path = require(`path`);
 const {nanoid} = require(`nanoid`);
 
 const HttpCode = require(`~/constants`);
-const {getTime, buildQueryString} = require(`~/utils`);
+const {prepareErrors} = require(`~/utils`);
 
 const api = require(`~/express/api`).getAPI();
 
@@ -15,6 +15,10 @@ const UPLOAD_DIR = `../upload/img`;
 
 const articlesRouter = new Router();
 const uploadDirAbsolute = path.resolve(__dirname, UPLOAD_DIR);
+
+const getAddArticleCategories = () => {
+  return api.getCategories({withCount: false});
+};
 
 const storage = multer.diskStorage({
   destination: uploadDirAbsolute,
@@ -71,9 +75,14 @@ articlesRouter.post(`/add`, upload.single(`picture`), async (req, res) => {
     const savedArticle = {
       ...articleData,
     };
-    const query = buildQueryString(savedArticle);
+    const articleCategories = await getAddArticleCategories();
+    const validationMessages = prepareErrors(error);
 
-    return res.redirect(`/articles/add${query}`);
+    return res.render(`${ROOT}/add`, {
+      article: savedArticle,
+      categories: articleCategories,
+      validationMessages,
+    });
   }
 });
 

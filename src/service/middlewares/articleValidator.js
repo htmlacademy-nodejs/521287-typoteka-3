@@ -9,11 +9,13 @@ const {
 } = require(`~/utils`);
 
 const ErrorArticleMessage = {
+  TITLE_REQUIRED: `Заголовок отсутствует`,
   TITLE_MIN: `Заголовок содержит меньше 30 символов`,
   TITLE_MAX: `Заголовок не может содержать более 250 символов`,
   PICTURE: `Формат изображения не jpg или png`,
   CREATED_AT: `Дата публикации отсутствует`,
-  CATEGORIES: `Не выбрана ни одна категория поста`,
+  CATEGORIES: `Не выбрана ни одна категория`,
+  ANNOUNCE_REQUIRED: `Анонс отсутствует`,
   ANNOUNCE_MIN: `Анонс не может содержать меньше 30 символов`,
   ANNOUNCE_MAX: `Анонс не может содержать более 250 символов`,
   DESCRIPTION_MAX: `Полный текст не может содержать более 1000 символов`,
@@ -23,6 +25,7 @@ const ErrorArticleMessage = {
 
 const schema = Joi.object({
   title: Joi.string().min(30).max(250).required().messages({
+    'string.empty': ErrorArticleMessage.TITLE_REQUIRED,
     'string.min': ErrorArticleMessage.TITLE_MIN,
     'string.max': ErrorArticleMessage.TITLE_MAX
   }),
@@ -30,18 +33,21 @@ const schema = Joi.object({
     'string.pattern.base': ErrorArticleMessage.PICTURE
   }),
   createdAt: Joi.string().isoDate().required().messages({
-    'any.required': ErrorArticleMessage.CREATED_AT
+    'string.empty': ErrorArticleMessage.CREATED_AT
   }),
   categories: Joi.array().min(1).items(
       Joi.number().integer().positive().messages({
         'number.base': ErrorArticleMessage.CATEGORIES
       })
-  ).min(1).required(),
+  ).min(1).required().messages({
+    'array.min': ErrorArticleMessage.CATEGORIES,
+  }),
   announce: Joi.string().min(30).max(250).required().messages({
+    'string.empty': ErrorArticleMessage.ANNOUNCE_REQUIRED,
     'string.min': ErrorArticleMessage.ANNOUNCE_MIN,
     'string.max': ErrorArticleMessage.ANNOUNCE_MAX
   }),
-  description: Joi.string().max(1000).messages({
+  description: Joi.string().allow(``).max(1000).messages({
     'string.max': ErrorArticleMessage.DESCRIPTION_MAX
   })
 });

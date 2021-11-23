@@ -14,6 +14,9 @@ const {readContent} = require(`~/utils/readContent`);
 const {
   buildValidationErrorMessage,
 } = require(`~/utils/buildValidationErrorMessage`);
+const {
+  prepareErrors,
+} = require(`~/utils/prepareErrors`);
 
 const MAX_ID_LENGTH = 6;
 
@@ -136,4 +139,5 @@ module.exports = {
   buildQueryString,
   readContent,
   buildValidationErrorMessage,
+  prepareErrors,
 };
