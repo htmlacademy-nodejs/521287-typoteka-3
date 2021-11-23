@@ -132,12 +132,18 @@ articlesRouter.post(
 
         return res.redirect(`/${ROOT}/${id}`);
       } catch (error) {
-        const errorMessage = encodeURIComponent(
-            error.response && error.response.data
-        );
-        const errorPath = `/${ROOT}/${id}/?error=${errorMessage}`;
+        const [article, categories] = await Promise.all([
+          api.getArticle(id, true),
+          api.getCategories(true),
+        ]);
+        const validationMessages = prepareErrors(error);
 
-        return res.redirect(errorPath);
+        return res.render(`${ROOT}/article`, {
+          article,
+          categories,
+          newComment: text,
+          validationMessages,
+        });
       }
     }
 );
