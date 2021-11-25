@@ -137,11 +137,11 @@ articlesRouter.post(
       const {text} = req.body;
 
       try {
-        await api.createComment(id, {
+        const comment = await api.createComment(id, {
           text,
         });
 
-        return res.redirect(`/${ROOT}/${id}`);
+        return res.redirect(`/${ROOT}/${id}#${comment.id}`);
       } catch (error) {
         const [article, categories] = await Promise.all([
           api.getArticle(id, true),
