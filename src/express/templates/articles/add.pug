@@ -5,9 +5,20 @@ block content
     section
       .popup.popup--new-publication.popup--anti
         .new-publication
-          form(action='/articles/add' method='POST' enctype="multipart/form-data" autocomplete="off")
+          - const id = article ? article.id : null;
+          - const entrypoint = id ? `edit/${id}` : 'add';
+          form(
+            action=`/articles/${entrypoint}`
+            method='POST'
+            enctype="multipart/form-data"
+            autocomplete="off"
+          )
             .new-publication__header
-              h1 Новая публикация
+              -
+                const title = id
+                  ? 'Редактирование публикации'
+                  : 'Новая публикация';
+              h1 #{title}
 
               .new-publication__date-form
                 h3 Дата публикации
@@ -62,14 +73,13 @@ block content
                       | Обзор
 
                 .new-publication__category-wrapper
-                  -
-                    const articleCategories = article
-                        ? article.categories
-                        : [];
                   each category in categories
                     .new-publication__checkbox.new-publication__checkbox--auto
-                      - const categoryId = category.id;
-                      - const checked = articleCategories.includes(categoryId);
+                      -
+                        const categoryId = category.id;
+                        const checked = articleCategories
+                          ? articleCategories.includes(categoryId)
+                          : false;
                       input(
                           type='checkbox'
                           name=`category-${categoryId}`

@@ -40,7 +40,8 @@
     "start-front-server": "node ./src/express/index.js",
     "start-front-server::debug": "nodemon ./src/express/index.js",
     "eslint": "eslint --ext .js src/",
-    "test": "jest --watchAll",
+    "jest": "npm run jest",
+    "test::rest": "jest --watchAll",
     "test::eslint": "npm run eslint"
   },
   "repository": {

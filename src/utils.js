@@ -15,6 +15,15 @@ const {
   buildValidationErrorMessage,
 } = require(`~/utils/buildValidationErrorMessage`);
 const {
+  buildArticleData,
+} = require(`~/utils/buildArticleData`);
+const {
+  getCategoriesFromBody,
+} = require(`~/utils/getCategoriesFromBody`);
+const {
+  getArticleCategoriesIds,
+} = require(`~/utils/getArticleCategoriesIds`);
+const {
   prepareErrors,
 } = require(`~/utils/prepareErrors`);
 
@@ -139,5 +148,8 @@ module.exports = {
   buildQueryString,
   readContent,
   buildValidationErrorMessage,
+  buildArticleData,
+  getArticleCategoriesIds,
+  getCategoriesFromBody,
   prepareErrors,
 };

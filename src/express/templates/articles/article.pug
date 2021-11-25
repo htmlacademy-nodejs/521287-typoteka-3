@@ -8,7 +8,11 @@ block content
         h2.visually-hidden Основное содержание
         .post__wrapper
           .post__head
-            a.post__backwards.button.button--backwards(href='#') Назад
+            - const previousId = article.id - 1;
+            if previousId > 0
+              a.post__backwards.button.button--backwards(
+                href=`/articles/${previousId}`
+              ) Назад
 
             time.post__date(datetime=article.createdAt)
               +formatDate(article.createdAt)
@@ -22,7 +26,9 @@ block content
 
           .post__text
             h3 #{article.announce}
-            p #{article.description}
+            - const paragraphs = article.description.split('\n');
+            each item in paragraphs
+              p #{item}
 
       .post__wrapper.post__wrapper--comments
         section.post__comments.comments

@@ -6,7 +6,11 @@ const path = require(`path`);
 const {nanoid} = require(`nanoid`);
 
 const HttpCode = require(`~/constants`);
-const {prepareErrors} = require(`~/utils`);
+const {
+  buildArticleData,
+  getArticleCategoriesIds,
+  prepareErrors,
+} = require(`~/utils`);
 
 const api = require(`~/express/api`).getAPI();
 
@@ -15,6 +19,15 @@ const UPLOAD_DIR = `../upload/img`;
 
 const articlesRouter = new Router();
 const uploadDirAbsolute = path.resolve(__dirname, UPLOAD_DIR);
+
+const getEditArticleData = async (articleId) => {
+  const [article, categories] = await Promise.all([
+    api.getArticle(articleId, false),
+    api.getCategories()
+  ]);
+
+  return [article, categories];
+};
 
 const getAddArticleCategories = () => {
   return api.getCategories({withCount: false});
@@ -46,45 +59,64 @@ articlesRouter.get(`/add`, async (req, res) => {
 });
 
 articlesRouter.post(`/add`, upload.single(`picture`), async (req, res) => {
-  const {body, file} = req;
-
-  const {title, announce, description, createdAt} = body;
-  const categories = Object.entries(body)
-    .map(([key, value]) => {
-      if (value === `on`) {
-        return Number(key.split(`-`)[1]);
-      }
-    })
-    .filter((item) => item !== undefined);
-  const picture = file ? file.filename : null;
-
-  const articleData = {
-    title,
-    announce,
-    description,
-    createdAt,
-    categories,
-    picture,
-  };
+  const article = buildArticleData(req);
 
   try {
-    await api.createArticle(articleData);
+    await api.createArticle(article);
 
     return res.redirect(`../my`);
   } catch (error) {
-    const savedArticle = {
-      ...articleData,
-    };
-    const articleCategories = await getAddArticleCategories();
+    const articleCategories = article.categories;
+    const categories = await getAddArticleCategories();
     const validationMessages = prepareErrors(error);
 
     return res.render(`${ROOT}/add`, {
-      article: savedArticle,
-      categories: articleCategories,
+      article,
+      articleCategories,
+      categories,
       validationMessages,
     });
   }
 });
+
+articlesRouter.get(`/edit/:id`, async (req, res) => {
+  const {id} = req.params;
+
+  try {
+    const [article, categories] = await getEditArticleData(Number(id));
+    const articleCategories = getArticleCategoriesIds(article);
+
+    res.render(`${ROOT}/add`, {article, articleCategories, categories});
+  } catch (error) {
+    return res.render(`errors/404`).status(HttpCode.NOT_FOUND);
+  }
+
+  return null;
+});
+articlesRouter.post(
+    `/edit/:id`,
+    upload.single(`picture`),
+    async (req, res) => {
+      const {id} = req.params;
+      const article = buildArticleData(req);
+
+      try {
+        await api.editArticle(Number(id), article);
+
+        return res.redirect(`/articles/${id}`);
+      } catch (error) {
+        const articleCategories = article.categories;
+        const categories = await getAddArticleCategories();
+        const validationMessages = prepareErrors(error);
+
+        return res.render(`${ROOT}/add`, {
+          article,
+          articleCategories,
+          categories,
+          validationMessages,
+        });
+      }
+    });
 
 articlesRouter.get(`/:id`, async (req, res) => {
   const {id} = res.req.params;
@@ -93,30 +125,9 @@ articlesRouter.get(`/:id`, async (req, res) => {
     api.getArticle(id, true),
     api.getCategories(true),
   ]);
-  const selectedCategoriesIds = article.categories.map((category) => category.id);
+  const selectedCategoriesIds = getArticleCategoriesIds(article);
 
   res.render(`${ROOT}/article`, {article, categories, selectedCategoriesIds});
-});
-
-articlesRouter.get(`/edit/:id`, async (req, res) => {
-  const {id} = req.params;
-
-  try {
-    const [article, categories] = await Promise.all([
-      api.getArticle(id),
-      api.getCategories(),
-    ]);
-
-    const articleCategories = article.categories.map(
-        (category) => category.name
-    );
-
-    res.render(`${ROOT}/edit`, {article, categories, articleCategories});
-  } catch (error) {
-    return res.render(`errors/404`).status(HttpCode.NOT_FOUND);
-  }
-
-  return null;
 });
 
 articlesRouter.post(
