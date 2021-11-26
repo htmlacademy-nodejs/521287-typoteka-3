@@ -14,13 +14,17 @@ app.use(express.json());
 search(app, new DataService(mockData));
 
 describe(`GET /search`, () => {
+  console.log(`i am in test`);
   describe(`+`, () => {
     let response;
 
     beforeAll(async () => {
+      console.log(`before request`);
       response = await request(app).get(`/search`).query({
         query: `смартфон`,
       });
+      console.log(`after request`);
+      console.log(response);
     });
 
     it(`responds with 200 status code`, () => {
