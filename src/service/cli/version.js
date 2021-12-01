@@ -2,7 +2,7 @@
 
 const chalk = require(`chalk`);
 
-const packageJsonFile = require(`root/package.json`);
+const packageJsonFile = require(`../../../package.json`);
 
 module.exports = {
   name: `--version`,

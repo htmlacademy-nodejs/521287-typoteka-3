@@ -4,7 +4,6 @@
   "description": "Типотека",
   "main": "./src/service/service.js",
   "_moduleAliases": {
-    "root": ".",
     "~": "src"
   },
   "dependencies": {
