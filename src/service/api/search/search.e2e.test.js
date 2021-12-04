@@ -2,29 +2,42 @@
 
 const express = require(`express`);
 const request = require(`supertest`);
+const Sequelize = require(`sequelize`);
 
 const {HttpCode} = require(`~/constants`);
 const DataService = require(`~/service/data-service/search`);
+const initDB = require(`~/service/lib/init-db`);
 
-const {mockData} = require(`./mockData`);
+const {
+  mockCategories,
+  mockArticles,
+  foundArticleTitle,
+} = require(`./search.mocks`);
 const search = require(`./search`);
 
 const app = express();
 app.use(express.json());
-search(app, new DataService(mockData));
+
+const mockDB = new Sequelize(`sqlite::memory:`, {
+  logging: false
+});
+
+beforeAll(async () => {
+  await initDB(mockDB, {
+    categories: mockCategories,
+    articles: mockArticles,
+  });
+  search(app, new DataService(mockDB));
+});
 
 describe(`GET /search`, () => {
-  console.log(`i am in test`);
   describe(`+`, () => {
     let response;
 
     beforeAll(async () => {
-      console.log(`before request`);
       response = await request(app).get(`/search`).query({
         query: `смартфон`,
       });
-      console.log(`after request`);
-      console.log(response);
     });
 
     it(`responds with 200 status code`, () => {
@@ -36,9 +49,8 @@ describe(`GET /search`, () => {
     });
 
     it(`returns right data`, () => {
-      const foundArticleId = mockData[1].id;
-
-      expect(response.body[0].id).toBe(foundArticleId);
+      expect(response.body[0].title)
+        .toBe(foundArticleTitle);
     });
   });
 
