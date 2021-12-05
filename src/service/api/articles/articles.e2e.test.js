@@ -116,6 +116,34 @@ describe(`POST /articles`, () => {
         expect(response.statusCode).toBe(HttpCode.BAD_REQUEST);
       }
     });
+
+    it(`responds with 400 status code when field type is wrong`, async () => {
+      const badArticles = [
+        {...newArticle, title: true},
+        {...newArticle, announce: 12345},
+        {...newArticle, categories: `Котики`}
+      ];
+
+      for (const badArticle of badArticles) {
+        const response = await request(app).post(`/articles`).send(badArticle);
+
+        expect(response.statusCode).toBe(HttpCode.BAD_REQUEST);
+      }
+    });
+
+    test(`responds with 400 status code when some field value is wrong`, async () => {
+      const badArticles = [
+        {...newArticle, title: `too short`},
+        {...newArticle, announce: `too short announce`},
+        {...newArticle, categories: []}
+      ];
+
+      for (const badArticle of badArticles) {
+        const response = await request(app).post(`/articles`).send(badArticle);
+
+        expect(response.statusCode).toBe(HttpCode.BAD_REQUEST);
+      }
+    });
   });
 });
 
