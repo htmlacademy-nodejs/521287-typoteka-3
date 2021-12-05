@@ -1,6 +1,7 @@
 'use strict';
 
 const express = require(`express`);
+const helmet = require(`helmet`);
 const path = require(`path`);
 require(`module-alias/register`);
 
@@ -16,6 +17,7 @@ app.use(express.urlencoded({extended: false}));
 app.use(express.static(path.resolve(__dirname, PUBLIC_DIR)));
 app.use(express.static(path.resolve(__dirname, UPLOAD_DIR)));
 
+app.use(helmet());
 app.use(router);
 
 app.set(`views`, path.resolve(__dirname, `templates`));

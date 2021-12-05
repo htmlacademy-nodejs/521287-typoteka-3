@@ -1,6 +1,7 @@
 'use strict';
 
 const express = require(`express`);
+const helmet = require(`helmet`);
 
 const {HttpCode, API_PREFIX} = require(`~/constants`);
 const {getLogger} = require(`~/service/lib/logger`);
@@ -9,6 +10,7 @@ const routes = require(`~/service/api`);
 const app = express();
 const logger = getLogger({name: `api`});
 
+app.use(helmet());
 app.use(express.json());
 
 app.use((req, res, next) => {
