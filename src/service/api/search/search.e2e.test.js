@@ -12,7 +12,7 @@ const {
   mockCategories,
   mockArticles,
   foundArticleTitle,
-} = require(`./search.mocks`);
+} = require(`../mockData`);
 const search = require(`./search`);
 
 const app = express();

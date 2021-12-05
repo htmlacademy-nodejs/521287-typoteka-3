@@ -5,13 +5,15 @@ const request = require(`supertest`);
 const {HttpCode} = require(`~/constants`);
 
 const {createAPI} = require(`./utils`);
-const {mockData} = require(`./mockData`);
+const {
+  mockArticles,
+} = require(`../mockData`);
 
 describe(`GET /articles`, () => {
-  const app = createAPI();
   let response;
 
   beforeAll(async () => {
+    const app = await createAPI();
     response = await request(app).get(`/articles`);
   });
 
@@ -19,25 +21,26 @@ describe(`GET /articles`, () => {
     expect(response.statusCode).toBe(HttpCode.OK);
   });
 
-  it(`returns list of 5 articles`, () => {
-    const length = mockData.length;
+  it(`returns right article list`, () => {
+    const length = response.body.length;
+    const expected = mockArticles.length;
 
-    expect(response.body.length).toBe(length);
+    expect(length).toBe(expected);
   });
 
   it(`returns right data`, () => {
-    const {id} = mockData[0];
-
-    expect(response.body[0].id).toBe(id);
+    expect(response.body[0].title).toBe(
+        mockArticles[0].title
+    );
   });
 });
 
 describe(`GET /articles/{articleId}`, () => {
-  const ARTICLE_ID = `ghJIDB`;
-  const app = createAPI();
+  const ARTICLE_ID = 3;
   let response;
 
   beforeAll(async () => {
+    const app = await createAPI();
     response = await request(app).get(`/articles/${ARTICLE_ID}`);
   });
 
@@ -46,25 +49,27 @@ describe(`GET /articles/{articleId}`, () => {
   });
 
   it(`returns right data`, () => {
-    const title = mockData[3].title;
+    const expectedTitle = mockArticles[ARTICLE_ID - 1].title;
 
-    expect(response.body.title).toBe(title);
+    expect(response.body.title).toBe(expectedTitle);
   });
 });
 
 describe(`POST /articles`, () => {
   describe(`+`, () => {
-    const app = createAPI();
+    const newArticleTitle = `Созидание интереснее потребления по мнению Павла Дурова`;
     const newArticle = {
-      title: `Созидание интереснее потребления`,
-      createdDate: `2020-12-13 12:30:52`,
-      category: [`Продуктивность`],
+      title: newArticleTitle,
+      createdAt: `2020-12-13T12:30:52.599Z`,
+      categories: [1],
       announce: `Почему государству выгодно, чтобы мы потребляли больше, как это вредно с точки зрения эволюции и чем интереснее заниматься в жизни`,
-      fullText: `Душа, как бы это ни казалось парадоксальным, спонтанно иллюстрирует конфликтный импульс, таким образом, стратегия поведения, выгодная отдельному человеку, ведет к коллективному проигрышу. Гештальт, по определению, разрушаем. Однако Э.Дюркгейм утверждал, что мышление начинает девиантный интеракционизм. Как было показано выше, лидерство последовательно`,
+      description: `Душа, как бы это ни казалось парадоксальным, спонтанно иллюстрирует конфликтный импульс, таким образом, стратегия поведения, выгодная отдельному человеку, ведет к коллективному проигрышу. Гештальт, по определению, разрушаем. Однако Э.Дюркгейм утверждал, что мышление начинает девиантный интеракционизм. Как было показано выше, лидерство последовательно`,
     };
+    let app;
     let response;
 
     beforeAll(async () => {
+      app = await createAPI();
       response = await request(app).post(`/articles`).send(newArticle);
     });
 
@@ -72,27 +77,34 @@ describe(`POST /articles`, () => {
       expect(response.statusCode).toBe(HttpCode.CREATED);
     });
 
-    it(`returns created article`, () => {
-      expect(response.body).toEqual(expect.objectContaining(newArticle));
+    it(`returns right data`, () => {
+      expect(response.body.title).toEqual(newArticleTitle);
     });
 
     it(`creates new article`, async () => {
       const articleResponse = await request(app).get(`/articles`);
 
-      const newLength = mockData.length + 1;
+      const newArticleListLength = articleResponse.body.length;
+      const expectedArticleListLength = mockArticles.length + 1;
 
-      expect(articleResponse.body.length).toBe(newLength);
+      expect(newArticleListLength).toBe(
+          expectedArticleListLength
+      );
     });
   });
 
   describe(`−`, () => {
-    const app = createAPI();
     const newArticle = {
       createdDate: `2020-12-13 12:30:52`,
       category: [`Продуктивность`],
       announce: `Почему государству выгодно, чтобы мы потребляли больше, как это вредно с точки зрения эволюции и чем интереснее заниматься в жизни`,
       fullText: `Душа, как бы это ни казалось парадоксальным, спонтанно иллюстрирует конфликтный импульс, таким образом, стратегия поведения, выгодная отдельному человеку, ведет к коллективному проигрышу. Гештальт, по определению, разрушаем. Однако Э.Дюркгейм утверждал, что мышление начинает девиантный интеракционизм. Как было показано выше, лидерство последовательно`,
     };
+    let app;
+
+    beforeAll(async () => {
+      app = await createAPI();
+    });
 
     it(`responds with 400 status code when some required property is absent`, async () => {
       for (const key of Object.keys(newArticle)) {
@@ -108,20 +120,22 @@ describe(`POST /articles`, () => {
 });
 
 describe(`PUT /articles/{articleId}`, () => {
-  const ARTICLE_ID = `Adjh2S`;
+  const ARTICLE_ID = `3`;
 
   describe(`+`, () => {
-    const app = createAPI();
+    const changedArticleTitle = `Изменённый заголовок очень интересной статьи`;
     const changedArticle = {
-      title: `Изменённый заголовок`,
-      createdDate: `2021-01-01 09:00:00`,
-      category: [`Разное`],
-      announce: `Изменённый анонс`,
-      fullText: `Изменённый текст`,
+      title: changedArticleTitle,
+      createdAt: `2021-01-01T10:00:00.000Z`,
+      categories: [2],
+      announce: `Изменённый анонс очень интересной статьи`,
+      description: `Изменённый текст`,
     };
+    let app;
     let response;
 
     beforeAll(async () => {
+      app = await createAPI();
       response = await request(app)
         .put(`/articles/${ARTICLE_ID}`)
         .send(changedArticle);
@@ -131,44 +145,38 @@ describe(`PUT /articles/{articleId}`, () => {
       expect(response.statusCode).toBe(HttpCode.OK);
     });
 
-    it(`returns changed article`, () => {
-      expect(response.body).toEqual(expect.objectContaining(changedArticle));
-    });
-
     it(`changes certain article`, async () => {
       const articleResponse = await request(app).get(`/articles/${ARTICLE_ID}`);
 
-      const newTitle = changedArticle.title;
+      const {title} = articleResponse.body;
 
-      expect(articleResponse.body.title).toBe(newTitle);
+      expect(title).toBe(changedArticleTitle);
     });
   });
 
   describe(`−`, () => {
-    it(`responds with 404 status code when article doesn't exist`, async () => {
-      const app = createAPI();
-      const validArticle = {
-        title: `Изменённый заголовок`,
-        createdDate: `2021-01-01 09:00:00`,
-        category: [`Разное`],
-        announce: `Изменённый анонс`,
-        fullText: `Изменённый текст`,
-      };
+    const validArticle = {
+      title: `Изменённый заголовок интересной статьи`,
+      createdAt: `2021-01-01T09:00:00.000Z`,
+      category: [3],
+      announce: `Изменённый анонс интересной статьи`,
+      description: `Изменённый текст`,
+    };
+
+    it(`responds with 400 status code when article doesn't exist`, async () => {
+      const app = await createAPI();
+
       const response = await request(app)
         .put(`/articles/NOEXIST`)
         .send(validArticle);
 
-      expect(response.statusCode).toBe(HttpCode.NOT_FOUND);
+      expect(response.statusCode).toBe(HttpCode.BAD_REQUEST);
     });
 
     it(`responds with 400 status code when some required property is absent`, async () => {
-      const app = createAPI();
-      const invalidArticle = {
-        createdDate: `2021-01-01 09:00:00`,
-        category: [`Разное`],
-        announce: `Изменённый анонс`,
-        fullText: `Изменённый текст`,
-      };
+      const app = await createAPI();
+      const invalidArticle = {...validArticle};
+      delete invalidArticle.title;
       const response = await request(app)
         .put(`/articles/${ARTICLE_ID}`)
         .send(invalidArticle);
@@ -180,11 +188,12 @@ describe(`PUT /articles/{articleId}`, () => {
 
 describe(`DELETE /articles/{articleId}`, () => {
   describe(`+`, () => {
-    const ARTICLE_ID = `Adjh2S`;
-    const app = createAPI();
+    const ARTICLE_ID = `2`;
+    let app;
     let response;
 
     beforeAll(async () => {
+      app = await createAPI();
       response = await request(app).delete(`/articles/${ARTICLE_ID}`);
     });
 
@@ -192,37 +201,33 @@ describe(`DELETE /articles/{articleId}`, () => {
       expect(response.statusCode).toBe(HttpCode.OK);
     });
 
-    it(`returns deleted article`, () => {
-      expect(response.body.id).toBe(ARTICLE_ID);
-    });
-
     it(`deletes certain article`, async () => {
       const articleResponse = await request(app).get(`/articles`);
 
-      const newLength = mockData.length - 1;
+      const {length: newLength} = articleResponse.body;
+      const expectedNewLength = mockArticles.length - 1;
 
-      expect(articleResponse.body.length).toBe(newLength);
+      expect(newLength).toBe(expectedNewLength);
     });
   });
 
   describe(`−`, () => {
     it(`responds with 404 status code when article doesn't exist`, async () => {
-      const app = createAPI();
+      const app = await createAPI();
       const response = await request(app).delete(`/articles/NOEXIST`);
 
-      expect(response.statusCode).toBe(HttpCode.NOT_FOUND);
+      expect(response.statusCode).toBe(HttpCode.BAD_REQUEST);
     });
   });
 });
 
 describe(`GET /articles/{articleId}/comments`, () => {
   describe(`+`, () => {
-    const ARTICLE_ID = `mSlg3L`;
-    const app = createAPI();
-    const article = mockData[4];
-    let response;
+    const ARTICLE_ID = `2`;
+    let response = null;
 
     beforeAll(async () => {
+      const app = await createAPI();
       response = await request(app).get(`/articles/${ARTICLE_ID}/comments`);
     });
 
@@ -230,22 +235,30 @@ describe(`GET /articles/{articleId}/comments`, () => {
       expect(response.statusCode).toBe(HttpCode.OK);
     });
 
-    it(`returns certain article comments`, () => {
-      const {length} = article.comments;
+    it(`returns article comment list`, () => {
+      const {length} = response.body;
+      const expectedCommentLength =
+        mockArticles[ARTICLE_ID - 1]
+          .comments
+          .length;
 
-      expect(response.body.length).toBe(length);
+      expect(length).toBe(
+          expectedCommentLength
+      );
     });
 
     it(`returns right data`, () => {
-      const {id} = article.comments[0];
+      const COMMENT_ID = 0;
+      const {text} = response.body[COMMENT_ID];
+      const expected = mockArticles[ARTICLE_ID - 1].comments[COMMENT_ID].text;
 
-      expect(response.body[0].id).toBe(id);
+      expect(text).toBe(expected);
     });
   });
 
   describe(`−`, () => {
     it(`responds with 404 status code when article doesn't exist`, async () => {
-      const app = createAPI();
+      const app = await createAPI();
       const response = await request(app).delete(`/articles/NOEXIST/comments`);
 
       expect(response.statusCode).toBe(HttpCode.NOT_FOUND);
@@ -254,17 +267,18 @@ describe(`GET /articles/{articleId}/comments`, () => {
 });
 
 describe(`POST /articles/{articleId}/comments`, () => {
-  const ARTICLE_ID = `mSlg3L`;
+  const ARTICLE_ID = `2`;
 
   describe(`+`, () => {
-    const app = createAPI();
+    const newCommentText = `Валидному комментарию достаточно этого поля`;
     const newComment = {
-      text: `Валидному комментарию достаточно этого поля`,
+      text: newCommentText,
     };
-    const article = mockData[4];
+    let app;
     let response;
 
     beforeAll(async () => {
+      app = await createAPI();
       response = await request(app)
         .post(`/articles/${ARTICLE_ID}/comments`)
         .send(newComment);
@@ -274,8 +288,10 @@ describe(`POST /articles/{articleId}/comments`, () => {
       expect(response.statusCode).toBe(HttpCode.CREATED);
     });
 
-    it(`returns created comment`, () => {
-      expect(response.body).toEqual(expect.objectContaining(newComment));
+    it(`return new comment`, async () => {
+      const {text} = response.body;
+
+      expect(text).toBe(newCommentText);
     });
 
     it(`creates new comment`, async () => {
@@ -283,16 +299,16 @@ describe(`POST /articles/{articleId}/comments`, () => {
           `/articles/${ARTICLE_ID}/comments`
       );
 
-      const {length} = article.comments;
-      const newLength = length + 1;
+      const length = articleResponse.body.length;
+      const expected = mockArticles[0].comments.length + 1;
 
-      expect(articleResponse.body.length).toBe(newLength);
+      expect(length).toBe(expected);
     });
   });
 
   describe(`−`, () => {
     it(`responds with 404 status code when article doesn't exist`, async () => {
-      const app = createAPI();
+      const app = await createAPI();
       const newComment = {
         text: `Неважно какой комментарий`,
       };
@@ -305,7 +321,7 @@ describe(`POST /articles/{articleId}/comments`, () => {
     });
 
     it(`responds with 400 status code when required property is absent`, async () => {
-      const app = createAPI();
+      const app = await createAPI();
       const validComment = {
         text: `Комментарий будет невалидным без этого поля`,
       };
@@ -323,13 +339,15 @@ describe(`POST /articles/{articleId}/comments`, () => {
 });
 
 describe(`DELETE /articles/{articleId}/comments/{commentId}`, () => {
+  const ARTICLE_ID = `1`;
+  const COMMENT_ID = `1`;
+
   describe(`+`, () => {
-    const ARTICLE_ID = `mSlg3L`;
-    const COMMENT_ID = `czZoLY`;
-    const app = createAPI();
+    let app;
     let response;
 
     beforeAll(async () => {
+      app = await createAPI();
       response = await request(app).delete(
           `/articles/${ARTICLE_ID}/comments/${COMMENT_ID}`
       );
@@ -339,27 +357,35 @@ describe(`DELETE /articles/{articleId}/comments/{commentId}`, () => {
       expect(response.statusCode).toBe(HttpCode.OK);
     });
 
-    it(`returns deleted comment`, () => {
-      expect(response.body.id).toBe(COMMENT_ID);
-    });
-
     it(`deletes certain comment`, async () => {
       const commentResponse = await request(app).get(
           `/articles/${ARTICLE_ID}/comments`
       );
 
-      expect(commentResponse.body.length).toBe(4);
+      const length = commentResponse.body.length;
+      const expected = mockArticles[ARTICLE_ID - 1].comments.length - 1;
+
+      expect(length).toBe(expected);
     });
   });
 
   describe(`−`, () => {
-    it(`responds with 404 status code when article with comment doesn't exist`, async () => {
-      const app = createAPI();
+    it(`responds with 400 status code when article doesn't exist`, async () => {
+      const app = await createAPI();
       const response = await request(app).delete(
-          `/articles/NOEXIST/comments/EXIST`
+          `/articles/NOEXIST/comments/${COMMENT_ID}`
       );
 
-      expect(response.statusCode).toBe(HttpCode.NOT_FOUND);
+      expect(response.statusCode).toBe(HttpCode.BAD_REQUEST);
+    });
+
+    it(`responds with 400 status code when comment doesn't exist`, async () => {
+      const app = await createAPI();
+      const response = await request(app).delete(
+          `/articles/${ARTICLE_ID}/comments/NOEXIST`
+      );
+
+      expect(response.statusCode).toBe(HttpCode.BAD_REQUEST);
     });
   });
 });

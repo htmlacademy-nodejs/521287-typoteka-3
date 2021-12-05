@@ -28,8 +28,6 @@ const commentValidator = async (req, res, next) => {
   if (error) {
     const errorMessage = buildValidationErrorMessage(error);
 
-    console.log(errorMessage);
-
     return res
       .status(HttpCode.BAD_REQUEST)
       .send(errorMessage);

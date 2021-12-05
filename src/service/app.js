@@ -18,7 +18,7 @@ app.use((req, res, next) => {
     logger.info(`Response status code was ${res.statusCode}`);
   });
 
-  return next();
+  next();
 });
 
 app.use(API_PREFIX, routes);
