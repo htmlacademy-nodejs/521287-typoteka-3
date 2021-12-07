@@ -1,20 +1,35 @@
 'use strict';
 
 const express = require(`express`);
+const Sequelize = require(`sequelize`);
 
 const DataService = require(`~/service/data-service/articles`);
 const CommentService = require(`~/service/data-service/comments`);
+const initDB = require(`~/service/lib/init-db`);
 
-const {mockData} = require(`./mockData`);
 const articles = require(`./articles`);
+const {
+  mockCategories,
+  mockArticles,
+} = require(`../mockData`);
 
-const createAPI = () => {
+const createAPI = async () => {
+  const mockDB = new Sequelize(`sqlite::memory:`, {
+    logging: false,
+  });
+
   const app = express();
-  const cloneData = JSON.parse(JSON.stringify(mockData));
-
   app.use(express.json());
 
-  articles(app, new DataService(cloneData), new CommentService());
+  await initDB(mockDB, {
+    categories: mockCategories,
+    articles: mockArticles,
+  });
+  articles(
+      app,
+      new DataService(mockDB),
+      new CommentService(mockDB)
+  );
 
   return app;
 };

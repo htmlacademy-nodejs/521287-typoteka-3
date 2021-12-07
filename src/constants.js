@@ -10,6 +10,13 @@ const ExitCode = {
   ERROR: 1,
 };
 
+const HttpMethod = {
+  GET: `GET`,
+  POST: `POST`,
+  PUT: `PUT`,
+  DELETE: `DELETE`
+};
+
 const HttpCode = {
   OK: 200,
   CREATED: 201,
@@ -46,6 +53,7 @@ const ARTICLES_PER_PAGE = 8;
 module.exports = {
   Env,
   ExitCode,
+  HttpMethod,
   HttpCode,
   AnnounceRestrict,
   PictureRestrict,

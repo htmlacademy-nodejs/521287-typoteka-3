@@ -5,25 +5,43 @@ block content
     section
       .popup.popup--new-publication.popup--anti
         .new-publication
-          form(action='/articles/add' method='POST' enctype="multipart/form-data" autocomplete="off")
+          - const id = article ? article.id : null;
+          - const entrypoint = id ? `edit/${id}` : 'add';
+          form(
+            action=`/articles/${entrypoint}`
+            method='POST'
+            enctype="multipart/form-data"
+            autocomplete="off"
+          )
             .new-publication__header
-              h1 Новая публикация
+              -
+                const title = id
+                  ? 'Редактирование публикации'
+                  : 'Новая публикация';
+              h1 #{title}
 
               .new-publication__date-form
                 h3 Дата публикации
                 .new-publication__date-form-division
                   .new-publication__date-block
                     label(for='new-publication-date' aria-label='Календарь')
+                    -
+                      const createdAt =
+                        (article && article.createdAt)
+                          ? article.createdAt
+                          : new Date().toISOString();
                     input#new-publication-date(
                       type='text'
-                      name='date'
-                      value=article ? article.createdDate : date
-                      placeholder=article ? article.createdDate : date)
+                      name='createdAt'
+                      value=createdAt)
                       
               button.new-publication__button.button.button--colored(type='submit') Опубликовать
             a.popup__button.button.button--popup-close(aria-label='Закрыть окно')
               | Закрыть
               | окно
+
+            +insertErrorMessages(validationMessages)
+
             .new-publication__form.form
               .form__wrapper.form__wrapper--intro
                 .form__field
@@ -38,10 +56,15 @@ block content
 
                 .form__field.form__field--post-image
                   label
+                    -
+                      const picture =
+                        (article && article.picture && article.picture !== 'null')
+                        ? article.picture
+                        : '';
                     input#image-name-field(
                       type='text'
-                      name='photo'
-                      value=article ? article.picture : ''
+                      name='picture'
+                      value=picture
                       placeholder='Фотография'
                       readonly)
                   .form__image-loader.form__image-loader--publication
@@ -50,22 +73,28 @@ block content
                       | Обзор
 
                 .new-publication__category-wrapper
-                  each category, i in categories
+                  each category in categories
                     .new-publication__checkbox.new-publication__checkbox--auto
+                      -
+                        const categoryId = category.id;
+                        const checked = articleCategories
+                          ? articleCategories.includes(categoryId)
+                          : false;
                       input(
                           type='checkbox'
-                          name=`category-${i}`
-                          id=`checkbox-${i}`
-                          checked=article && article.category.includes(category))
-                      label(for=`category-${i}`) #{category.name}
+                          name=`category-${categoryId}`
+                          id=`category-${categoryId}`
+                          checked=checked
+                        )
+                      label(for=`category-${categoryId}`) #{category.name}
                   a.new-publication__form-link.button.button--transparent(href='#') Добавить категорию
 
               .form__wrapper.form__wrapper--text
                 .form__field.form__field--publication-text
                   label
-                    textarea(rows='5' name='announce' placeholder='Анонс публикации')
+                    textarea(rows='5' name='announce' placeholder='Анонс публикации' required)
                       | #{article ? article.announce : ''}
                 .form__field.form__field--publication-text
                   label
-                    textarea(rows='10' name='fullText' placeholder='Полный текст публикации')
-                      | #{article ? article.fullText : ''}
+                    textarea(rows='10' name='description' placeholder='Полный текст публикации')
+                      | #{article ? article.description : ''}

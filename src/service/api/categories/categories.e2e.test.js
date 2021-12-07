@@ -2,16 +2,34 @@
 
 const express = require(`express`);
 const request = require(`supertest`);
+const Sequelize = require(`sequelize`);
 
 const {HttpCode} = require(`~/constants`);
 const DataService = require(`~/service/data-service/categories`);
+const initDB = require(`~/service/lib/init-db`);
 
-const {mockData, mockCategories} = require(`./mockData`);
+const {
+  mockArticles,
+  mockCategories,
+  foundArticlesWithSecondCategory,
+} = require(`../mockData`);
 const categories = require(`./categories`);
 
 const app = express();
 app.use(express.json());
-categories(app, new DataService(mockData));
+
+const mockDB = new Sequelize(`sqlite::memory:`, {
+  logging: false
+});
+
+beforeAll(async () => {
+  await initDB(mockDB, {
+    categories: mockCategories,
+    articles: mockArticles,
+  });
+  categories(app, new DataService(mockDB));
+});
+
 
 describe(`GET /categories`, () => {
   let response;
@@ -31,6 +49,32 @@ describe(`GET /categories`, () => {
   });
 
   it(`returns right data`, () => {
-    expect(response.body).toEqual(expect.arrayContaining(mockCategories));
+    expect(response.body.map((item) => item.name)).toEqual(
+        expect.arrayContaining(mockCategories)
+    );
+  });
+});
+
+describe(`GET /categories/:id`, () => {
+  const CATEGORY_ID = 2;
+  let response;
+
+  beforeAll(async () => {
+    response = await request(app)
+      .get(`/categories/${CATEGORY_ID}`);
+  });
+
+  it(`responds with 200 status code`, () => {
+    expect(response.statusCode).toBe(HttpCode.OK);
+  });
+
+  it(`returns right data`, () => {
+    const {id, name, articles} = response.body;
+
+    expect(id).toBe(CATEGORY_ID);
+    expect(name).toBe(mockCategories[1]);
+    expect(articles.length).toBe(
+        foundArticlesWithSecondCategory.length
+    );
   });
 });

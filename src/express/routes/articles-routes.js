@@ -6,7 +6,11 @@ const path = require(`path`);
 const {nanoid} = require(`nanoid`);
 
 const HttpCode = require(`~/constants`);
-const {getTime, buildQueryString} = require(`~/utils`);
+const {
+  buildArticleData,
+  getArticleCategoriesIds,
+  prepareErrors,
+} = require(`~/utils`);
 
 const api = require(`~/express/api`).getAPI();
 
@@ -15,6 +19,19 @@ const UPLOAD_DIR = `../upload/img`;
 
 const articlesRouter = new Router();
 const uploadDirAbsolute = path.resolve(__dirname, UPLOAD_DIR);
+
+const getEditArticleData = async (articleId) => {
+  const [article, categories] = await Promise.all([
+    api.getArticle(articleId, false),
+    api.getCategories()
+  ]);
+
+  return [article, categories];
+};
+
+const getAddArticleCategories = () => {
+  return api.getCategories({withCount: false});
+};
 
 const storage = multer.diskStorage({
   destination: uploadDirAbsolute,
@@ -42,35 +59,64 @@ articlesRouter.get(`/add`, async (req, res) => {
 });
 
 articlesRouter.post(`/add`, upload.single(`picture`), async (req, res) => {
-  const {body, file} = req;
-  const {title, announce, fullText, date, category = []} = body;
-  const time = getTime(new Date());
-  const createdDate = `${date}, ${time}`;
-  const picture = file ? file.filename : null;
-
-  const articleData = {
-    title,
-    announce,
-    fullText,
-    createdDate,
-    categories: category,
-    picture,
-  };
+  const article = buildArticleData(req);
 
   try {
-    await api.createArticle(articleData);
+    await api.createArticle(article);
 
     return res.redirect(`../my`);
   } catch (error) {
-    const savedArticle = {
-      ...articleData,
-      createdDate: date,
-    };
-    const query = buildQueryString(savedArticle);
+    const articleCategories = article.categories;
+    const categories = await getAddArticleCategories();
+    const validationMessages = prepareErrors(error);
 
-    return res.redirect(`/articles/add${query}`);
+    return res.render(`${ROOT}/add`, {
+      article,
+      articleCategories,
+      categories,
+      validationMessages,
+    });
   }
 });
+
+articlesRouter.get(`/edit/:id`, async (req, res) => {
+  const {id} = req.params;
+
+  try {
+    const [article, categories] = await getEditArticleData(Number(id));
+    const articleCategories = getArticleCategoriesIds(article);
+
+    res.render(`${ROOT}/add`, {article, articleCategories, categories});
+  } catch (error) {
+    return res.render(`errors/404`).status(HttpCode.NOT_FOUND);
+  }
+
+  return null;
+});
+articlesRouter.post(
+    `/edit/:id`,
+    upload.single(`picture`),
+    async (req, res) => {
+      const {id} = req.params;
+      const article = buildArticleData(req);
+
+      try {
+        await api.editArticle(Number(id), article);
+
+        return res.redirect(`/articles/${id}`);
+      } catch (error) {
+        const articleCategories = article.categories;
+        const categories = await getAddArticleCategories();
+        const validationMessages = prepareErrors(error);
+
+        return res.render(`${ROOT}/add`, {
+          article,
+          articleCategories,
+          categories,
+          validationMessages,
+        });
+      }
+    });
 
 articlesRouter.get(`/:id`, async (req, res) => {
   const {id} = res.req.params;
@@ -79,31 +125,39 @@ articlesRouter.get(`/:id`, async (req, res) => {
     api.getArticle(id, true),
     api.getCategories(true),
   ]);
-  const selectedCategoriesIds = article.categories.map((category) => category.id);
+  const selectedCategoriesIds = getArticleCategoriesIds(article);
 
   res.render(`${ROOT}/article`, {article, categories, selectedCategoriesIds});
 });
 
-articlesRouter.get(`/edit/:id`, async (req, res) => {
-  const {id} = req.params;
+articlesRouter.post(
+    `/:id/comments`,
+    async (req, res) => {
+      const {id} = req.params;
+      const {text} = req.body;
 
-  try {
-    const [article, categories] = await Promise.all([
-      api.getArticle(id),
-      api.getCategories(),
-    ]);
+      try {
+        const comment = await api.createComment(id, {
+          text,
+        });
 
-    const articleCategories = article.categories.map(
-        (category) => category.name
-    );
+        return res.redirect(`/${ROOT}/${id}#${comment.id}`);
+      } catch (error) {
+        const [article, categories] = await Promise.all([
+          api.getArticle(id, true),
+          api.getCategories(true),
+        ]);
+        const validationMessages = prepareErrors(error);
 
-    res.render(`${ROOT}/edit`, {article, categories, articleCategories});
-  } catch (error) {
-    return res.render(`errors/404`).status(HttpCode.NOT_FOUND);
-  }
-
-  return null;
-});
+        return res.render(`${ROOT}/article`, {
+          article,
+          categories,
+          newComment: text,
+          validationMessages,
+        });
+      }
+    }
+);
 
 articlesRouter.get(`/category/:id`, async (req, res) => {
   const {id} = req.params;

@@ -11,6 +11,21 @@ const {nanoid} = require(`nanoid`);
 const {DateRestrict} = require(`~/constants`);
 const {getPictureFileName} = require(`~/utils/getPictureFileName`);
 const {readContent} = require(`~/utils/readContent`);
+const {
+  buildValidationErrorMessage,
+} = require(`~/utils/buildValidationErrorMessage`);
+const {
+  buildArticleData,
+} = require(`~/utils/buildArticleData`);
+const {
+  getCategoriesFromBody,
+} = require(`~/utils/getCategoriesFromBody`);
+const {
+  getArticleCategoriesIds,
+} = require(`~/utils/getArticleCategoriesIds`);
+const {
+  prepareErrors,
+} = require(`~/utils/prepareErrors`);
 
 const MAX_ID_LENGTH = 6;
 
@@ -132,4 +147,9 @@ module.exports = {
   generateCommentsWithoutIds,
   buildQueryString,
   readContent,
+  buildValidationErrorMessage,
+  buildArticleData,
+  getArticleCategoriesIds,
+  getCategoriesFromBody,
+  prepareErrors,
 };

@@ -1,0 +1,4 @@
+mixin insertErrorMessages(messages)
+  if messages
+    each message of messages
+      .server-error= message

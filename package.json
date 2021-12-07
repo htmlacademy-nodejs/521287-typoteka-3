@@ -4,7 +4,6 @@
   "description": "Типотека",
   "main": "./src/service/service.js",
   "_moduleAliases": {
-    "root": ".",
     "~": "src"
   },
   "dependencies": {
@@ -14,21 +13,24 @@
     "cross-env": "7.0.3",
     "dotenv": "8.2.0",
     "express": "4.17.1",
+    "helmet": "4.6.0",
+    "joi": "17.4.2",
     "multer": "1.4.2",
     "nanoid": "3.1.12",
     "pg": "8.5.1",
     "pino": "6.8.0",
     "pug": "3.0.0",
-    "sequelize": "6.5.0"
+    "sequelize": "6.4.0"
   },
   "devDependencies": {
     "eslint": "6.8.0",
     "eslint-config-htmlacademy": "0.5.2",
     "jest": "26.6.3",
     "module-alias": "2.2.2",
-    "nodemon": "2.0.3",
+    "nodemon": "2.0.5",
     "pino-pretty": "4.3.0",
-    "supertest": "6.0.1"
+    "sqlite3": "5.0.0",
+    "supertest": "6.1.1"
   },
   "scripts": {
     "start": "npm run start-all-servers",
@@ -39,7 +41,8 @@
     "start-front-server": "node ./src/express/index.js",
     "start-front-server::debug": "nodemon ./src/express/index.js",
     "eslint": "eslint --ext .js src/",
-    "test": "jest --watchAll",
+    "jest": "npm run jest",
+    "test::rest": "jest --watchAll",
     "test::eslint": "npm run eslint"
   },
   "repository": {
