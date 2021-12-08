@@ -10,13 +10,16 @@ const {
 const {getLogger} = require(`~/service/lib/logger`);
 const sequelize = require(`~/service/lib/sequelize`);
 const initDatabase = require(`~/service/lib/init-db`);
+const {
+  mockUsers,
+} = require(`~/service/api/users/users.mocks`);
 
 const {
   getPictureFileName,
   getRandomInt,
   getRandomSubarray,
   shuffle,
-  generateCommentsWithoutIds,
+  generateCommentsWithUsers,
   readContent,
 } = require(`~/utils`);
 
@@ -33,11 +36,13 @@ const generateArticles = (
     titles,
     sentences,
     categoryList,
-    commentList
+    commentList,
+    users
 ) =>
   Array(count)
     .fill({})
     .map(() => {
+      const user = users[getRandomInt(0, users.length - 1)].email;
       const title = titles[getRandomInt(0, titles.length - 1)];
       const announce = shuffle(sentences)
         .slice(0, getRandomInt(AnnounceRestrict.MIN, AnnounceRestrict.MAX))
@@ -51,9 +56,14 @@ const generateArticles = (
           getRandomInt(PictureRestrict.MIN, PictureRestrict.MAX)
       );
       const categories = getRandomSubarray(categoryList);
-      const comments = generateCommentsWithoutIds(count, commentList);
+      const comments = generateCommentsWithUsers(
+          count,
+          commentList,
+          users,
+      );
 
       return {
+        user,
         title,
         announce,
         description,
@@ -84,14 +94,16 @@ module.exports = {
 
     const [count] = args;
     const countOffer = Number.parseInt(count, 10) || DEFAULT_COUNT;
+    const users = mockUsers;
     const articles = generateArticles(
         countOffer,
         titles,
         sentences,
         categories,
-        comments
+        comments,
+        users,
     );
 
-    return initDatabase(sequelize, {articles, categories});
+    return initDatabase(sequelize, {articles, categories, users});
   },
 };

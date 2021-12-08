@@ -1,5 +1,13 @@
 'use strict';
 
+const {
+  getRandomInt,
+} = require(`~/utils`);
+
+const {
+  mockUsers: users,
+} = require(`./users/users.mocks`);
+
 const mockCategories = [
   `Музыка`,
   `Программирование`,
@@ -11,6 +19,7 @@ const mockCategories = [
 
 const mockArticles = [
   {
+    "user": users[getRandomInt(0, users.length - 1)].email,
     "title": `Ёлки. История деревьев и людей`,
     "createdAt": `2020-11-09T23:54:48.599Z`,
     "announce": `Собрать камни бесконечности легко, если вы прирожденный герой.`,
@@ -20,14 +29,17 @@ const mockArticles = [
     ],
     "comments": [
       {
+        "user": users[getRandomInt(0, users.length - 1)].email,
         "text": `Согласен с автором! Мне не нравится ваш стиль. Ощущение, что вы меня поучаете. Хочу такую же футболку :-)`
       },
       {
+        "user": users[getRandomInt(0, users.length - 1)].email,
         "text": `Планируете записать видосик на эту тему? Совсем немного...`
       },
     ]
   },
   {
+    "user": users[getRandomInt(0, users.length - 1)].email,
     "title": `Обзор новейшего смартфона Айфон 13 Про`,
     "createdAt": `2020-13-09T09:00:00.000Z`,
     "announce": `Этот смартфон — настоящая находка. Большой и яркий экран, мощнейший процессор — всё это в небольшом гаджете.`,
@@ -40,14 +52,17 @@ const mockArticles = [
     ],
     "comments": [
       {
+        "user": users[getRandomInt(0, users.length - 1)].email,
         "text": `Давно не пользуюсь стационарными компьютерами. Ноутбуки победили. Мне кажется или я уже читал это где-то?`
       },
       {
+        "user": users[getRandomInt(0, users.length - 1)].email,
         "text": `Мне кажется или я уже читал это где-то? Мне не нравится ваш стиль. Ощущение, что вы меня поучаете. Это где ж такие красоты?`
       }
     ]
   },
   {
+    "user": users[getRandomInt(0, users.length - 1)].email,
     "title": `Учим HTML, CSS и португальский язык`,
     "createdAt": `2020-14-09T12:00:00.000Z`,
     "announce": `Он написал больше 30 хитов. Идеи пришли во время сна в старом замке`,
@@ -57,18 +72,23 @@ const mockArticles = [
     ],
     "comments": [
       {
+        "user": users[getRandomInt(0, users.length - 1)].email,
         "text": `Планируете записать видосик на эту тему?`
       },
       {
+        "user": users[getRandomInt(0, users.length - 1)].email,
         "text": `Это где ж такие красоты?`
       },
       {
+        "user": users[getRandomInt(0, users.length - 1)].email,
         "text": `Хочу такую же футболку :-) Согласен с автором!`
       },
       {
+        "user": users[getRandomInt(0, users.length - 1)].email,
         "text": `Это где ж такие красоты? Совсем немного...`
       },
       {
+        "user": users[getRandomInt(0, users.length - 1)].email,
         "text": `Планируете записать видосик на эту тему?`
       }
     ]
