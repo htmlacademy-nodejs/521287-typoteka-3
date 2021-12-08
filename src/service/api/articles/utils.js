@@ -18,7 +18,7 @@ const createAPI = async () => {
     logging: false,
   });
 
-  const app = express();
+  const app = express({limit: `50KB`});
   app.use(express.json());
 
   await initDB(mockDB, {
