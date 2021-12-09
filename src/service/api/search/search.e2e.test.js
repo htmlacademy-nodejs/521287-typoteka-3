@@ -13,6 +13,9 @@ const {
   mockArticles,
   foundArticleTitle,
 } = require(`../mockData`);
+const {
+  mockUsers,
+} = require(`../users/users.mocks`);
 const search = require(`./search`);
 
 const app = express();
@@ -26,6 +29,7 @@ beforeAll(async () => {
   await initDB(mockDB, {
     categories: mockCategories,
     articles: mockArticles,
+    users: mockUsers,
   });
   search(app, new DataService(mockDB));
 });

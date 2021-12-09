@@ -20,24 +20,4 @@ module.exports = (app, service) => {
 
     return res.status(HttpCode.CREATED).json(result);
   });
-
-  route.post(`/auth`, async (req, res) => {
-    const {email, password} = req.body;
-
-    const user = await service.findByEmail(email);
-    if (!user) {
-      const message = `Email is incorrect`;
-      return res.status(HttpCode.UNAUTHORIZED).send(message);
-    }
-
-    const {passwordHash} = user;
-    const isPasswordCorrect = await passwordUtils.compare(password, passwordHash);
-    if (isPasswordCorrect) {
-      delete user.passwordHash;
-      return res.status(HttpCode.OK).json(user);
-    } else {
-      const message = `Password is incorrect`;
-      return res.status(HttpCode.UNAUTHORIZED).send(message);
-    }
-  });
 };
