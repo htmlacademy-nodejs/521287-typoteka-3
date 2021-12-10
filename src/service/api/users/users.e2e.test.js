@@ -35,7 +35,11 @@ describe(`POST /users`, () => {
     });
 
     it(`responds with 400 status code when some required property is absent`, async () => {
-      for (const key of Object.keys(ValidUserData)) {
+      const requiredKeys = Object.keys(ValidUserData)
+        // eslint-disable-next-line max-nested-callbacks
+        .filter((key) => key !== `avatar`);
+
+      for (const key of requiredKeys) {
         const badUserData = {...ValidUserData};
         delete badUserData[key];
 

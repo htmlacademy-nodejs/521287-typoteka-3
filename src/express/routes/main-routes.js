@@ -2,8 +2,12 @@
 
 const {Router} = require(`express`);
 
-const api = require(`~/express/api`).getAPI();
 const {ARTICLES_PER_PAGE} = require(`~/constants`);
+const api = require(`~/express/api`).getAPI();
+const upload = require(`~/express/middlewares/upload`);
+const {
+  prepareErrors,
+} = require(`~/utils`);
 
 const ROOT = `main`;
 
@@ -59,7 +63,42 @@ mainRouter.get(`/categories`, async (req, res) => {
   return res.render(`${ROOT}/categories`, {categories});
 });
 
-mainRouter.get(`/register`, (req, res) => res.render(`${ROOT}/register`));
+mainRouter.get(`/register`, (req, res) => {
+  return res.render(`${ROOT}/register`);
+});
+
+mainRouter.post(`/register`, upload.single(`avatar`), async (req, res) => {
+  const {body, file} = req;
+  const {
+    email,
+    name,
+    surname,
+    password,
+    passwordRepeated,
+  } = body;
+  const avatar = file ? file.filename : null;
+  const userData = {
+    email,
+    name,
+    surname,
+    password,
+    passwordRepeated,
+    avatar,
+  };
+
+  try {
+    await api.createUser(userData);
+
+    res.redirect(`/login`);
+  } catch (error) {
+    const validationMessages = prepareErrors(error);
+
+    return res.render(`${ROOT}/register`, {
+      validationMessages,
+    });
+  }
+});
+
 mainRouter.get(`/login`, (req, res) => res.render(`${ROOT}/login`));
 
 module.exports = mainRouter;
