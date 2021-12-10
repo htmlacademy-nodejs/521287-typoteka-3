@@ -1,6 +1,6 @@
 'use strict';
 
-const passwordUtils = require(`../../lib/password`);
+const passwordUtils = require(`~/service/lib/password`);
 
 const EMAIL = `ivanov@example.com`;
 const USERNAME = `Иван Иванов`;
