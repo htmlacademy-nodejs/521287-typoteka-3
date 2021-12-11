@@ -1,6 +1,6 @@
 'use strict';
 
-const {hash, hashSync, compare} = require(`bcrypt`);
+const {hash, hashSync} = require(`bcrypt`);
 
 const SALT_ROUNDS = 10;
 
@@ -12,5 +12,4 @@ const hashSyncWithConstSalt = (password) =>
 module.exports = {
   hash: hashWithConstSalt,
   hashSync: hashSyncWithConstSalt,
-  compare,
 };
