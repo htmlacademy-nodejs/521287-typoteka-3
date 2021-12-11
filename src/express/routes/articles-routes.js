@@ -119,7 +119,7 @@ articlesRouter.post(
     });
 
 articlesRouter.get(`/:id`, async (req, res) => {
-  const {id} = res.req.params;
+  const {id} = req.params;
 
   const [article, categories] = await Promise.all([
     api.getArticle(id, true),

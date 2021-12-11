@@ -9,11 +9,13 @@ const {
   CategoryService,
   SearchService,
   CommentService,
+  UserService,
 } = require(`~/service/data-service`);
 
 const articles = require(`./articles/articles`);
 const categories = require(`./categories/categories`);
 const search = require(`./search/search`);
+const users = require(`./users/users`);
 
 const app = new Router();
 
@@ -23,6 +25,7 @@ defineModels(sequelize);
   articles(app, new ArticleService(sequelize), new CommentService(sequelize));
   categories(app, new CategoryService(sequelize));
   search(app, new SearchService(sequelize));
+  users(app, new UserService(sequelize));
 })();
 
 module.exports = app;

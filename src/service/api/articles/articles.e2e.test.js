@@ -300,6 +300,7 @@ describe(`POST /articles/{articleId}/comments`, () => {
   describe(`+`, () => {
     const newCommentText = `Валидному комментарию достаточно этого поля`;
     const newComment = {
+      userId: 1,
       text: newCommentText,
     };
     let app;
