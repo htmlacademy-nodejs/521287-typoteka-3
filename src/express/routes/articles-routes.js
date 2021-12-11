@@ -11,6 +11,7 @@ const {
   getArticleCategoriesIds,
   prepareErrors,
 } = require(`~/utils`);
+const {checkAuth} = require(`~/express/middlewares`);
 
 const api = require(`~/express/api`).getAPI();
 
@@ -45,7 +46,7 @@ const storage = multer.diskStorage({
 
 const upload = multer({storage});
 
-articlesRouter.get(`/add`, async (req, res) => {
+articlesRouter.get(`/add`, checkAuth, async (req, res) => {
   const {session, query} = req;
   const {user} = session;
   const article = Object.keys(query).length ? query : null;
@@ -60,28 +61,32 @@ articlesRouter.get(`/add`, async (req, res) => {
   });
 });
 
-articlesRouter.post(`/add`, upload.single(`picture`), async (req, res) => {
-  const article = buildArticleData(req);
+articlesRouter.post(`/add`,
+    [
+      checkAuth,
+      upload.single(`picture`)
+    ], async (req, res) => {
+      const article = buildArticleData(req);
 
-  try {
-    await api.createArticle(article);
+      try {
+        await api.createArticle(article);
 
-    return res.redirect(`../my`);
-  } catch (error) {
-    const articleCategories = article.categories;
-    const categories = await getAddArticleCategories();
-    const validationMessages = prepareErrors(error);
+        return res.redirect(`../my`);
+      } catch (error) {
+        const articleCategories = article.categories;
+        const categories = await getAddArticleCategories();
+        const validationMessages = prepareErrors(error);
 
-    return res.render(`${ROOT}/add`, {
-      article,
-      articleCategories,
-      categories,
-      validationMessages,
+        return res.render(`${ROOT}/add`, {
+          article,
+          articleCategories,
+          categories,
+          validationMessages,
+        });
+      }
     });
-  }
-});
 
-articlesRouter.get(`/edit/:id`, async (req, res) => {
+articlesRouter.get(`/edit/:id`, checkAuth, async (req, res) => {
   const {params, session} = req;
   const {id} = params;
   const {user} = session;
@@ -104,7 +109,10 @@ articlesRouter.get(`/edit/:id`, async (req, res) => {
 });
 articlesRouter.post(
     `/edit/:id`,
-    upload.single(`picture`),
+    [
+      checkAuth,
+      upload.single(`picture`),
+    ],
     async (req, res) => {
       const {id} = req.params;
       const article = buildArticleData(req);
@@ -148,6 +156,7 @@ articlesRouter.get(`/:id`, async (req, res) => {
 
 articlesRouter.post(
     `/:id/comments`,
+    checkAuth,
     async (req, res) => {
       const {params, body, session} = req;
       const {id} = params;

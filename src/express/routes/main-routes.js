@@ -4,7 +4,7 @@ const {Router} = require(`express`);
 
 const {ARTICLES_PER_PAGE} = require(`~/constants`);
 const api = require(`~/express/api`).getAPI();
-const {upload} = require(`~/express/middlewares`);
+const {checkAuth, upload} = require(`~/express/middlewares`);
 const {
   prepareErrors,
 } = require(`~/utils`);
@@ -66,7 +66,7 @@ mainRouter.get(`/search`, async (req, res) => {
   return res.render(`${ROOT}/search`, {user, search, result});
 });
 
-mainRouter.get(`/categories`, async (req, res) => {
+mainRouter.get(`/categories`, checkAuth, async (req, res) => {
   const {user} = req.session;
   const categories = await api.getCategories();
 
