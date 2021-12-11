@@ -10,9 +10,9 @@ const {
   ErrorAuthMessage,
 } = require(`./users.const`);
 
-const route = new Router();
-
 module.exports = (app, service) => {
+  const route = new Router();
+
   app.use(`/users`, route);
 
   route.post(`/`, userValidator(service), async (req, res) => {

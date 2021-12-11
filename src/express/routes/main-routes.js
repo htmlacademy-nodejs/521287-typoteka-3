@@ -101,4 +101,31 @@ mainRouter.post(`/register`, upload.single(`avatar`), async (req, res) => {
 
 mainRouter.get(`/login`, (req, res) => res.render(`${ROOT}/login`));
 
+mainRouter.post(`/login`, async (req, res) => {
+  const {email, password} = req.body;
+
+  try {
+    const user = await api.auth(email, password);
+
+    req.session.user = user;
+    await req.session.save();
+    return res.redirect(`/`);
+  } catch (error) {
+    const validationMessages = prepareErrors(error);
+
+    return res.render(`${ROOT}/login`, {
+      email,
+      password,
+      validationMessages,
+    });
+  }
+});
+
+mainRouter.get(`/logout`, async (req, res) => {
+  delete req.session.user;
+  await req.session.save();
+
+  res.redirect(`/`);
+});
+
 module.exports = mainRouter;
