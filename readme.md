@@ -1,7 +1,7 @@
 # Личный проект «Типотека» [![Build status][travis-image]][travis-url]
 
 - Студент: [Илья Сидорчик](https://up.htmlacademy.ru/nodejs/3/user/521287)
-- Наставник: [Дмитрий Мирошниченко](https://htmlacademy.ru/profile/id591417)
+- Наставник: [Юрий Кучма](https://htmlacademy.ru/profile/krabaton)
 
 ---
 
