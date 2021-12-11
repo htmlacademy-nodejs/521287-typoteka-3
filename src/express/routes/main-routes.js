@@ -4,7 +4,7 @@ const {Router} = require(`express`);
 
 const {ARTICLES_PER_PAGE} = require(`~/constants`);
 const api = require(`~/express/api`).getAPI();
-const upload = require(`~/express/middlewares/upload`);
+const {upload} = require(`~/express/middlewares`);
 const {
   prepareErrors,
 } = require(`~/utils`);
@@ -14,6 +14,8 @@ const ROOT = `main`;
 const mainRouter = new Router();
 
 mainRouter.get(`/`, async (req, res) => {
+  const {user} = req.session;
+
   // Получаем номер страницы
   let {page = 1} = req.query;
   page = +page;
@@ -39,10 +41,17 @@ mainRouter.get(`/`, async (req, res) => {
   const totalPages = Math.ceil(count / ARTICLES_PER_PAGE);
 
   // Передаем собранные данные в шаблон
-  res.render(`${ROOT}/main`, {articles, categories, page, totalPages});
+  res.render(`${ROOT}/main`, {
+    user,
+    articles,
+    categories,
+    page,
+    totalPages,
+  });
 });
 
 mainRouter.get(`/search`, async (req, res) => {
+  const {user} = req.session;
   let search = null;
   let result = [];
 
@@ -54,17 +63,20 @@ mainRouter.get(`/search`, async (req, res) => {
     result = [];
   }
 
-  return res.render(`${ROOT}/search`, {search, result});
+  return res.render(`${ROOT}/search`, {user, search, result});
 });
 
 mainRouter.get(`/categories`, async (req, res) => {
+  const {user} = req.session;
   const categories = await api.getCategories();
 
-  return res.render(`${ROOT}/categories`, {categories});
+  return res.render(`${ROOT}/categories`, {user, categories});
 });
 
 mainRouter.get(`/register`, (req, res) => {
-  return res.render(`${ROOT}/register`);
+  const {user} = req.session;
+
+  return res.render(`${ROOT}/register`, {user});
 });
 
 mainRouter.post(`/register`, upload.single(`avatar`), async (req, res) => {
@@ -89,7 +101,7 @@ mainRouter.post(`/register`, upload.single(`avatar`), async (req, res) => {
   try {
     await api.createUser(userData);
 
-    res.redirect(`/login`);
+    return res.redirect(`/login`);
   } catch (error) {
     const validationMessages = prepareErrors(error);
 
@@ -99,7 +111,11 @@ mainRouter.post(`/register`, upload.single(`avatar`), async (req, res) => {
   }
 });
 
-mainRouter.get(`/login`, (req, res) => res.render(`${ROOT}/login`));
+mainRouter.get(`/login`, (req, res) => {
+  const {user} = req.session;
+
+  return res.render(`${ROOT}/login`, {user});
+});
 
 mainRouter.post(`/login`, async (req, res) => {
   const {email, password} = req.body;

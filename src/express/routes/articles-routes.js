@@ -46,12 +46,14 @@ const storage = multer.diskStorage({
 const upload = multer({storage});
 
 articlesRouter.get(`/add`, async (req, res) => {
-  const {query} = req;
+  const {session, query} = req;
+  const {user} = session;
   const article = Object.keys(query).length ? query : null;
   const categories = await api.getCategories();
   const date = new Date();
 
   res.render(`${ROOT}/add`, {
+    user,
     article,
     categories,
     date,
@@ -80,13 +82,20 @@ articlesRouter.post(`/add`, upload.single(`picture`), async (req, res) => {
 });
 
 articlesRouter.get(`/edit/:id`, async (req, res) => {
-  const {id} = req.params;
+  const {params, session} = req;
+  const {id} = params;
+  const {user} = session;
 
   try {
     const [article, categories] = await getEditArticleData(Number(id));
     const articleCategories = getArticleCategoriesIds(article);
 
-    res.render(`${ROOT}/add`, {article, articleCategories, categories});
+    res.render(`${ROOT}/add`, {
+      user,
+      article,
+      articleCategories,
+      categories,
+    });
   } catch (error) {
     return res.render(`errors/404`).status(HttpCode.NOT_FOUND);
   }
@@ -119,7 +128,9 @@ articlesRouter.post(
     });
 
 articlesRouter.get(`/:id`, async (req, res) => {
-  const {id} = req.params;
+  const {params, session} = req;
+  const {id} = params;
+  const {user} = session;
 
   const [article, categories] = await Promise.all([
     api.getArticle(id, true),
@@ -127,19 +138,29 @@ articlesRouter.get(`/:id`, async (req, res) => {
   ]);
   const selectedCategoriesIds = getArticleCategoriesIds(article);
 
-  res.render(`${ROOT}/article`, {article, categories, selectedCategoriesIds});
+  res.render(`${ROOT}/article`, {
+    user,
+    article,
+    categories,
+    selectedCategoriesIds,
+  });
 });
 
 articlesRouter.post(
     `/:id/comments`,
     async (req, res) => {
-      const {id} = req.params;
-      const {text} = req.body;
+      const {params, body, session} = req;
+      const {id} = params;
+      const {text} = body;
+      const {user} = session;
+
+      const commentData = {
+        userId: user.id,
+        text,
+      };
 
       try {
-        const comment = await api.createComment(id, {
-          text,
-        });
+        const comment = await api.createComment(id, commentData);
 
         return res.redirect(`/${ROOT}/${id}#${comment.id}`);
       } catch (error) {
@@ -150,6 +171,7 @@ articlesRouter.post(
         const validationMessages = prepareErrors(error);
 
         return res.render(`${ROOT}/article`, {
+          user,
           article,
           categories,
           newComment: text,
@@ -160,7 +182,9 @@ articlesRouter.post(
 );
 
 articlesRouter.get(`/category/:id`, async (req, res) => {
-  const {id} = req.params;
+  const {params, session} = req;
+  const {id} = params;
+  const {user} = session;
 
   const [selectedCategory, categories, articles] = await Promise.all([
     api.getCategory(id),
@@ -173,6 +197,7 @@ articlesRouter.get(`/category/:id`, async (req, res) => {
   const selectedCategoriesIds = [selectedCategory.id];
 
   res.render(`${ROOT}/articles-with-category`, {
+    user,
     categories,
     selectedCategoriesIds,
     articlesWithCategory,
