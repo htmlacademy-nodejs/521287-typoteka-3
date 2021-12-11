@@ -1,6 +1,7 @@
 "use strict";
 
 const {Router} = require(`express`);
+const csrf = require(`csurf`);
 const multer = require(`multer`);
 const path = require(`path`);
 const {nanoid} = require(`nanoid`);
@@ -19,6 +20,7 @@ const ROOT = `articles`;
 const UPLOAD_DIR = `../upload/img`;
 
 const articlesRouter = new Router();
+const csrfProtection = csrf();
 const uploadDirAbsolute = path.resolve(__dirname, UPLOAD_DIR);
 
 const getEditArticleData = async (articleId) => {
@@ -46,25 +48,32 @@ const storage = multer.diskStorage({
 
 const upload = multer({storage});
 
-articlesRouter.get(`/add`, checkAuth, async (req, res) => {
-  const {session, query} = req;
-  const {user} = session;
-  const article = Object.keys(query).length ? query : null;
-  const categories = await api.getCategories();
-  const date = new Date();
+articlesRouter.get(`/add`,
+    [
+      checkAuth,
+      csrfProtection
+    ], async (req, res) => {
+      const {session, query} = req;
+      const {user} = session;
+      const article = Object.keys(query).length ? query : null;
+      const categories = await api.getCategories();
+      const date = new Date();
+      const csrfToken = req.csrfToken();
 
-  res.render(`${ROOT}/add`, {
-    user,
-    article,
-    categories,
-    date,
-  });
-});
+      res.render(`${ROOT}/add`, {
+        user,
+        article,
+        categories,
+        date,
+        csrfToken,
+      });
+    });
 
 articlesRouter.post(`/add`,
     [
       checkAuth,
-      upload.single(`picture`)
+      upload.single(`picture`),
+      csrfProtection,
     ], async (req, res) => {
       const article = buildArticleData(req);
 
@@ -86,32 +95,39 @@ articlesRouter.post(`/add`,
       }
     });
 
-articlesRouter.get(`/edit/:id`, checkAuth, async (req, res) => {
-  const {params, session} = req;
-  const {id} = params;
-  const {user} = session;
+articlesRouter.get(`/edit/:id`,
+    [
+      checkAuth,
+      csrfProtection
+    ], async (req, res) => {
+      const {params, session} = req;
+      const {id} = params;
+      const {user} = session;
+      const csrfToken = req.csrfToken();
 
-  try {
-    const [article, categories] = await getEditArticleData(Number(id));
-    const articleCategories = getArticleCategoriesIds(article);
+      try {
+        const [article, categories] = await getEditArticleData(Number(id));
+        const articleCategories = getArticleCategoriesIds(article);
 
-    res.render(`${ROOT}/add`, {
-      user,
-      article,
-      articleCategories,
-      categories,
+        res.render(`${ROOT}/add`, {
+          user,
+          article,
+          articleCategories,
+          categories,
+          csrfToken,
+        });
+      } catch (error) {
+        return res.render(`errors/404`).status(HttpCode.NOT_FOUND);
+      }
+
+      return null;
     });
-  } catch (error) {
-    return res.render(`errors/404`).status(HttpCode.NOT_FOUND);
-  }
-
-  return null;
-});
 articlesRouter.post(
     `/edit/:id`,
     [
       checkAuth,
       upload.single(`picture`),
+      csrfProtection,
     ],
     async (req, res) => {
       const {id} = req.params;
@@ -135,10 +151,11 @@ articlesRouter.post(
       }
     });
 
-articlesRouter.get(`/:id`, async (req, res) => {
+articlesRouter.get(`/:id`, csrfProtection, async (req, res) => {
   const {params, session} = req;
   const {id} = params;
   const {user} = session;
+  const csrfToken = req.csrfToken();
 
   const [article, categories] = await Promise.all([
     api.getArticle(id, true),
@@ -151,12 +168,16 @@ articlesRouter.get(`/:id`, async (req, res) => {
     article,
     categories,
     selectedCategoriesIds,
+    csrfToken,
   });
 });
 
 articlesRouter.post(
     `/:id/comments`,
-    checkAuth,
+    [
+      checkAuth,
+      csrfProtection,
+    ],
     async (req, res) => {
       const {params, body, session} = req;
       const {id} = params;

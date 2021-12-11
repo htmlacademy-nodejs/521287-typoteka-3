@@ -1,6 +1,7 @@
 'use strict';
 
 const {Router} = require(`express`);
+const csrf = require(`csurf`);
 
 const {ARTICLES_PER_PAGE} = require(`~/constants`);
 const api = require(`~/express/api`).getAPI();
@@ -12,6 +13,7 @@ const {
 const ROOT = `main`;
 
 const mainRouter = new Router();
+const csrfProtection = csrf();
 
 mainRouter.get(`/`, async (req, res) => {
   const {user} = req.session;
@@ -73,51 +75,63 @@ mainRouter.get(`/categories`, checkAuth, async (req, res) => {
   return res.render(`${ROOT}/categories`, {user, categories});
 });
 
-mainRouter.get(`/register`, (req, res) => {
+mainRouter.get(`/register`, csrfProtection, (req, res) => {
   const {user} = req.session;
+  const csrfToken = req.csrfToken();
 
-  return res.render(`${ROOT}/register`, {user});
+  return res.render(`${ROOT}/register`, {
+    user,
+    csrfToken,
+  });
 });
 
-mainRouter.post(`/register`, upload.single(`avatar`), async (req, res) => {
-  const {body, file} = req;
-  const {
-    email,
-    name,
-    surname,
-    password,
-    passwordRepeated,
-  } = body;
-  const avatar = file ? file.filename : null;
-  const userData = {
-    email,
-    name,
-    surname,
-    password,
-    passwordRepeated,
-    avatar,
-  };
+mainRouter.post(`/register`,
+    [
+      upload.single(`avatar`),
+      csrfProtection,
+    ], async (req, res) => {
+      const {body, file} = req;
+      const {
+        email,
+        name,
+        surname,
+        password,
+        passwordRepeated,
+      } = body;
+      const avatar = file ? file.filename : null;
+      const userData = {
+        email,
+        name,
+        surname,
+        password,
+        passwordRepeated,
+        avatar,
+      };
 
-  try {
-    await api.createUser(userData);
+      try {
+        await api.createUser(userData);
 
-    return res.redirect(`/login`);
-  } catch (error) {
-    const validationMessages = prepareErrors(error);
+        return res.redirect(`/login`);
+      } catch (error) {
+        const validationMessages = prepareErrors(error);
 
-    return res.render(`${ROOT}/register`, {
-      validationMessages,
+        return res.render(`${ROOT}/register`, {
+          validationMessages,
+        });
+      }
     });
-  }
-});
 
-mainRouter.get(`/login`, (req, res) => {
+mainRouter.get(`/login`, csrfProtection, (req, res) => {
   const {user} = req.session;
+  const csrfToken = req.csrfToken();
 
-  return res.render(`${ROOT}/login`, {user});
+  return res.render(`${ROOT}/login`, {
+    user,
+    csrfToken,
+  });
 });
 
-mainRouter.post(`/login`, async (req, res) => {
+mainRouter.post(`/login`, csrfProtection, async (req, res) => {
   const {email, password} = req.body;
 
   try {

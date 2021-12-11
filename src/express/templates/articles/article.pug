@@ -56,9 +56,12 @@ block content
                 enctype='application/x-www-form-urlencoded'
                 autocomplete='off'
               )
+                input(type="hidden" name="_csrf" value=csrfToken)
+
                 .comments__avatar.avatar
                   - const userAvatar = user.avatar || 'avatar-1.png';
                   img(src=`/img/${userAvatar}` alt='аватар пользователя')
+
                 label
                   textarea(
                     name='text'
