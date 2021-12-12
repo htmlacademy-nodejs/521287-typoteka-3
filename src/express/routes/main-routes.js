@@ -87,8 +87,8 @@ mainRouter.get(`/register`, csrfProtection, (req, res) => {
 
 mainRouter.post(`/register`,
     [
-      upload.single(`avatar`),
       csrfProtection,
+      upload.single(`avatar`),
     ], async (req, res) => {
       const {body, file} = req;
       const {
@@ -141,12 +141,14 @@ mainRouter.post(`/login`, csrfProtection, async (req, res) => {
     await req.session.save();
     return res.redirect(`/`);
   } catch (error) {
+    const csrfToken = req.csrfToken();
     const validationMessages = prepareErrors(error);
 
     return res.render(`${ROOT}/login`, {
       email,
       password,
       validationMessages,
+      csrfToken,
     });
   }
 });

@@ -13,6 +13,8 @@ const sequelize = require(`~/service/lib/sequelize`);
 const DEFAULT_PORT = 8080;
 const PUBLIC_DIR = `public`;
 const UPLOAD_DIR = `upload`;
+const EXP_SESSION = 180000;
+const CHECK_EXP_INTERVAL_SESSION = 60000;
 
 const {SESSION_SECRET} = process.env;
 if (!SESSION_SECRET) {
@@ -25,8 +27,8 @@ const app = express();
 
 const mySessionStore = new SequelizeStore({
   db: sequelize,
-  expiration: 180000,
-  checkExpirationInterval: 60000,
+  expiration: EXP_SESSION,
+  checkExpirationInterval: CHECK_EXP_INTERVAL_SESSION,
 });
 
 sequelize.sync({force: false});
