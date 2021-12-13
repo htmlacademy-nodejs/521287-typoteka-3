@@ -11,6 +11,7 @@ block content
     h2.popup__title Регистрация
     .popup__form.popup__form--active.form.form--register
       form(action='/register' method='POST')
+        input(type="hidden" name="_csrf" value=csrfToken)
         .form__field
           label
             input(type='email' name='email' placeholder='Электронная почта' required='' autofocus)
@@ -38,7 +39,7 @@ block content
           a.form__avatar.avatar
             img(src='img/icons/smile.svg' alt='аватар пользователя')
           label
-            input.visually-hidden(type='file' name='upload')
+            input.visually-hidden(type='file' name='avatar' required)
             | Загрузить фото профиля
 
         button.form__submit-btn.form__submit-btn--register.button.button--colored(type='submit') Зарегистрироваться

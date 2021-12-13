@@ -1,6 +1,7 @@
 "use strict";
 
 const {Router} = require(`express`);
+const csrf = require(`csurf`);
 const multer = require(`multer`);
 const path = require(`path`);
 const {nanoid} = require(`nanoid`);
@@ -11,6 +12,7 @@ const {
   getArticleCategoriesIds,
   prepareErrors,
 } = require(`~/utils`);
+const {checkAuth} = require(`~/express/middlewares`);
 
 const api = require(`~/express/api`).getAPI();
 
@@ -18,6 +20,7 @@ const ROOT = `articles`;
 const UPLOAD_DIR = `../upload/img`;
 
 const articlesRouter = new Router();
+const csrfProtection = csrf();
 const uploadDirAbsolute = path.resolve(__dirname, UPLOAD_DIR);
 
 const getEditArticleData = async (articleId) => {
@@ -45,57 +48,87 @@ const storage = multer.diskStorage({
 
 const upload = multer({storage});
 
-articlesRouter.get(`/add`, async (req, res) => {
-  const {query} = req;
-  const article = Object.keys(query).length ? query : null;
-  const categories = await api.getCategories();
-  const date = new Date();
+articlesRouter.get(`/add`,
+    [
+      checkAuth,
+      csrfProtection
+    ], async (req, res) => {
+      const {session, query} = req;
+      const {user} = session;
+      const article = Object.keys(query).length ? query : null;
+      const categories = await api.getCategories();
+      const date = new Date();
+      const csrfToken = req.csrfToken();
 
-  res.render(`${ROOT}/add`, {
-    article,
-    categories,
-    date,
-  });
-});
-
-articlesRouter.post(`/add`, upload.single(`picture`), async (req, res) => {
-  const article = buildArticleData(req);
-
-  try {
-    await api.createArticle(article);
-
-    return res.redirect(`../my`);
-  } catch (error) {
-    const articleCategories = article.categories;
-    const categories = await getAddArticleCategories();
-    const validationMessages = prepareErrors(error);
-
-    return res.render(`${ROOT}/add`, {
-      article,
-      articleCategories,
-      categories,
-      validationMessages,
+      res.render(`${ROOT}/add`, {
+        user,
+        article,
+        categories,
+        date,
+        csrfToken,
+      });
     });
-  }
-});
 
-articlesRouter.get(`/edit/:id`, async (req, res) => {
-  const {id} = req.params;
+articlesRouter.post(`/add`,
+    [
+      checkAuth,
+      csrfProtection,
+      upload.single(`picture`),
+    ], async (req, res) => {
+      const article = buildArticleData(req);
 
-  try {
-    const [article, categories] = await getEditArticleData(Number(id));
-    const articleCategories = getArticleCategoriesIds(article);
+      try {
+        await api.createArticle(article);
 
-    res.render(`${ROOT}/add`, {article, articleCategories, categories});
-  } catch (error) {
-    return res.render(`errors/404`).status(HttpCode.NOT_FOUND);
-  }
+        return res.redirect(`../my`);
+      } catch (error) {
+        const articleCategories = article.categories;
+        const categories = await getAddArticleCategories();
+        const validationMessages = prepareErrors(error);
 
-  return null;
-});
+        return res.render(`${ROOT}/add`, {
+          article,
+          articleCategories,
+          categories,
+          validationMessages,
+        });
+      }
+    });
+
+articlesRouter.get(`/edit/:id`,
+    [
+      checkAuth,
+      csrfProtection
+    ], async (req, res) => {
+      const {params, session} = req;
+      const {id} = params;
+      const {user} = session;
+      const csrfToken = req.csrfToken();
+
+      try {
+        const [article, categories] = await getEditArticleData(Number(id));
+        const articleCategories = getArticleCategoriesIds(article);
+
+        res.render(`${ROOT}/add`, {
+          user,
+          article,
+          articleCategories,
+          categories,
+          csrfToken,
+        });
+      } catch (error) {
+        return res.render(`errors/404`).status(HttpCode.NOT_FOUND);
+      }
+
+      return null;
+    });
 articlesRouter.post(
     `/edit/:id`,
-    upload.single(`picture`),
+    [
+      checkAuth,
+      csrfProtection,
+      upload.single(`picture`),
+    ],
     async (req, res) => {
       const {id} = req.params;
       const article = buildArticleData(req);
@@ -118,8 +151,11 @@ articlesRouter.post(
       }
     });
 
-articlesRouter.get(`/:id`, async (req, res) => {
-  const {id} = req.params;
+articlesRouter.get(`/:id`, csrfProtection, async (req, res) => {
+  const {params, session} = req;
+  const {id} = params;
+  const {user} = session;
+  const csrfToken = req.csrfToken();
 
   const [article, categories] = await Promise.all([
     api.getArticle(id, true),
@@ -127,19 +163,34 @@ articlesRouter.get(`/:id`, async (req, res) => {
   ]);
   const selectedCategoriesIds = getArticleCategoriesIds(article);
 
-  res.render(`${ROOT}/article`, {article, categories, selectedCategoriesIds});
+  res.render(`${ROOT}/article`, {
+    user,
+    article,
+    categories,
+    selectedCategoriesIds,
+    csrfToken,
+  });
 });
 
 articlesRouter.post(
     `/:id/comments`,
+    [
+      checkAuth,
+      csrfProtection,
+    ],
     async (req, res) => {
-      const {id} = req.params;
-      const {text} = req.body;
+      const {params, body, session} = req;
+      const {id} = params;
+      const {text} = body;
+      const {user} = session;
+
+      const commentData = {
+        userId: user.id,
+        text,
+      };
 
       try {
-        const comment = await api.createComment(id, {
-          text,
-        });
+        const comment = await api.createComment(id, commentData);
 
         return res.redirect(`/${ROOT}/${id}#${comment.id}`);
       } catch (error) {
@@ -150,6 +201,7 @@ articlesRouter.post(
         const validationMessages = prepareErrors(error);
 
         return res.render(`${ROOT}/article`, {
+          user,
           article,
           categories,
           newComment: text,
@@ -160,7 +212,9 @@ articlesRouter.post(
 );
 
 articlesRouter.get(`/category/:id`, async (req, res) => {
-  const {id} = req.params;
+  const {params, session} = req;
+  const {id} = params;
+  const {user} = session;
 
   const [selectedCategory, categories, articles] = await Promise.all([
     api.getCategory(id),
@@ -173,6 +227,7 @@ articlesRouter.get(`/category/:id`, async (req, res) => {
   const selectedCategoriesIds = [selectedCategory.id];
 
   res.render(`${ROOT}/articles-with-category`, {
+    user,
     categories,
     selectedCategoriesIds,
     articlesWithCategory,

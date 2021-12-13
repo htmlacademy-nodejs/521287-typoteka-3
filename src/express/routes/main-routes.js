@@ -1,10 +1,11 @@
 'use strict';
 
 const {Router} = require(`express`);
+const csrf = require(`csurf`);
 
 const {ARTICLES_PER_PAGE} = require(`~/constants`);
 const api = require(`~/express/api`).getAPI();
-const upload = require(`~/express/middlewares/upload`);
+const {checkAuth, upload} = require(`~/express/middlewares`);
 const {
   prepareErrors,
 } = require(`~/utils`);
@@ -12,8 +13,11 @@ const {
 const ROOT = `main`;
 
 const mainRouter = new Router();
+const csrfProtection = csrf();
 
 mainRouter.get(`/`, async (req, res) => {
+  const {user} = req.session;
+
   // Получаем номер страницы
   let {page = 1} = req.query;
   page = +page;
@@ -39,10 +43,17 @@ mainRouter.get(`/`, async (req, res) => {
   const totalPages = Math.ceil(count / ARTICLES_PER_PAGE);
 
   // Передаем собранные данные в шаблон
-  res.render(`${ROOT}/main`, {articles, categories, page, totalPages});
+  res.render(`${ROOT}/main`, {
+    user,
+    articles,
+    categories,
+    page,
+    totalPages,
+  });
 });
 
 mainRouter.get(`/search`, async (req, res) => {
+  const {user} = req.session;
   let search = null;
   let result = [];
 
@@ -54,51 +65,99 @@ mainRouter.get(`/search`, async (req, res) => {
     result = [];
   }
 
-  return res.render(`${ROOT}/search`, {search, result});
+  return res.render(`${ROOT}/search`, {user, search, result});
 });
 
-mainRouter.get(`/categories`, async (req, res) => {
+mainRouter.get(`/categories`, checkAuth, async (req, res) => {
+  const {user} = req.session;
   const categories = await api.getCategories();
 
-  return res.render(`${ROOT}/categories`, {categories});
+  return res.render(`${ROOT}/categories`, {user, categories});
 });
 
-mainRouter.get(`/register`, (req, res) => {
-  return res.render(`${ROOT}/register`);
+mainRouter.get(`/register`, csrfProtection, (req, res) => {
+  const {user} = req.session;
+  const csrfToken = req.csrfToken();
+
+  return res.render(`${ROOT}/register`, {
+    user,
+    csrfToken,
+  });
 });
 
-mainRouter.post(`/register`, upload.single(`avatar`), async (req, res) => {
-  const {body, file} = req;
-  const {
-    email,
-    name,
-    surname,
-    password,
-    passwordRepeated,
-  } = body;
-  const avatar = file ? file.filename : null;
-  const userData = {
-    email,
-    name,
-    surname,
-    password,
-    passwordRepeated,
-    avatar,
-  };
+mainRouter.post(`/register`,
+    [
+      csrfProtection,
+      upload.single(`avatar`),
+    ], async (req, res) => {
+      const {body, file} = req;
+      const {
+        email,
+        name,
+        surname,
+        password,
+        passwordRepeated,
+      } = body;
+      const avatar = file ? file.filename : null;
+      const userData = {
+        email,
+        name,
+        surname,
+        password,
+        passwordRepeated,
+        avatar,
+      };
+
+      try {
+        await api.createUser(userData);
+
+        return res.redirect(`/login`);
+      } catch (error) {
+        const validationMessages = prepareErrors(error);
+
+        return res.render(`${ROOT}/register`, {
+          validationMessages,
+        });
+      }
+    });
+
+mainRouter.get(`/login`, csrfProtection, (req, res) => {
+  const {user} = req.session;
+  const csrfToken = req.csrfToken();
+
+  return res.render(`${ROOT}/login`, {
+    user,
+    csrfToken,
+  });
+});
+
+mainRouter.post(`/login`, csrfProtection, async (req, res) => {
+  const {email, password} = req.body;
 
   try {
-    await api.createUser(userData);
+    const user = await api.auth(email, password);
 
-    res.redirect(`/login`);
+    req.session.user = user;
+    await req.session.save();
+    return res.redirect(`/`);
   } catch (error) {
+    const csrfToken = req.csrfToken();
     const validationMessages = prepareErrors(error);
 
-    return res.render(`${ROOT}/register`, {
+    return res.render(`${ROOT}/login`, {
+      email,
+      password,
       validationMessages,
+      csrfToken,
     });
   }
 });
 
-mainRouter.get(`/login`, (req, res) => res.render(`${ROOT}/login`));
+mainRouter.get(`/logout`, async (req, res) => {
+  delete req.session.user;
+  await req.session.save();
+
+  res.redirect(`/`);
+});
 
 module.exports = mainRouter;

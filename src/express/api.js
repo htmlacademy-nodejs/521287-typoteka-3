@@ -70,6 +70,13 @@ class API {
       data,
     });
   }
+
+  auth(email, password) {
+    return this._load(`/users/auth`, {
+      method: HttpMethod.POST,
+      data: {email, password},
+    });
+  }
 }
 
 const defaultAPI = new API(defaultURL, TIMEOUT);
