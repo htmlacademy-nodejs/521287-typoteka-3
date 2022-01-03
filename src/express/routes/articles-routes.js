@@ -172,6 +172,11 @@ articlesRouter.get(`/:id`, csrfProtection, async (req, res) => {
   });
 });
 
+articlesRouter.get(
+    `/:id/comments`,
+    (_, res) => res.redirect(`./`)
+);
+
 articlesRouter.post(
     `/:id/comments`,
     [
@@ -199,6 +204,7 @@ articlesRouter.post(
           api.getCategories(true),
         ]);
         const validationMessages = prepareErrors(error);
+        const csrfToken = req.csrfToken();
 
         return res.render(`${ROOT}/article`, {
           user,
@@ -206,6 +212,7 @@ articlesRouter.post(
           categories,
           newComment: text,
           validationMessages,
+          csrfToken,
         });
       }
     }

@@ -1,5 +1,10 @@
 extends ../layout.pug
 
+mixin insertCommentErrorMessages(messages)
+  if messages
+    each message of messages
+      p.comments__error= message
+
 block content
   main
     section.post
@@ -32,7 +37,13 @@ block content
 
       .post__wrapper.post__wrapper--comments
         section.post__comments.comments
-          h2.comments__title.title.title--middle Комментарии
+          -
+            const commentsTitle = article.comments 
+              ? 'Комментарии'
+              : 'Комментарии отсутствуют'
+
+          h2.comments__title.title.title--middle #{commentsTitle}
+
           if (article.comments)
             ul.comments__list
               each comment in article.comments
@@ -55,6 +66,7 @@ block content
                 method='POST'
                 enctype='application/x-www-form-urlencoded'
                 autocomplete='off'
+                id="commments__form"
               )
                 input(type="hidden" name="_csrf" value=csrfToken)
 
@@ -70,4 +82,11 @@ block content
                   ) #{newComment}
                 button.comments__button.button.button--colored(type='submit').
                   Опубликовать
-                +insertErrorMessages(validationMessages)
+                +insertCommentErrorMessages(validationMessages)
+          else
+            .comments__footer.comments__footer--visitor
+              a.comments__button.button.button--colored(href="/login") Войти
+              .comments__registration
+                p.text.text--signature
+                  b.title.title--small Регистрация
+                  | Чтобы присоединиться к переписке, нужно зарегистрироваться
