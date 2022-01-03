@@ -42,14 +42,20 @@ mainRouter.get(`/`, async (req, res) => {
   // (с округлением вверх)
   const totalPages = Math.ceil(count / ARTICLES_PER_PAGE);
 
-  // Передаем собранные данные в шаблон
-  res.render(`${ROOT}/main`, {
-    user,
-    articles,
-    categories,
-    page,
-    totalPages,
-  });
+  if (count) {
+    // Передаем собранные данные в шаблон
+    return res.render(`${ROOT}/main`, {
+      user,
+      articles,
+      categories,
+      page,
+      totalPages,
+    });
+  } else {
+    return res.render(`${ROOT}/main-empty`, {
+      user,
+    });
+  }
 });
 
 mainRouter.get(`/search`, async (req, res) => {
