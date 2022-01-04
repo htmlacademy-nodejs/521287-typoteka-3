@@ -11,16 +11,18 @@ const myRouter = new Router();
 
 myRouter.get(`/`, checkAuth, async (req, res) => {
   const {user} = req.session;
+  const userId = user.id;
 
-  const articles = await api.getArticles();
+  const articles = await api.getArticles({userId});
 
   res.render(`${ROOT}/my`, {user, articles});
 });
 
 myRouter.get(`/comments`, checkAuth, async (req, res) => {
   const {user} = req.session;
+  const userId = user.id;
 
-  const articles = await api.getArticles({comments: true});
+  const articles = await api.getArticles({userId, withComments: true});
 
   /**
    * Здесь должно быть получение статей пользователя,

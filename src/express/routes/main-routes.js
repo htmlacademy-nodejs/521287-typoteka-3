@@ -17,6 +17,7 @@ const csrfProtection = csrf();
 
 mainRouter.get(`/`, async (req, res) => {
   const {user} = req.session;
+  const userId = user ? user.id : null;
 
   // Получаем номер страницы
   let {page = 1} = req.query;
@@ -33,7 +34,7 @@ mainRouter.get(`/`, async (req, res) => {
     {count, articles},
     categories
   ] = await Promise.all([
-    api.getArticles({limit, offset}),
+    api.getArticles({userId, limit, offset}),
     api.getCategories(true)
   ]);
 

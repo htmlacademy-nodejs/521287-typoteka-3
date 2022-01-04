@@ -19,13 +19,16 @@ module.exports = (app, service, commentService) => {
    * Статья
    */
   route.get(`/`, async (req, res) => {
-    const {offset, limit, comments} = req.query;
+    const {userId, offset, limit, withComments} = req.query;
     let result;
 
     if (limit || offset) {
       result = await service.findPage({limit, offset});
     } else {
-      result = await service.findAll(comments);
+      result = await service.findAll({
+        userId,
+        withComments,
+      });
     }
 
     return res.status(HttpCode.OK).json(result);
@@ -33,7 +36,7 @@ module.exports = (app, service, commentService) => {
 
   route.get(`/:articleId`,
       [routeParamsValidator, articleExist(service)],
-      (req, res) => {
+      (_, res) => {
         const {article} = res.locals;
 
         return res.status(HttpCode.OK).json(article);

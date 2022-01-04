@@ -75,6 +75,7 @@ articlesRouter.post(`/add`,
       csrfProtection,
       upload.single(`picture`),
     ], async (req, res) => {
+      const {user} = req.session;
       const article = buildArticleData(req);
 
       try {
@@ -85,12 +86,15 @@ articlesRouter.post(`/add`,
         const articleCategories = article.categories;
         const categories = await getAddArticleCategories();
         const validationMessages = prepareErrors(error);
+        const csrfToken = req.csrfToken();
 
         return res.render(`${ROOT}/add`, {
+          user,
           article,
           articleCategories,
           categories,
           validationMessages,
+          csrfToken,
         });
       }
     });
@@ -151,26 +155,28 @@ articlesRouter.post(
       }
     });
 
-articlesRouter.get(`/:id`, csrfProtection, async (req, res) => {
-  const {params, session} = req;
-  const {id} = params;
-  const {user} = session;
-  const csrfToken = req.csrfToken();
+articlesRouter.get(`/:id`,
+    csrfProtection, // Для коммментирования
+    async (req, res) => {
+      const {params, session} = req;
+      const {id} = params;
+      const {user} = session;
+      const csrfToken = req.csrfToken();
 
-  const [article, categories] = await Promise.all([
-    api.getArticle(id, true),
-    api.getCategories(true),
-  ]);
-  const selectedCategoriesIds = getArticleCategoriesIds(article);
+      const [article, categories] = await Promise.all([
+        api.getArticle(id, true),
+        api.getCategories(true),
+      ]);
+      const selectedCategoriesIds = getArticleCategoriesIds(article);
 
-  res.render(`${ROOT}/article`, {
-    user,
-    article,
-    categories,
-    selectedCategoriesIds,
-    csrfToken,
-  });
-});
+      res.render(`${ROOT}/article`, {
+        user,
+        article,
+        categories,
+        selectedCategoriesIds,
+        csrfToken,
+      });
+    });
 
 articlesRouter.get(
     `/:id/comments`,
@@ -222,11 +228,12 @@ articlesRouter.get(`/category/:id`, async (req, res) => {
   const {params, session} = req;
   const {id} = params;
   const {user} = session;
+  const userId = user ? user.id : null;
 
   const [selectedCategory, categories, articles] = await Promise.all([
     api.getCategory(id),
     api.getCategories(true),
-    api.getArticles({comments: true}),
+    api.getArticles({userId, withComments: true}),
   ]);
   const articlesWithCategory = articles.filter((article) =>
     article.categories.some((category) => category.id === selectedCategory.id)

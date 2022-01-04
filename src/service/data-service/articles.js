@@ -28,7 +28,7 @@ class ArticleService {
     return result;
   }
 
-  async findAll(needComments) {
+  async findAll({userId, withComments}) {
     const include = [
       Aliase.CATEGORIES,
       {
@@ -39,7 +39,7 @@ class ArticleService {
         }
       }
     ];
-    if (needComments) {
+    if (withComments) {
       include.push({
         model: this._Comment,
         as: Aliase.COMMENTS,
@@ -55,11 +55,17 @@ class ArticleService {
       });
     }
 
+    let where;
+    if (userId) {
+      where = {userId};
+    }
+
     const articles = await this._Article.findAll({
       include,
       order: [
         [`createdAt`, `DESC`]
-      ]
+      ],
+      where,
     });
     const result = articles.map((item) => item.get());
 
