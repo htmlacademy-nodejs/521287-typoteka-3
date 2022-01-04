@@ -24,11 +24,7 @@ myRouter.get(`/comments`, checkAuth, async (req, res) => {
 
   const articles = await api.getArticles({userId, withComments: true});
 
-  /**
-   * Здесь должно быть получение статей пользователя,
-   * но пока нет такого функционала
-   */
-  res.render(`${ROOT}/comments`, {user, articles: articles.slice(0, 3)});
+  res.render(`${ROOT}/comments`, {user, articles});
 });
 
 module.exports = myRouter;

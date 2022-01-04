@@ -17,15 +17,49 @@ class ArticleService {
     return article.get();
   }
 
-  async findOne(id, needComments) {
-    const include = [Aliase.CATEGORIES];
-    if (needComments) {
-      include.push(Aliase.COMMENTS);
+  async findOne({id, userId, withComments}) {
+
+    const options = {
+      include: [
+        Aliase.CATEGORIES,
+        {
+          model: this._User,
+          as: Aliase.USERS,
+          attributes: {
+            exclude: [`passwordHash`]
+          }
+        }
+      ],
+      where: [{
+        id,
+      }]
+    };
+
+    if (userId) {
+      options.where.push({userId});
     }
 
-    const result = await this._Article.findByPk(id, {include});
+    if (withComments) {
+      options.include.push({
+        model: this._Comment,
+        as: Aliase.COMMENTS,
+        include: [
+          {
+            model: this._User,
+            as: Aliase.USERS,
+            attributes: {
+              exclude: [`passwordHash`]
+            }
+          }
+        ]
+      });
 
-    return result;
+      options.order = [
+        [{model: this._Comment, as: Aliase.COMMENTS}, `createdAt`, `DESC`]
+      ];
+    }
+
+    return await this._Article.findOne(options);
   }
 
   async findAll({userId, withComments}) {

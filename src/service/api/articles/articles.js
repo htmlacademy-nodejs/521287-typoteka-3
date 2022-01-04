@@ -36,7 +36,7 @@ module.exports = (app, service, commentService) => {
 
   route.get(`/:articleId`,
       [routeParamsValidator, articleExist(service)],
-      (_, res) => {
+      (req, res) => {
         const {article} = res.locals;
 
         return res.status(HttpCode.OK).json(article);

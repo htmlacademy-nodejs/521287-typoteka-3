@@ -9,6 +9,7 @@ const {
 } = require(`~/utils`);
 
 const ErrorArticleMessage = {
+  USER_ID: `Некорректный идентификатор пользователя`,
   TITLE_REQUIRED: `Заголовок отсутствует`,
   TITLE_MIN: `Заголовок содержит меньше 30 символов`,
   TITLE_MAX: `Заголовок не может содержать более 250 символов`,
@@ -24,6 +25,9 @@ const ErrorArticleMessage = {
 };
 
 const schema = Joi.object({
+  userId: Joi.number().integer().positive().required().messages({
+    'number.base': ErrorArticleMessage.USER_ID
+  }),
   title: Joi.string().min(30).max(250).required().messages({
     'string.empty': ErrorArticleMessage.TITLE_REQUIRED,
     'string.min': ErrorArticleMessage.TITLE_MIN,

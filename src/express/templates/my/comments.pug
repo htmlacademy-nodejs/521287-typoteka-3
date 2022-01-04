@@ -2,20 +2,33 @@ extends ../layout.pug
 
 block content
   main.main-page.main-page--padding
-    section.main-page__publication.publication
-      h1.publication__title Комментарии
+    - const TITLE = 'Комментарии';
+    - const withComments = articles.some(article => article.comments.length);
 
-      if (articles)
+    if (withComments)
+      section.main-page__publication.publication
+        h1.publication__title #{TITLE}
+      
         ul.publication__list
           each article in articles
             each comment in article.comments
               li.publication__list-item
                 .publication__header
-                  img.publication__list-image(src='/img/avatar-small-2.png' width='20' height='20' alt='Аватар пользователя')
-                  b.publication__list-name Александр Петров
+                  - const author = comment.users;
+                  - const authorAvatar = author.avatar || 'avatar-1.png';
+                  img.publication__list-image(
+                    src=`/img/${authorAvatar}` width='20' height='20' alt='Аватар пользователя'
+                  )
+                  b.publication__list-name #{author.name} #{author.surname}
                   time.publication__item-time(datetime=article.createdAt)
                     +formatDate(article.createdAt)
-                a.publication__item-text(href='#') #{article.title}
+                a.publication__item-text(
+                  href=`/articles/${article.id}`
+                ) #{article.title}
                 p.publication__text-strong #{comment.text}
                 button.publication__button.button.button--close-item(type='button')
                   span.visually-hidden Закрыть строку списка
+    else
+      h1.notes__title #{TITLE}
+      div.main-page__empty-wrapper
+        p.main-page__empty-text Здесь пока пусто!

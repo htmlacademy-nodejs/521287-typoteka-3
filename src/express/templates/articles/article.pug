@@ -38,23 +38,26 @@ block content
       .post__wrapper.post__wrapper--comments
         section.post__comments.comments
           -
-            const commentsTitle = article.comments 
+            const withComments = article.comments.length;
+            const commentsTitle = withComments
               ? 'Комментарии'
               : 'Комментарии отсутствуют'
 
           h2.comments__title.title.title--middle #{commentsTitle}
 
-          if (article.comments)
+          if (withComments)
             ul.comments__list
               each comment in article.comments
+                - const author = comment.users;
+                - const authorAvatar = author.avatar || 'avatar-1.png';
                 li.comments__comment(
                   id=comment.id
                 )
                   .comments__avatar.avatar
-                    img(src='/img/avatar-1.png' alt='аватар пользователя')
+                    img(src=`/img/${authorAvatar}` alt='Аватар пользователя')
                   .comments__text
                     .comments__head
-                      p Евгений Петров •
+                      p #{author.name} #{author.surname} •
                       time.comments__date(datetime=comment.createdAt)
                         +formatDate(comment.createdAt)
                     p.comments__message #{comment.text}
@@ -72,7 +75,7 @@ block content
 
                 .comments__avatar.avatar
                   - const userAvatar = user.avatar || 'avatar-1.png';
-                  img(src=`/img/${userAvatar}` alt='аватар пользователя')
+                  img(src=`/img/${userAvatar}` alt='Аватар пользователя')
 
                 label
                   textarea(

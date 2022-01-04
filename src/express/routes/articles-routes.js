@@ -23,9 +23,9 @@ const articlesRouter = new Router();
 const csrfProtection = csrf();
 const uploadDirAbsolute = path.resolve(__dirname, UPLOAD_DIR);
 
-const getEditArticleData = async (articleId) => {
+const getEditArticleData = async (id, userId) => {
   const [article, categories] = await Promise.all([
-    api.getArticle(articleId, false),
+    api.getArticle({id, userId, withComments: true}),
     api.getCategories()
   ]);
 
@@ -51,28 +51,28 @@ const upload = multer({storage});
 articlesRouter.get(`/add`,
     [
       checkAuth,
-      csrfProtection
+      // csrfProtection
     ], async (req, res) => {
       const {session, query} = req;
       const {user} = session;
       const article = Object.keys(query).length ? query : null;
       const categories = await api.getCategories();
       const date = new Date();
-      const csrfToken = req.csrfToken();
+      // const csrfToken = req.csrfToken();
 
       res.render(`${ROOT}/add`, {
         user,
         article,
         categories,
         date,
-        csrfToken,
+        // csrfToken,
       });
     });
 
 articlesRouter.post(`/add`,
     [
       checkAuth,
-      csrfProtection,
+      // csrfProtection,
       upload.single(`picture`),
     ], async (req, res) => {
       const {user} = req.session;
@@ -86,7 +86,7 @@ articlesRouter.post(`/add`,
         const articleCategories = article.categories;
         const categories = await getAddArticleCategories();
         const validationMessages = prepareErrors(error);
-        const csrfToken = req.csrfToken();
+        // const csrfToken = req.csrfToken();
 
         return res.render(`${ROOT}/add`, {
           user,
@@ -94,7 +94,7 @@ articlesRouter.post(`/add`,
           articleCategories,
           categories,
           validationMessages,
-          csrfToken,
+          // csrfToken,
         });
       }
     });
@@ -102,15 +102,16 @@ articlesRouter.post(`/add`,
 articlesRouter.get(`/edit/:id`,
     [
       checkAuth,
-      csrfProtection
+      // csrfProtection
     ], async (req, res) => {
       const {params, session} = req;
       const {id} = params;
       const {user} = session;
-      const csrfToken = req.csrfToken();
+      const userId = user.id;
+      // const csrfToken = req.csrfToken();
 
       try {
-        const [article, categories] = await getEditArticleData(Number(id));
+        const [article, categories] = await getEditArticleData(Number(id), userId);
         const articleCategories = getArticleCategoriesIds(article);
 
         res.render(`${ROOT}/add`, {
@@ -118,19 +119,20 @@ articlesRouter.get(`/edit/:id`,
           article,
           articleCategories,
           categories,
-          csrfToken,
+          // csrfToken,
         });
       } catch (error) {
         return res.render(`errors/404`).status(HttpCode.NOT_FOUND);
       }
 
       return null;
-    });
+    }
+);
 articlesRouter.post(
     `/edit/:id`,
     [
       checkAuth,
-      csrfProtection,
+      // csrfProtection,
       upload.single(`picture`),
     ],
     async (req, res) => {
@@ -145,12 +147,14 @@ articlesRouter.post(
         const articleCategories = article.categories;
         const categories = await getAddArticleCategories();
         const validationMessages = prepareErrors(error);
+        // const csrfToken = req.csrfToken();
 
         return res.render(`${ROOT}/add`, {
           article,
           articleCategories,
           categories,
           validationMessages,
+          // csrfToken,
         });
       }
     });
@@ -161,10 +165,11 @@ articlesRouter.get(`/:id`,
       const {params, session} = req;
       const {id} = params;
       const {user} = session;
+      const userId = user ? user.id : null;
       const csrfToken = req.csrfToken();
 
       const [article, categories] = await Promise.all([
-        api.getArticle(id, true),
+        api.getArticle({id, userId, withComments: true}),
         api.getCategories(true),
       ]);
       const selectedCategoriesIds = getArticleCategoriesIds(article);
@@ -194,9 +199,10 @@ articlesRouter.post(
       const {id} = params;
       const {text} = body;
       const {user} = session;
+      const userId = user.id;
 
       const commentData = {
-        userId: user.id,
+        userId,
         text,
       };
 
@@ -206,7 +212,7 @@ articlesRouter.post(
         return res.redirect(`/${ROOT}/${id}#${comment.id}`);
       } catch (error) {
         const [article, categories] = await Promise.all([
-          api.getArticle(id, true),
+          api.getArticle({id, userId, withComments: true}),
           api.getCategories(true),
         ]);
         const validationMessages = prepareErrors(error);

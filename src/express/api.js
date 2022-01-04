@@ -29,8 +29,10 @@ class API {
     });
   }
 
-  getArticle(id, comments) {
-    return this._load(`/articles/${id}`, {params: {comments}});
+  getArticle({id, userId, withComments}) {
+    return this._load(`/articles/${id}`, {
+      params: {id, userId, withComments}
+    });
   }
 
   search(query) {
