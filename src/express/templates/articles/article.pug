@@ -49,12 +49,16 @@ block content
             ul.comments__list
               each comment in article.comments
                 - const author = comment.users;
-                - const authorAvatar = author.avatar || 'avatar-1.png';
+                -
+                  const authorAvatarPath = author && author.avatar
+                  ? `/img/${author.avatar}`
+                  : '';
+
                 li.comments__comment(
                   id=comment.id
                 )
                   .comments__avatar.avatar
-                    img(src=`/img/${authorAvatar}` alt='Аватар пользователя')
+                    img(src=authorAvatarPath alt='Аватар пользователя')
                   .comments__text
                     .comments__head
                       p #{author.name} #{author.surname} •
@@ -74,8 +78,11 @@ block content
                 input(type="hidden" name="_csrf" value=csrfToken)
 
                 .comments__avatar.avatar
-                  - const userAvatar = user.avatar || 'avatar-1.png';
-                  img(src=`/img/${userAvatar}` alt='Аватар пользователя')
+                  -
+                    const userAvatarPath = user
+                      ? `/img/${user.avatar}`
+                      : '';
+                  img(src=userAvatarPath alt='Аватар пользователя')
 
                 label
                   textarea(
