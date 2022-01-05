@@ -115,9 +115,16 @@ module.exports = (app, service, commentService) => {
       `/:articleId/comments/:commentId`,
       [routeParamsValidator, articleExist(service)],
       async (req, res) => {
-        const {commentId} = req.params;
+        const {params, body} = req;
 
-        const deletedComment = await commentService.drop(commentId);
+        const {articleId, commentId} = params;
+        const {userId} = body;
+
+        const deletedComment = await commentService.drop({
+          articleId,
+          commentId,
+          userId,
+        });
 
         if (!deletedComment) {
           return res

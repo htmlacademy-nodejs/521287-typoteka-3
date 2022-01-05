@@ -13,24 +13,28 @@ block content
           each article in articles
             each comment in article.comments
               li.publication__list-item
-                .publication__header
-                  - const author = comment.users;
-                  -
-                    const authorAvatarPath = author && author.avatar
-                      ? `/img/${author.avatar}`
-                      : '';
-                  img.avatar.publication__list-image(
-                    src=authorAvatarPath width='20' height='20' alt='Аватар пользователя'
-                  )
-                  b.publication__list-name #{author.name} #{author.surname}
-                  time.publication__item-time(datetime=article.createdAt)
-                    +formatDate(article.createdAt)
-                a.publication__item-text(
-                  href=`/articles/${article.id}`
-                ) #{article.title}
-                p.publication__text-strong #{comment.text}
-                button.publication__button.button.button--close-item(type='button')
-                  span.visually-hidden Закрыть строку списка
+                form(
+                  action=`/articles/${article.id}/comments/${comment.id}`
+                  method='POST'
+                )
+                  header.publication__header
+                    - const author = comment.users;
+                    -
+                      const authorAvatarPath = author && author.avatar
+                        ? `/img/${author.avatar}`
+                        : '';
+                    img.avatar.publication__list-image(
+                      src=authorAvatarPath width='20' height='20' alt='Аватар пользователя'
+                    )
+                    b.publication__list-name #{author.name} #{author.surname}
+                    time.publication__item-time(datetime=article.createdAt)
+                      +formatDate(article.createdAt)
+                  a.publication__item-text(
+                    href=`/articles/${article.id}`
+                  ) #{article.title}
+                  p.publication__text-strong #{comment.text}
+                  button.publication__button.button.button--close-item(type='submit')
+                    span.visually-hidden Удалить комментарий
     else
       h1.notes__title #{TITLE}
       div.main-page__empty-wrapper

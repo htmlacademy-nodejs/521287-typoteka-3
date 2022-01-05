@@ -230,6 +230,36 @@ articlesRouter.post(
     }
 );
 
+articlesRouter.post(
+    `/:articleId/comments/:commentId`,
+    [
+      checkAuth,
+    ],
+    async (req, res) => {
+      const {params, session} = req;
+      const {articleId, commentId} = params;
+      const {user} = session;
+      const userId = user.id;
+
+      try {
+        await api.removeComment({
+          articleId,
+          commentId,
+          userId,
+        });
+
+        return res.redirect(`/my/comments`);
+      } catch (error) {
+        console.log(error);
+        const {status, statusText} = error.response;
+
+        return res
+          .status(status)
+          .send(statusText);
+      }
+    }
+);
+
 articlesRouter.get(`/category/:id`, async (req, res) => {
   const {params, session} = req;
   const {id} = params;

@@ -18,7 +18,6 @@ class ArticleService {
   }
 
   async findOne({id, userId, withComments}) {
-
     const options = {
       include: [
         Aliase.CATEGORIES,

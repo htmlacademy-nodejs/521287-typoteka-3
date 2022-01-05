@@ -25,9 +25,22 @@ class CommentService {
     return result;
   }
 
-  async drop(id) {
+  async drop({articleId, commentId, userId}) {
+    const articleByUser = await this._Article.findOne({
+      where: {
+        id: articleId,
+        userId,
+      }
+    });
+
+    if (!articleByUser) {
+      return false;
+    }
+
     const deletedRows = await this._Comment.destroy({
-      where: {id}
+      where: {
+        id: commentId,
+      }
     });
 
     return Boolean(deletedRows);

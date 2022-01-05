@@ -59,6 +59,7 @@ describe(`POST /articles`, () => {
   describe(`+`, () => {
     const newArticleTitle = `Созидание интереснее потребления по мнению Павла Дурова`;
     const newArticle = {
+      userId: 1,
       title: newArticleTitle,
       createdAt: `2020-12-13T12:30:52.599Z`,
       categories: [1],
@@ -153,6 +154,7 @@ describe(`PUT /articles/{articleId}`, () => {
   describe(`+`, () => {
     const changedArticleTitle = `Изменённый заголовок очень интересной статьи`;
     const changedArticle = {
+      userId: 1,
       title: changedArticleTitle,
       createdAt: `2021-01-01T10:00:00.000Z`,
       categories: [2],
@@ -377,9 +379,9 @@ describe(`DELETE /articles/{articleId}/comments/{commentId}`, () => {
 
     beforeAll(async () => {
       app = await createAPI();
-      response = await request(app).delete(
-          `/articles/${ARTICLE_ID}/comments/${COMMENT_ID}`
-      );
+      response = await request(app)
+        .delete(`/articles/${ARTICLE_ID}/comments/${COMMENT_ID}`)
+        .send({userId: 1});
     });
 
     it(`responds with 200 status code`, () => {
