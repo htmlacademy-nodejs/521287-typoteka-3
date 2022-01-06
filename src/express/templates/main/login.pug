@@ -2,45 +2,41 @@ extends ../layout.pug
 
 block content
   main
-    h1.visually-hidden Регистрация пользователя
-  section
-    .popup.popup--registration.popup--anti
-      a.popup__button.button.button--popup-close(aria-label='Закрыть окно')
-        | Закрыть
-        | окно
-      h2.popup__title Войти
+    section
+      .popup.popup--registration.popup--anti
+        h1.popup__title Вход
 
-      .popup__form.form.form--log-in
-        form(action='/login' method='POST')
-          input(type="hidden" name="_csrf" value=csrfToken)
-          .form__field
-            label
-              input(
-                type='email'
-                name='email'
-                value=email
-                placeholder='Электронная почта'
-                required
-                autofocus)
-          .form__field
-            label
-              input(
-                type='password'
-                name='password'
-                value=password
-                placeholder='Пароль'
-                required)
+        .popup__form.form.form--log-in
+          form(action='/login' method='POST')
+            input(type="hidden" name="_csrf" value=csrfToken)
+            .form__field
+              label
+                input(
+                  type='email'
+                  name='email'
+                  value=email
+                  placeholder='Электронная почта'
+                  required
+                  autofocus)
+            .form__field
+              label
+                input(
+                  type='password'
+                  name='password'
+                  value=password
+                  placeholder='Пароль'
+                  required)
 
-          if validationMessages
-            each message in validationMessages
-              p.form__error-message #{message}
+            if validationMessages
+              each message in validationMessages
+                p.form__error-message #{message}
 
-          button(
-            class={
-              'form__submit-btn': true,
-              'form__submit-btn--log-in': true,
-              'button': true,
-              'button--colored': true
-            }
-            type='submit'
-          ) Войти
+            button(
+              class={
+                'form__submit-btn': true,
+                'form__submit-btn--log-in': true,
+                'button': true,
+                'button--colored': true
+              }
+              type='submit'
+            ) Войти
