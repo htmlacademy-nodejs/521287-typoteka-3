@@ -2,14 +2,14 @@
 
 const {Router} = require(`express`);
 
-const {checkAuth} = require(`~/express/middlewares`);
+const {checkAuth, checkAdmin} = require(`~/express/middlewares`);
 const api = require(`~/express/api`).getAPI();
 
 const ROOT = `my`;
 
 const myRouter = new Router();
 
-myRouter.get(`/`, checkAuth, async (req, res) => {
+myRouter.get(`/`, [checkAuth, checkAdmin], async (req, res) => {
   const {user} = req.session;
   const userId = user.id;
 
@@ -18,7 +18,7 @@ myRouter.get(`/`, checkAuth, async (req, res) => {
   res.render(`${ROOT}/my`, {user, articles});
 });
 
-myRouter.get(`/comments`, checkAuth, async (req, res) => {
+myRouter.get(`/comments`, [checkAuth, checkAdmin], async (req, res) => {
   const {user} = req.session;
   const userId = user.id;
 

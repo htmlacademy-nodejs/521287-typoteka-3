@@ -19,7 +19,7 @@ const mockCategories = [
 
 const mockArticles = [
   {
-    "user": users[getRandomInt(0, users.length - 1)].email,
+    "user": users[0].email,
     "title": `Ёлки. История деревьев и людей`,
     "createdAt": `2021-03-09T09:00:00.000Z`,
     "announce": `Собрать камни бесконечности легко, если вы прирожденный герой.`,
@@ -29,7 +29,7 @@ const mockArticles = [
     ],
     "comments": [
       {
-        "user": users[getRandomInt(0, users.length - 1)].email,
+        "user": users[0].email,
         "text": `Согласен с автором! Мне не нравится ваш стиль. Ощущение, что вы меня поучаете. Хочу такую же футболку :-)`
       },
       {
@@ -39,7 +39,7 @@ const mockArticles = [
     ]
   },
   {
-    "user": users[getRandomInt(0, users.length - 1)].email,
+    "user": users[0].email,
     "title": `Обзор новейшего смартфона Айфон 13 Про`,
     "createdAt": `2021-02-09T09:00:00.000Z`,
     "announce": `Этот смартфон — настоящая находка. Большой и яркий экран, мощнейший процессор — всё это в небольшом гаджете.`,
@@ -62,7 +62,7 @@ const mockArticles = [
     ]
   },
   {
-    "user": users[getRandomInt(0, users.length - 1)].email,
+    "user": users[0].email,
     "title": `Учим HTML, CSS и португальский язык`,
     "createdAt": `2021-01-09T09:00:00.000Z`,
     "announce": `Он написал больше 30 хитов. Идеи пришли во время сна в старом замке`,

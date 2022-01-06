@@ -2,17 +2,17 @@
 
 const passwordUtils = require(`~/service/lib/password`);
 
-const EMAIL = `ivanov@example.com`;
+const EMAIL = `admin@typoteka.ru`;
 const NAME = `Иван`;
 const SURNAME = `Иванов`;
-const PASSWORD = `qwerty1234`;
+const PASSWORD = `admin`;
 
 const ValidUserData = {
   name: `Сидор`,
   surname: `Сидоров`,
   email: `sidorov@example.com`,
-  password: PASSWORD,
-  passwordRepeated: PASSWORD,
+  password: `qwerty1234`,
+  passwordRepeated: `qwerty1234`,
   avatar: `sidorov.jpg`,
 };
 

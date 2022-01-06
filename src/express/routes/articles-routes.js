@@ -12,7 +12,7 @@ const {
   getArticleCategoriesIds,
   prepareErrors,
 } = require(`~/utils`);
-const {checkAuth} = require(`~/express/middlewares`);
+const {checkAuth, checkAdmin} = require(`~/express/middlewares`);
 
 const api = require(`~/express/api`).getAPI();
 
@@ -51,6 +51,7 @@ const upload = multer({storage});
 articlesRouter.get(`/add`,
     [
       checkAuth,
+      checkAdmin,
       // csrfProtection
     ], async (req, res) => {
       const {session, query} = req;
@@ -72,6 +73,7 @@ articlesRouter.get(`/add`,
 articlesRouter.post(`/add`,
     [
       checkAuth,
+      checkAdmin,
       // csrfProtection,
       upload.single(`picture`),
     ], async (req, res) => {
@@ -102,6 +104,7 @@ articlesRouter.post(`/add`,
 articlesRouter.get(`/edit/:id`,
     [
       checkAuth,
+      checkAdmin,
       // csrfProtection
     ], async (req, res) => {
       const {params, session} = req;
@@ -132,6 +135,7 @@ articlesRouter.post(
     `/edit/:id`,
     [
       checkAuth,
+      checkAdmin,
       // csrfProtection,
       upload.single(`picture`),
     ],
@@ -162,6 +166,7 @@ articlesRouter.post(
     `/:id`,
     [
       checkAuth,
+      checkAdmin,
     ],
     async (req, res) => {
       const {params, session} = req;
@@ -220,6 +225,7 @@ articlesRouter.post(
     `/:id/comments`,
     [
       checkAuth,
+      checkAdmin,
       csrfProtection,
     ],
     async (req, res) => {
@@ -262,6 +268,7 @@ articlesRouter.post(
     `/:articleId/comments/:commentId`,
     [
       checkAuth,
+      checkAdmin,
     ],
     async (req, res) => {
       const {params, session} = req;
