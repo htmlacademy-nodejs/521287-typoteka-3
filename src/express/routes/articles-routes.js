@@ -158,6 +158,34 @@ articlesRouter.post(
         });
       }
     });
+articlesRouter.post(
+    `/:id`,
+    [
+      checkAuth,
+    ],
+    async (req, res) => {
+      const {params, session} = req;
+
+      const {id} = params;
+      const {user} = session;
+      const userId = user.id;
+
+      try {
+        await api.removeArticle({
+          id,
+          userId,
+        });
+
+        return res.redirect(`/my`);
+      } catch (error) {
+        const {status, statusText} = error.response;
+
+        return res
+            .status(status)
+            .send(statusText);
+      }
+    }
+);
 
 articlesRouter.get(`/:id`,
     csrfProtection, // Для коммментирования
@@ -250,7 +278,6 @@ articlesRouter.post(
 
         return res.redirect(`/my/comments`);
       } catch (error) {
-        console.log(error);
         const {status, statusText} = error.response;
 
         return res

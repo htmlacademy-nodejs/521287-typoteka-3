@@ -217,6 +217,8 @@ describe(`PUT /articles/{articleId}`, () => {
 });
 
 describe(`DELETE /articles/{articleId}`, () => {
+  const USER_ID = `1`;
+
   describe(`+`, () => {
     const ARTICLE_ID = `2`;
     let app;
@@ -224,7 +226,9 @@ describe(`DELETE /articles/{articleId}`, () => {
 
     beforeAll(async () => {
       app = await createAPI();
-      response = await request(app).delete(`/articles/${ARTICLE_ID}`);
+      response = await request(app)
+        .delete(`/articles/${ARTICLE_ID}`)
+        .send({userId: USER_ID});
     });
 
     it(`responds with 200 status code`, () => {
@@ -244,7 +248,9 @@ describe(`DELETE /articles/{articleId}`, () => {
   describe(`−`, () => {
     it(`responds with 404 status code when article doesn't exist`, async () => {
       const app = await createAPI();
-      const response = await request(app).delete(`/articles/NOEXIST`);
+      const response = await request(app)
+        .delete(`/articles/NOEXIST`)
+        .send({userId: USER_ID});
 
       expect(response.statusCode).toBe(HttpCode.BAD_REQUEST);
     });
@@ -372,6 +378,7 @@ describe(`POST /articles/{articleId}/comments`, () => {
 describe(`DELETE /articles/{articleId}/comments/{commentId}`, () => {
   const ARTICLE_ID = `1`;
   const COMMENT_ID = `1`;
+  const USER_ID = `1`;
 
   describe(`+`, () => {
     let app;
@@ -381,7 +388,7 @@ describe(`DELETE /articles/{articleId}/comments/{commentId}`, () => {
       app = await createAPI();
       response = await request(app)
         .delete(`/articles/${ARTICLE_ID}/comments/${COMMENT_ID}`)
-        .send({userId: 1});
+        .send({userId: USER_ID});
     });
 
     it(`responds with 200 status code`, () => {
@@ -403,9 +410,9 @@ describe(`DELETE /articles/{articleId}/comments/{commentId}`, () => {
   describe(`−`, () => {
     it(`responds with 400 status code when article doesn't exist`, async () => {
       const app = await createAPI();
-      const response = await request(app).delete(
-          `/articles/NOEXIST/comments/${COMMENT_ID}`
-      );
+      const response = await request(app)
+        .delete(`/articles/NOEXIST/comments/${COMMENT_ID}`)
+        .send({userId: USER_ID});
 
       expect(response.statusCode).toBe(HttpCode.BAD_REQUEST);
     });

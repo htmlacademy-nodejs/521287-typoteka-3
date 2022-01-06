@@ -133,9 +133,12 @@ class ArticleService {
     return Boolean(updatedRows);
   }
 
-  async drop(id) {
+  async drop({id, userId}) {
     const deletedRows = await this._Article.destroy({
-      where: {id},
+      where: {
+        id,
+        userId,
+      },
     });
 
     return Boolean(deletedRows);

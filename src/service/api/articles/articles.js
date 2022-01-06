@@ -73,14 +73,20 @@ module.exports = (app, service, commentService) => {
   route.delete(`/:articleId`,
       [routeParamsValidator, articleExist(service)],
       async (req, res) => {
-        const {articleId} = req.params;
+        const {params, body} = req;
 
-        const deletedOffer = await service.drop(articleId);
+        const {articleId: id} = params;
+        const {userId} = body;
+
+        const deletedOffer = await service.drop({
+          id,
+          userId,
+        });
 
         if (!deletedOffer) {
           return res
-        .status(HttpCode.NOT_FOUND)
-        .send(`Article #${articleId} wasn't found`);
+            .status(HttpCode.NOT_FOUND)
+            .send(`Article #${id} wasn't found`);
         }
 
         return res.status(HttpCode.OK).json(deletedOffer);
