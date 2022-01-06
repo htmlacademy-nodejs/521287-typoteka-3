@@ -1,0 +1,23 @@
+- const articlePath = `/articles/${article.id}`;
+
+include ./article-breadcrumbs.pug
+
+if article.picture
+  .preview__background
+    img.preview__background-image(
+      src=`img/${article.picture}` width='460' height='240' alt=`${article.title}`
+    )
+
+time.preview__time(datetime=createdAt)
+  +formatDate(article.createdAt)
+
+h3.preview__name
+  a.preview__name-link(href=articlePath) #{article.title}
+
+p.preview__text #{article.announce}
+
+a.preview__comment(href=`${articlePath}/#comments`)
+  span.preview__cloud
+  |  Комментарии
+  - const commentCount = article.comments && article.comments.length;
+  b.preview__comment-count  (#{commentCount})
