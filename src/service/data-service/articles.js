@@ -105,24 +105,42 @@ class ArticleService {
     return result;
   }
 
-  async findPage({limit, offset}) {
+  async findPage({limit, offset, withComments}) {
+    const include = [
+      Aliase.CATEGORIES,
+      {
+        model: this._User,
+        as: Aliase.USERS,
+        attributes: {
+          exclude: [`passwordHash`]
+        }
+      }
+    ];
+    if (withComments) {
+      include.push({
+        model: this._Comment,
+        as: Aliase.COMMENTS,
+        include: [
+          {
+            model: this._User,
+            as: Aliase.USERS,
+            attributes: {
+              exclude: [`passwordHash`]
+            }
+          }
+        ]
+      });
+    }
+
     const {count, rows} = await this._Article.findAndCountAll({
       limit,
       offset,
-      include: [
-        Aliase.CATEGORIES,
-        {
-          model: this._User,
-          as: Aliase.USERS,
-          attributes: {
-            exclude: [`passwordHash`]
-          }
-        }
-      ],
+      include,
       distinct: true,
     });
+    const articles = rows;
 
-    return {count, articles: rows};
+    return {count, articles};
   }
 
   async update(id, article) {

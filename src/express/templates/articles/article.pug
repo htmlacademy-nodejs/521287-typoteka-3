@@ -35,7 +35,9 @@ block content
             each item in paragraphs
               p #{item}
 
-      .post__wrapper.post__wrapper--comments
+      .post__wrapper.post__wrapper--comments(
+        id="comments"
+      )
         section.post__comments.comments
           -
             const withComments = article.comments.length;

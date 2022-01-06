@@ -23,7 +23,7 @@ module.exports = (app, service, commentService) => {
     let result;
 
     if (limit || offset) {
-      result = await service.findPage({limit, offset});
+      result = await service.findPage({limit, offset, withComments});
     } else {
       result = await service.findAll({
         userId,
