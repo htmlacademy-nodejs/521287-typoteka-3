@@ -64,7 +64,7 @@ block content
                       p #{author.name} #{author.surname} •
                       time.comments__date(datetime=comment.createdAt)
                         +formatDate(comment.createdAt)
-                    p.comments__message #{comment.text}
+                    +comment(comment.text, 'comments__message')
 
           if user
             .comments__footer.comments__footer--user

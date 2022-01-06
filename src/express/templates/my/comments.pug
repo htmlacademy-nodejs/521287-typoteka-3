@@ -32,7 +32,10 @@ block content
                   a.publication__item-text(
                     href=`/articles/${article.id}`
                   ) #{article.title}
-                  p.publication__text-strong #{comment.text}
+
+                  div.publication__text-strong
+                    +comment(comment.text, 'publication__paragraph')
+
                   button.publication__button.button.button--close-item(type='submit')
                     span.visually-hidden Удалить комментарий
     else
