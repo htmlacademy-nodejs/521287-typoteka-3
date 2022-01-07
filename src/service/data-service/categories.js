@@ -18,16 +18,17 @@ class CategoryService {
     return result;
   }
 
-  async findAll(needCount) {
-    if (needCount) {
-      const categories = await this._Category.findAll({
+  async findAll(withCount) {
+    let options = {raw: true};
+    if (withCount) {
+      options = {
         attributes: [
           `id`,
           `name`,
           [
             Sequelize.fn(
                 `COUNT`,
-                `*`
+                Sequelize.col(`Category.id`)
             ),
             `count`
           ],
@@ -38,15 +39,15 @@ class CategoryService {
           as: Aliase.ARTICLE_CATEGORIES,
           attributes: [],
         }],
-      });
-      const result = categories.map((item) => item.get());
-
-      return result;
-    } else {
-      const result = await this._Category.findAll({raw: true});
-
-      return result;
+      };
     }
+
+    let result = await this._Category.findAll(options);
+    if (withCount) {
+      result = result.map((item) => item.get());
+    }
+
+    return result;
   }
 }
 

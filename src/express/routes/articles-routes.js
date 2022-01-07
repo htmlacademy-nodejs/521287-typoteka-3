@@ -203,7 +203,7 @@ articlesRouter.get(`/:id`,
 
       const [article, categories] = await Promise.all([
         api.getArticle({id, userId, withComments: true}),
-        api.getCategories(true),
+        api.getCategories({withCount: true}),
       ]);
       const selectedCategoriesIds = getArticleCategoriesIds(article);
 
@@ -247,7 +247,7 @@ articlesRouter.post(
       } catch (error) {
         const [article, categories] = await Promise.all([
           api.getArticle({id, userId, withComments: true}),
-          api.getCategories(true),
+          api.getCategories({withCount: true}),
         ]);
         const validationMessages = prepareErrors(error);
         const csrfToken = req.csrfToken();
@@ -302,7 +302,7 @@ articlesRouter.get(`/category/:id`, async (req, res) => {
 
   const [selectedCategory, categories, articles] = await Promise.all([
     api.getCategory(id),
-    api.getCategories(true),
+    api.getCategories({withCount: true}),
     api.getArticles({userId, withComments: true}),
   ]);
   const articlesWithCategory = articles.filter((article) =>

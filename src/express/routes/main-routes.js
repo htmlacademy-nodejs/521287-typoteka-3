@@ -39,7 +39,7 @@ mainRouter.get(`/`, async (req, res) => {
     categories
   ] = await Promise.all([
     api.getArticles({userId, limit, offset, withComments: true}),
-    api.getCategories(true)
+    api.getCategories({withCount: true})
   ]);
 
   // Количество страниц — это общее количество объявлений,
@@ -87,7 +87,8 @@ mainRouter.get(
       const categories = await api.getCategories();
 
       return res.render(`${ROOT}/categories`, {user, categories});
-    });
+    }
+);
 
 mainRouter.get(`/register`, csrfProtection, (req, res) => {
   const {user} = req.session;

@@ -43,8 +43,8 @@ class API {
     return this._load(`/categories/${id}`, {params: {count}});
   }
 
-  getCategories(count) {
-    return this._load(`/categories`, {params: {count}});
+  getCategories({withCount} = {}) {
+    return this._load(`/categories`, {params: {withCount}});
   }
 
   createArticle(data) {
