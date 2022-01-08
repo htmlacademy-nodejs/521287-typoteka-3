@@ -5,21 +5,50 @@ block content
     section.main-page__category.category
       h1.category__title Категории
       .category__add-form
-        form(action='#' method='POST')
-          input#add-form-add-category(type='text' name='add-category' placeholder='Новая категория')
+        form(action='/categories' method='POST')
+          input(type="hidden" name="_csrf" value=csrfToken)
+          input#add-form-add-category(
+            type='text'
+            name='name'
+            placeholder='Новая категория'
+            value=name
+            autofocus=!wasEdited
+          )
           label(for='add-form-add-category')
             span.visually-hidden Добавить категорию
           button.category__button.button.button--category(type='submit') Добавить
+        +insertErrorMessages(createValidationMessages)
 
-      if (categories)
+      if (categories.length)
         ul.category__list
           each category in categories
-            - console.log('category:')
-            - console.log(category)
-            li.category__list-item
+            li.category__list-item(id=`category${category.id}`)
+              - const wasEdited = category.id === Number(editedId);
               form(action=`/categories/${category.id}` method='POST')
-                input#modify-form-category-1(type='text' name=`category-${id}` value=category.name)
+                input(type="hidden" name="_csrf" value=csrfToken)
+                input(
+                  type='hidden'
+                  name=`categoryOldName`
+                  value=category.name
+                )
+                input(
+                  type='text'
+                  name=`categoryNewName`
+                  value=(wasEdited && categoryNewName) || category.name
+                  id=`modify-form-category-${id}`
+                  autofocus=wasEdited
+                )
+                if (wasEdited)
+                  +insertErrorMessages(editValidationMessages)
                 label(for=`modify-form-category-${id}`)
                   span.visually-hidden Редактировать категорию
-                button.category__button.button.button--category(type='submit') Сохранить
-                button.category__button.button.button--category(type='submit') Удалить
+
+                button.category__button.button.button--category.button--edit-category(
+                  type='submit' name='action' value='editCategory'
+                ) Сохранить
+                button.category__button.button.button--category(
+                  type='submit' name='action' value='removeCategory'
+                ) Удалить
+      else
+        p(style="padding:20px 40px 20px 35px;")
+          i Здесь пока пусто!

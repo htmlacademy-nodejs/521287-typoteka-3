@@ -3,7 +3,7 @@
 const {Router} = require(`express`);
 const csrf = require(`csurf`);
 
-const {ARTICLES_PER_PAGE} = require(`~/constants`);
+const {ARTICLES_PER_PAGE, HttpCode} = require(`~/constants`);
 const api = require(`~/express/api`).getAPI();
 const {
   checkAuth,
@@ -81,13 +81,54 @@ mainRouter.get(`/search`, async (req, res) => {
 
 mainRouter.get(
     `/categories`,
-    [checkAuth, checkAdmin],
+    [
+      checkAuth,
+      checkAdmin,
+      csrfProtection,
+    ],
     async (req, res) => {
       const {user} = req.session;
+      const csrfToken = req.csrfToken();
 
       const categories = await api.getCategories();
 
-      return res.render(`${ROOT}/categories`, {user, categories});
+      return res.render(`${ROOT}/categories`, {
+        user,
+        csrfToken,
+        categories,
+      });
+    }
+);
+mainRouter.post(
+    `/categories`,
+    [
+      checkAuth,
+      checkAdmin,
+      csrfProtection,
+    ],
+    async (req, res) => {
+      const {name} = req.body;
+
+      try {
+        const newCategory = await api.createCategory({name});
+
+        const {id} = newCategory;
+
+        return res.redirect(`/categories#category${id}`);
+      } catch (error) {
+        const {user} = req.session;
+        const csrfToken = req.csrfToken();
+        const categories = await api.getCategories();
+        const createValidationMessages = prepareErrors(error);
+
+        return res.render(`${ROOT}/categories`, {
+          user,
+          csrfToken,
+          categories,
+          name,
+          createValidationMessages,
+        });
+      }
     }
 );
 mainRouter.post(
@@ -95,21 +136,59 @@ mainRouter.post(
     [
       checkAuth,
       checkAdmin,
+      csrfProtection,
     ],
     async (req, res) => {
-      const {id} = req.params;
+      const {params, body} = req;
 
-      try {
-        await api.removeCategory({id});
+      const {id} = params;
+      const {
+        categoryOldName,
+        categoryNewName,
+        action,
+      } = body;
 
-        return res.redirect(`/categories`);
-      } catch (error) {
-        const {status, statusText} = error.response;
+      if (action === `editCategory`) {
+        try {
+          if (categoryOldName === categoryNewName) {
+            const error = [`Новое название категории совпадает со старым`];
+            throw error;
+          }
+          const name = categoryNewName;
 
-        return res
-          .status(status)
-          .send(statusText);
+          await api.editCategory({id, name});
+
+          return res.redirect(`/categories#category${id}`);
+        } catch (error) {
+          const {user} = req.session;
+          const csrfToken = req.csrfToken();
+          const categories = await api.getCategories();
+          const editValidationMessages = prepareErrors(error);
+
+          return res.render(`${ROOT}/categories`, {
+            user,
+            csrfToken,
+            categories,
+            categoryNewName,
+            editedId: id,
+            editValidationMessages,
+          });
+        }
       }
+
+      if (action === `removeCategory`) {
+        try {
+          await api.removeCategory({id});
+
+          return res.redirect(`/categories`);
+        } catch (error) {
+          const {status, statusText} = error.response;
+
+          return res.status(status).send(statusText);
+        }
+      }
+
+      return res.redirect(`/categories`);
     }
 );
 

@@ -10,6 +10,12 @@ class CategoryService {
     this._ArticleCategory = sequelize.models.ArticleCategory;
   }
 
+  async create(data) {
+    const category = await this._Category.create(data);
+
+    return category.get();
+  }
+
   async findOne(id) {
     const result = await this._Category.findByPk(id, {
       include: [Aliase.ARTICLES],
@@ -48,6 +54,14 @@ class CategoryService {
     }
 
     return result;
+  }
+
+  async update({id, category}) {
+    const [updatedRows] = await this._Category.update(category, {
+      where: {id}
+    });
+
+    return Boolean(updatedRows);
   }
 
   async drop({id}) {
