@@ -13,11 +13,13 @@ block content
 
       if (categories)
         ul.category__list
-          each category, i in categories
+          each category in categories
+            - console.log('category:')
+            - console.log(category)
             li.category__list-item
-              form(action='#' method='POST')
-                input#modify-form-category-1(type='text' name=`category-${i}` value=category.name)
-                label(for=`modify-form-category-${i}`)
+              form(action=`/categories/${category.id}` method='POST')
+                input#modify-form-category-1(type='text' name=`category-${id}` value=category.name)
+                label(for=`modify-form-category-${id}`)
                   span.visually-hidden Редактировать категорию
                 button.category__button.button.button--category(type='submit') Сохранить
-                button.category__button.button.button--category(type='button') Удалить
+                button.category__button.button.button--category(type='submit') Удалить

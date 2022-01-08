@@ -49,6 +49,14 @@ class CategoryService {
 
     return result;
   }
+
+  async drop({id}) {
+    const deletedRows = await this._Category.destroy({
+      where: {id},
+    });
+
+    return Boolean(deletedRows);
+  }
 }
 
 module.exports = CategoryService;

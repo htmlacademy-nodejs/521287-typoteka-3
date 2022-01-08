@@ -84,9 +84,32 @@ mainRouter.get(
     [checkAuth, checkAdmin],
     async (req, res) => {
       const {user} = req.session;
+
       const categories = await api.getCategories();
 
       return res.render(`${ROOT}/categories`, {user, categories});
+    }
+);
+mainRouter.post(
+    `/categories/:id`,
+    [
+      checkAuth,
+      checkAdmin,
+    ],
+    async (req, res) => {
+      const {id} = req.params;
+
+      try {
+        await api.removeCategory({id});
+
+        return res.redirect(`/categories`);
+      } catch (error) {
+        const {status, statusText} = error.response;
+
+        return res
+          .status(status)
+          .send(statusText);
+      }
     }
 );
 

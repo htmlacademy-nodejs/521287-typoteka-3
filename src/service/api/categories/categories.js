@@ -25,4 +25,18 @@ module.exports = (app, service) => {
 
     return res.status(HttpCode.OK).json(category);
   });
+
+  route.delete(`/:id`, async (req, res) => {
+    const {id} = req.params;
+
+    const deletedCategory = await service.drop({id});
+
+    if (!deletedCategory) {
+      return res
+        .status(HttpCode.NOT_FOUND)
+        .send(`Category with ${id} wasn't found`);
+    }
+
+    return res.status(HttpCode.OK).json(deletedCategory);
+  });
 };
