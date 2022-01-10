@@ -4,9 +4,11 @@ const express = require(`express`);
 const session = require(`express-session`);
 const helmet = require(`helmet`);
 const path = require(`path`);
+
 const SequelizeStore = require(`connect-session-sequelize`)(session.Store);
 require(`module-alias/register`);
 
+const {HttpCode} = require(`~/constants`);
 const router = require(`~/express/routes`);
 const sequelize = require(`~/service/lib/sequelize`);
 
@@ -51,5 +53,20 @@ app.use(router);
 
 app.set(`views`, path.resolve(__dirname, `templates`));
 app.set(`view engine`, `pug`);
+
+app.use((_req, res) => {
+  return res.status(HttpCode.BAD_REQUEST).render(
+      `errors/404`, {
+        errorCode: HttpCode.NOT_FOUND,
+      }
+  );
+});
+app.use((_req, res) => {
+  return res.status(HttpCode.INTERNAL_SERVER_ERROR).render(
+      `errors/500`, {
+        errorCode: HttpCode.INTERNAL_SERVER_ERROR,
+      }
+  );
+});
 
 app.listen(DEFAULT_PORT);

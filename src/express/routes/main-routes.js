@@ -3,7 +3,7 @@
 const {Router} = require(`express`);
 const csrf = require(`csurf`);
 
-const {ARTICLES_PER_PAGE, HttpCode} = require(`~/constants`);
+const {ARTICLES_PER_PAGE} = require(`~/constants`);
 const api = require(`~/express/api`).getAPI();
 const {
   checkAuth,
