@@ -52,21 +52,21 @@ articlesRouter.get(`/add`,
     [
       checkAuth,
       checkAdmin,
-      // csrfProtection
+      csrfProtection
     ], async (req, res) => {
       const {session, query} = req;
       const {user} = session;
       const article = Object.keys(query).length ? query : null;
       const categories = await api.getCategories();
       const date = new Date();
-      // const csrfToken = req.csrfToken();
+      const csrfToken = req.csrfToken();
 
       res.render(`${ROOT}/add`, {
         user,
         article,
         categories,
         date,
-        // csrfToken,
+        csrfToken,
       });
     });
 
@@ -74,7 +74,7 @@ articlesRouter.post(`/add`,
     [
       checkAuth,
       checkAdmin,
-      // csrfProtection,
+      csrfProtection,
       upload.single(`picture`),
     ], async (req, res) => {
       const {user} = req.session;
@@ -88,7 +88,7 @@ articlesRouter.post(`/add`,
         const articleCategories = article.categories;
         const categories = await getAddArticleCategories();
         const validationMessages = prepareErrors(error);
-        // const csrfToken = req.csrfToken();
+        const csrfToken = req.csrfToken();
 
         return res.render(`${ROOT}/add`, {
           user,
@@ -96,7 +96,7 @@ articlesRouter.post(`/add`,
           articleCategories,
           categories,
           validationMessages,
-          // csrfToken,
+          csrfToken,
         });
       }
     });
@@ -105,13 +105,13 @@ articlesRouter.get(`/edit/:id`,
     [
       checkAuth,
       checkAdmin,
-      // csrfProtection
+      csrfProtection
     ], async (req, res) => {
       const {params, session} = req;
       const {id} = params;
       const {user} = session;
       const userId = user.id;
-      // const csrfToken = req.csrfToken();
+      const csrfToken = req.csrfToken();
 
       try {
         const [article, categories] = await getEditArticleData(Number(id), userId);
@@ -122,7 +122,7 @@ articlesRouter.get(`/edit/:id`,
           article,
           articleCategories,
           categories,
-          // csrfToken,
+          csrfToken,
         });
       } catch (error) {
         return res.render(`errors/404`).status(HttpCode.NOT_FOUND);
@@ -136,7 +136,7 @@ articlesRouter.post(
     [
       checkAuth,
       checkAdmin,
-      // csrfProtection,
+      csrfProtection,
       upload.single(`picture`),
     ],
     async (req, res) => {
@@ -151,14 +151,14 @@ articlesRouter.post(
         const articleCategories = article.categories;
         const categories = await getAddArticleCategories();
         const validationMessages = prepareErrors(error);
-        // const csrfToken = req.csrfToken();
+        const csrfToken = req.csrfToken();
 
         return res.render(`${ROOT}/add`, {
           article,
           articleCategories,
           categories,
           validationMessages,
-          // csrfToken,
+          csrfToken,
         });
       }
     });
