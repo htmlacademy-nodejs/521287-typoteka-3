@@ -1,6 +1,8 @@
 
 'use strict';
 
+const Aliase = require(`~/service/models/aliase`);
+
 class CommentService {
   constructor(sequelize) {
     this._Article = sequelize.models.Article;
@@ -16,7 +18,17 @@ class CommentService {
     return newComment;
   }
 
-  async findAll(articleId) {
+  async findAll({limit}) {
+    const result = await this._Comment.findAll({
+      include: [Aliase.USERS],
+      limit,
+      order: [[`createdAt`, `DESC`]]
+    });
+
+    return result;
+  }
+
+  async findAllByArticleId(articleId) {
     const result = await this._Comment.findAll({
       where: {articleId},
       raw: true,

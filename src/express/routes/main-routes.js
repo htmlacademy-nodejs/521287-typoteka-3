@@ -3,7 +3,10 @@
 const {Router} = require(`express`);
 const csrf = require(`csurf`);
 
-const {ARTICLES_PER_PAGE} = require(`~/constants`);
+const {
+  ARTICLES_PER_PAGE,
+  LAST_COMMENTS_COUNT,
+} = require(`~/constants`);
 const api = require(`~/express/api`).getAPI();
 const {
   checkAuth,
@@ -36,9 +39,13 @@ mainRouter.get(`/`, async (req, res) => {
   const offset = (page - 1) * ARTICLES_PER_PAGE;
   const [
     {count, articles},
+    lastComments,
     categories
   ] = await Promise.all([
     api.getArticles({userId, limit, offset, withComments: true}),
+    api.getComments({
+      limit: LAST_COMMENTS_COUNT,
+    }),
     api.getCategories({withCount: true})
   ]);
 
@@ -48,10 +55,15 @@ mainRouter.get(`/`, async (req, res) => {
   const totalPages = Math.ceil(count / ARTICLES_PER_PAGE);
 
   if (count) {
+    console.log(`lastComments ↓`);
+    console.log(lastComments);
+    console.log(`\n`);
+
     // Передаем собранные данные в шаблон
     return res.render(`${ROOT}/main`, {
       user,
       articles,
+      lastComments,
       categories,
       page,
       totalPages,

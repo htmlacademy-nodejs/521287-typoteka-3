@@ -112,7 +112,9 @@ module.exports = (app, service, commentService) => {
       async (req, res) => {
         const {articleId} = req.params;
 
-        const comments = await commentService.findAll(articleId);
+        const comments = await commentService.findAllByArticleId(
+            articleId
+        );
 
         return res.status(HttpCode.OK).json(comments);
       });

@@ -101,6 +101,14 @@ class API {
     });
   }
 
+  getComments({limit} = {}) {
+    return this._load(`/comments`, {
+      params: {
+        limit,
+      }
+    });
+  }
+
   removeComment({articleId, commentId, userId}) {
     return this._load(`/articles/${articleId}/comments/${commentId}`, {
       method: HttpMethod.DELETE,

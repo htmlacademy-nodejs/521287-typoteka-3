@@ -13,6 +13,7 @@ const {
 } = require(`~/service/data-service`);
 
 const articles = require(`./articles/articles`);
+const comments = require(`./comments/comments`);
 const categories = require(`./categories/categories`);
 const search = require(`./search/search`);
 const users = require(`./users/users`);
@@ -23,6 +24,7 @@ defineModels(sequelize);
 
 (async () => {
   articles(app, new ArticleService(sequelize), new CommentService(sequelize));
+  comments(app, new CommentService(sequelize));
   categories(app, new CategoryService(sequelize));
   search(app, new SearchService(sequelize));
   users(app, new UserService(sequelize));
