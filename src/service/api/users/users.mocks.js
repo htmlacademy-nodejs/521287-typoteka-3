@@ -8,12 +8,12 @@ const SURNAME = `Иванов`;
 const PASSWORD = `admin`;
 
 const ValidUserData = {
-  name: `Сидор`,
-  surname: `Сидоров`,
-  email: `sidorov@example.com`,
+  name: `Иссидора`,
+  surname: `Сидорова`,
+  email: `sidorova@example.com`,
   password: `qwerty1234`,
   passwordRepeated: `qwerty1234`,
-  avatar: `sidorov.jpg`,
+  avatar: `avatar-3.png`,
 };
 
 const AuthValidUserData = {
@@ -27,14 +27,14 @@ const mockUsers = [
     surname: SURNAME,
     email: EMAIL,
     passwordHash: passwordUtils.hashSync(PASSWORD),
-    avatar: `avatar01.jpg`,
+    avatar: `avatar-1.png`,
   },
   {
     name: `Пётр`,
     surname: `Петров`,
     email: `petrov@example.com`,
     passwordHash: passwordUtils.hashSync(`petrov`),
-    avatar: `avatar01.jpg`,
+    avatar: `avatar-5.png`,
   },
 ];
 

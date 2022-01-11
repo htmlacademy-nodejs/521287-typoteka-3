@@ -34,8 +34,8 @@ const AnnounceRestrict = {
 };
 
 const PictureRestrict = {
-  MIN: 1,
-  MAX: 16,
+  MIN: 0,
+  MAX: 2,
 };
 
 const DateRestrict = {
