@@ -34,6 +34,14 @@ module.exports = (app, service, commentService) => {
     return res.status(HttpCode.OK).json(result);
   });
 
+  route.get(`/popular`, async (req, res) => {
+    const {limit} = req.query;
+
+    const articles = await service.findMostCommented({limit});
+
+    return res.status(HttpCode.OK).json(articles);
+  });
+
   route.get(`/:articleId`,
       [routeParamsValidator, articleExist(service)],
       (req, res) => {

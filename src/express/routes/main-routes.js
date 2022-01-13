@@ -8,6 +8,7 @@ const {upload} = require(`~/express/middlewares`);
 
 const {
   ARTICLES_PER_PAGE,
+  POPULAR_ARTICLES_COUNT,
   LAST_COMMENTS_COUNT,
 } = require(`~/constants`);
 const {
@@ -36,10 +37,14 @@ mainRouter.get(`/`, async (req, res) => {
   const offset = (page - 1) * ARTICLES_PER_PAGE;
   const [
     {count, articles},
+    popularArticles,
     lastComments,
     categories
   ] = await Promise.all([
     api.getArticles({userId, limit, offset, withComments: true}),
+    api.getPopularArticles({
+      limit: POPULAR_ARTICLES_COUNT,
+    }),
     api.getComments({
       limit: LAST_COMMENTS_COUNT,
     }),
@@ -52,14 +57,11 @@ mainRouter.get(`/`, async (req, res) => {
   const totalPages = Math.ceil(count / ARTICLES_PER_PAGE);
 
   if (count) {
-    console.log(`lastComments ↓`);
-    console.log(lastComments);
-    console.log(`\n`);
-
     // Передаем собранные данные в шаблон
     return res.render(`${ROOT}/main`, {
       user,
       articles,
+      popularArticles,
       lastComments,
       categories,
       page,

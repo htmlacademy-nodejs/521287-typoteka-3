@@ -1,5 +1,7 @@
 'use strict';
 
+const {Sequelize, Op} = require(`sequelize`);
+
 const Aliase = require(`~/service/models/aliase`);
 
 class ArticleService {
@@ -101,6 +103,38 @@ class ArticleService {
       where,
     });
     const result = articles.map((item) => item.get());
+
+    return result;
+  }
+
+  async findMostCommented({limit}) {
+    const articles = await this._Article.findAll({
+      limit,
+      attributes: {
+        include: [
+          Sequelize.fn(`COUNT`, Sequelize.col(`comments.id`)),
+          `count`
+        ],
+      },
+      include: {
+        model: this._Comment,
+        as: Aliase.COMMENTS,
+        attributes: [],
+        duplicating: false,
+      },
+      group: [Sequelize.col(`Article.id`)],
+      having: Sequelize.where(
+          Sequelize.fn(`COUNT`, Sequelize.col(`comments.id`)),
+          {
+            [Op.gte]: 1,
+          }
+      ),
+      order: [
+        [`count`, `desc`]
+      ],
+    });
+
+    const result = articles.map((article) => article.get());
 
     return result;
   }

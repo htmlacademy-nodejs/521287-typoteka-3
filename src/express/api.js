@@ -29,6 +29,12 @@ class API {
     });
   }
 
+  getPopularArticles({limit} = {}) {
+    return this._load(`/articles/popular`, {
+      params: {limit}
+    });
+  }
+
   getArticle({id, userId, withComments}) {
     return this._load(`/articles/${id}`, {
       params: {id, userId, withComments}
