@@ -1,0 +1,27 @@
+section.main-page__last.last
+  h2.last__name
+    | Последние комментарии 
+    span.last__icon.last__icon--cloud
+
+  if lastComments.length
+    ul.last__list
+      each comment in lastComments
+        li.last__list-item
+          -
+            const user = comment.users;
+            const userAvatarPath = user.avatar
+              ? `/img/${user.avatar}`
+              : '';
+
+          img.last__list-image.avatar(
+            src=userAvatarPath
+            width='20'
+            height='20'
+            alt='Аватар пользователя'
+          )
+          b.last__list-name #{user.name} #{user.surname}
+          a.last__list-link(
+            href=`/articles/${comment.articleId}#${comment.id}`
+          ) #{comment.text}
+  else
+    p Здесь пока ничего нет...
