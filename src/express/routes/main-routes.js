@@ -3,16 +3,13 @@
 const {Router} = require(`express`);
 const csrf = require(`csurf`);
 
+const api = require(`~/express/api`).getAPI();
+const {upload} = require(`~/express/middlewares`);
+
 const {
   ARTICLES_PER_PAGE,
   LAST_COMMENTS_COUNT,
 } = require(`~/constants`);
-const api = require(`~/express/api`).getAPI();
-const {
-  checkAuth,
-  checkAdmin,
-  upload,
-} = require(`~/express/middlewares`);
 const {
   prepareErrors,
 } = require(`~/utils`);
@@ -90,119 +87,6 @@ mainRouter.get(`/search`, async (req, res) => {
 
   return res.render(`${ROOT}/search`, {user, search, result});
 });
-
-mainRouter.get(
-    `/categories`,
-    [
-      checkAuth,
-      checkAdmin,
-      csrfProtection,
-    ],
-    async (req, res) => {
-      const {user} = req.session;
-      const csrfToken = req.csrfToken();
-
-      const categories = await api.getCategories();
-
-      return res.render(`${ROOT}/categories`, {
-        user,
-        csrfToken,
-        categories,
-      });
-    }
-);
-mainRouter.post(
-    `/categories`,
-    [
-      checkAuth,
-      checkAdmin,
-      csrfProtection,
-    ],
-    async (req, res) => {
-      const {name} = req.body;
-
-      try {
-        const newCategory = await api.createCategory({name});
-
-        const {id} = newCategory;
-
-        return res.redirect(`/categories#category${id}`);
-      } catch (error) {
-        const {user} = req.session;
-        const csrfToken = req.csrfToken();
-        const categories = await api.getCategories();
-        const createValidationMessages = prepareErrors(error);
-
-        return res.render(`${ROOT}/categories`, {
-          user,
-          csrfToken,
-          categories,
-          name,
-          createValidationMessages,
-        });
-      }
-    }
-);
-mainRouter.post(
-    `/categories/:id`,
-    [
-      checkAuth,
-      checkAdmin,
-      csrfProtection,
-    ],
-    async (req, res) => {
-      const {params, body} = req;
-
-      const {id} = params;
-      const {
-        categoryOldName,
-        categoryNewName,
-        action,
-      } = body;
-
-      if (action === `editCategory`) {
-        try {
-          if (categoryOldName === categoryNewName) {
-            const error = [`Новое название категории совпадает со старым`];
-            throw error;
-          }
-          const name = categoryNewName;
-
-          await api.editCategory({id, name});
-
-          return res.redirect(`/categories#category${id}`);
-        } catch (error) {
-          const {user} = req.session;
-          const csrfToken = req.csrfToken();
-          const categories = await api.getCategories();
-          const editValidationMessages = prepareErrors(error);
-
-          return res.render(`${ROOT}/categories`, {
-            user,
-            csrfToken,
-            categories,
-            categoryNewName,
-            editedId: id,
-            editValidationMessages,
-          });
-        }
-      }
-
-      if (action === `removeCategory`) {
-        try {
-          await api.removeCategory({id});
-
-          return res.redirect(`/categories`);
-        } catch (error) {
-          const {status, statusText} = error.response;
-
-          return res.status(status).send(statusText);
-        }
-      }
-
-      return res.redirect(`/categories`);
-    }
-);
 
 mainRouter.get(`/register`, csrfProtection, (req, res) => {
   const {user} = req.session;
