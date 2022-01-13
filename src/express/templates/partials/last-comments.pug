@@ -20,8 +20,14 @@ section.main-page__last.last
             alt='Аватар пользователя'
           )
           b.last__list-name #{user.name} #{user.surname}
+
+          -
+            const {text} = comment;
+            const textFormatted = text.length > 100
+              ? `${text}...`
+              : text;
           a.last__list-link(
             href=`/articles/${comment.articleId}#${comment.id}`
-          ) #{comment.text}
+          ) #{textFormatted}
   else
-    p Здесь пока ничего нет...
+    p Здесь пока ничего нет
