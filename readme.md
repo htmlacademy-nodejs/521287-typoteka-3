@@ -3,51 +3,31 @@
 - Студент: [Илья Сидорчик](https://up.htmlacademy.ru/nodejs/3/user/521287)
 - Наставник: [Юрий Кучма](https://htmlacademy.ru/profile/krabaton)
 
----
+### Как локально развернуть проект
 
-### Аккаунт автора блога
+#### 1. Устанавливаем [Docker](https://docs.docker.com/desktop/mac/install/) и [Docker Compose](https://docs.docker.com/compose/install/)
 
-Эл. почта: `admin@typoteka.ru`
-Пароль: `admin`
+#### 2. Монтируем образ проекта
 
----
-
-_Не удаляйте и не изменяйте папки и файлы:_
-_`.editorconfig`, `.gitattributes`, `.gitignore`, `.travis.yml`, `package.json`._
-
----
-
-### Памятка
-
-#### 1. Зарегистрируйтесь на Гитхабе
-
-Если у вас ещё нет аккаунта на [github.com](https://github.com/join), скорее зарегистрируйтесь.
-
-#### 2. Создайте форк
-
-Откройте репозиторий и нажмите кнопку «Fork» в правом верхнем углу. Репозиторий из Академии будет скопирован в ваш аккаунт.
-
-<img width="769" alt="Press 'Fork'" src="https://cloud.githubusercontent.com/assets/259739/20264045/a1ddbf40-aa7a-11e6-9a1a-724a1c0123c8.png">
-
-Получится вот так:
-
-<img width="769" alt="Forked" src="https://cloud.githubusercontent.com/assets/259739/20264122/f63219a6-aa7a-11e6-945a-89818fc7c014.png">
-
-#### 3. Клонируйте репозиторий на свой компьютер
-
-Будьте внимательны: нужно клонировать свой репозиторий (форк), а не репозиторий Академии. Также обратите внимание, что клонировать репозиторий нужно через SSH, а не через HTTPS. Нажмите зелёную кнопку в правой части экрана, чтобы скопировать SSH-адрес вашего репозитория:
-
-<img width="769" alt="SSH" src="https://cloud.githubusercontent.com/assets/259739/20264180/42704126-aa7b-11e6-9ab4-73372b812a53.png">
-
-Клонировать репозиторий можно так:
-
+Вводим в консоли команду в корне репозитория:
 ```
-git clone SSH-адрес_вашего_форка
+docker-compose up --build -d
 ```
 
-Команда клонирует репозиторий на ваш компьютер и подготовит всё необходимое для старта работы.
+#### 3. Наполняем базу данных
 
-#### 4. Начинайте обучение!
+```
+docker exec -it nodejs npm run back-server-cli -- --fill-db 15
+```
+
+#### 4. Открываем веб-приложение
+
+http://localhost:8080/
+
+> АПИ доступно по адресу: http://localhost:3000/api/articles/1
+
+> Команда для показа логов: `docker-compose logs -f`
+
 
 ---
 
