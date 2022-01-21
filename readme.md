@@ -22,7 +22,12 @@ docker exec -it nodejs npm run back-server-cli -- --fill-db 15
 
 #### 4. Открываем веб-приложение
 
-http://localhost:8080/
+Адрес приложения: http://localhost:8080/
+
+Аккаунт автора блога:
+<br/>Эл. почта: `admin@typoteka.ru`<br/>
+Пароль: `admin`
+
 
 > АПИ доступно по адресу: http://localhost:3000/api/articles/1
 
