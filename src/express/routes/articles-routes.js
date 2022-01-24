@@ -74,8 +74,8 @@ articlesRouter.post(`/add`,
     [
       checkAuth,
       checkAdmin,
-      csrfProtection,
       upload.single(`picture`),
+      csrfProtection,
     ], async (req, res) => {
       const {user} = req.session;
       const article = buildArticleData(req);
@@ -136,8 +136,8 @@ articlesRouter.post(
     [
       checkAuth,
       checkAdmin,
-      csrfProtection,
       upload.single(`picture`),
+      csrfProtection,
     ],
     async (req, res) => {
       const {id} = req.params;
