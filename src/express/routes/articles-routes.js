@@ -205,7 +205,7 @@ articlesRouter.get(`/:id`,
 
 articlesRouter.get(
     `/:id/comments`,
-    (_, res) => res.redirect(`./`)
+    (_req, res) => res.redirect(`./`)
 );
 
 articlesRouter.post(

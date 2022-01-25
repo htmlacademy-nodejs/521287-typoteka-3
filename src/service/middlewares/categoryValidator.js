@@ -29,7 +29,6 @@ const CategoryValidator = async (req, res, next) => {
       {abortEarly: false}
   );
 
-  console.error(error);
   if (error) {
     const errorMessage = buildValidationErrorMessage(error);
 

@@ -67,11 +67,11 @@ mainRouter.get(`/`, async (req, res) => {
       page,
       totalPages,
     });
-  } else {
-    return res.render(`${ROOT}/main-empty`, {
-      user,
-    });
   }
+
+  return res.render(`${ROOT}/main-empty`, {
+    user,
+  });
 });
 
 mainRouter.get(`/search`, async (req, res) => {

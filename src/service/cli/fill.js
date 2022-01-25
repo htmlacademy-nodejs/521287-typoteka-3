@@ -32,7 +32,7 @@ const generateArticles = (
 ) =>
   Array(count)
     .fill({})
-    .map((_, index) => {
+    .map((_item, index) => {
       const title = titles[getRandomInt(0, titles.length - 1)];
       const announce = shuffle(sentences)
         .slice(0, getRandomInt(AnnounceRestrict.MIN, AnnounceRestrict.MAX))[0]
