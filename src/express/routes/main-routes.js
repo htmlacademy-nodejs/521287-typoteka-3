@@ -3,9 +3,14 @@
 const {Router} = require(`express`);
 const csrf = require(`csurf`);
 
-const {ARTICLES_PER_PAGE} = require(`~/constants`);
 const api = require(`~/express/api`).getAPI();
-const {checkAuth, upload} = require(`~/express/middlewares`);
+const {upload} = require(`~/express/middlewares`);
+
+const {
+  ARTICLES_PER_PAGE,
+  POPULAR_ARTICLES_COUNT,
+  LAST_COMMENTS_COUNT,
+} = require(`~/constants`);
 const {
   prepareErrors,
 } = require(`~/utils`);
@@ -17,6 +22,7 @@ const csrfProtection = csrf();
 
 mainRouter.get(`/`, async (req, res) => {
   const {user} = req.session;
+  const userId = user ? user.id : null;
 
   // Получаем номер страницы
   let {page = 1} = req.query;
@@ -31,10 +37,18 @@ mainRouter.get(`/`, async (req, res) => {
   const offset = (page - 1) * ARTICLES_PER_PAGE;
   const [
     {count, articles},
+    popularArticles,
+    lastComments,
     categories
   ] = await Promise.all([
-    api.getArticles({limit, offset}),
-    api.getCategories(true)
+    api.getArticles({userId, limit, offset, withComments: true}),
+    api.getPopularArticles({
+      limit: POPULAR_ARTICLES_COUNT,
+    }),
+    api.getComments({
+      limit: LAST_COMMENTS_COUNT,
+    }),
+    api.getCategories({withCount: true})
   ]);
 
   // Количество страниц — это общее количество объявлений,
@@ -42,14 +56,22 @@ mainRouter.get(`/`, async (req, res) => {
   // (с округлением вверх)
   const totalPages = Math.ceil(count / ARTICLES_PER_PAGE);
 
-  // Передаем собранные данные в шаблон
-  res.render(`${ROOT}/main`, {
-    user,
-    articles,
-    categories,
-    page,
-    totalPages,
-  });
+  if (count) {
+    // Передаем собранные данные в шаблон
+    return res.render(`${ROOT}/main`, {
+      user,
+      articles,
+      popularArticles,
+      lastComments,
+      categories,
+      page,
+      totalPages,
+    });
+  } else {
+    return res.render(`${ROOT}/main-empty`, {
+      user,
+    });
+  }
 });
 
 mainRouter.get(`/search`, async (req, res) => {
@@ -66,13 +88,6 @@ mainRouter.get(`/search`, async (req, res) => {
   }
 
   return res.render(`${ROOT}/search`, {user, search, result});
-});
-
-mainRouter.get(`/categories`, checkAuth, async (req, res) => {
-  const {user} = req.session;
-  const categories = await api.getCategories();
-
-  return res.render(`${ROOT}/categories`, {user, categories});
 });
 
 mainRouter.get(`/register`, csrfProtection, (req, res) => {

@@ -2,18 +2,18 @@
 
 const passwordUtils = require(`~/service/lib/password`);
 
-const EMAIL = `ivanov@example.com`;
+const EMAIL = `admin@typoteka.ru`;
 const NAME = `Иван`;
 const SURNAME = `Иванов`;
-const PASSWORD = `qwerty1234`;
+const PASSWORD = `admin`;
 
 const ValidUserData = {
-  name: `Сидор`,
-  surname: `Сидоров`,
-  email: `sidorov@example.com`,
-  password: PASSWORD,
-  passwordRepeated: PASSWORD,
-  avatar: `sidorov.jpg`,
+  name: `Иссидора`,
+  surname: `Сидорова`,
+  email: `sidorova@example.com`,
+  password: `qwerty1234`,
+  passwordRepeated: `qwerty1234`,
+  avatar: `avatar-3.png`,
 };
 
 const AuthValidUserData = {
@@ -27,14 +27,14 @@ const mockUsers = [
     surname: SURNAME,
     email: EMAIL,
     passwordHash: passwordUtils.hashSync(PASSWORD),
-    avatar: `avatar01.jpg`,
+    avatar: `avatar-1.png`,
   },
   {
     name: `Пётр`,
     surname: `Петров`,
     email: `petrov@example.com`,
     passwordHash: passwordUtils.hashSync(`petrov`),
-    avatar: `avatar01.jpg`,
+    avatar: `avatar-5.png`,
   },
 ];
 

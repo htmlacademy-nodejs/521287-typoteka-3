@@ -2,15 +2,24 @@ extends ../layout.pug
 
 block content
   main.main-page.main-page--padding
-    section.main-page__notes.notes
-      h1.notes__title Мои записи
+    - const TITLE = 'Мои записи';
 
-      if (articles)
+    if (articles.length)
+      section.main-page__notes.notes
+        h1.notes__title #{TITLE}
         ul.notes__list
           each article in articles
             li.notes__list-item
-              time.notes__item-time(datetime=`${createdAt}`)
-                +formatDate(article.createdAt)
-              a.notes__item-text(href=`/articles/${article.id}`) #{article.title}
-              button.notes__button.button.button--close-item(type='button')
-                span.visually-hidden Закрыть строку списка
+              form(
+                action=`/articles/${article.id}`
+                method='POST'
+              )
+                time.notes__item-time(datetime=`${createdAt}`)
+                  +formatDate(article.createdAt)
+                a.notes__item-text(href=`/articles/${article.id}`) #{article.title}
+                button.notes__button.button.button--close-item(type='submit')
+                  span.visually-hidden Удалить публикацию
+    else
+      h1.notes__title #{TITLE}
+      div.main-page__empty-wrapper
+        p.main-page__empty-text Здесь пока пусто!

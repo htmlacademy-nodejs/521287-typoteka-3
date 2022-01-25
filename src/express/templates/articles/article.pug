@@ -1,5 +1,10 @@
 extends ../layout.pug
 
+mixin insertCommentErrorMessages(messages)
+  if messages
+    each message of messages
+      p.comments__error= message
+
 block content
   main
     section.post
@@ -30,23 +35,38 @@ block content
             each item in paragraphs
               p #{item}
 
-      .post__wrapper.post__wrapper--comments
+      .post__wrapper.post__wrapper--comments(
+        id="comments"
+      )
         section.post__comments.comments
-          h2.comments__title.title.title--middle Комментарии
-          if (article.comments)
+          -
+            const withComments = article.comments.length;
+            const commentsTitle = withComments
+              ? 'Комментарии'
+              : 'Комментарии отсутствуют'
+
+          h2.comments__title.title.title--middle #{commentsTitle}
+
+          if (withComments)
             ul.comments__list
               each comment in article.comments
+                - const author = comment.users;
+                -
+                  const authorAvatarPath = author && author.avatar
+                  ? `/img/${author.avatar}`
+                  : '';
+
                 li.comments__comment(
                   id=comment.id
                 )
                   .comments__avatar.avatar
-                    img(src='/img/avatar-1.png' alt='аватар пользователя')
+                    img(src=authorAvatarPath alt='Аватар пользователя')
                   .comments__text
                     .comments__head
-                      p Евгений Петров •
+                      p #{author.name} #{author.surname} •
                       time.comments__date(datetime=comment.createdAt)
                         +formatDate(comment.createdAt)
-                    p.comments__message #{comment.text}
+                    +comment(comment.text, 'comments__message')
 
           if user
             .comments__footer.comments__footer--user
@@ -55,12 +75,16 @@ block content
                 method='POST'
                 enctype='application/x-www-form-urlencoded'
                 autocomplete='off'
+                id="commments__form"
               )
                 input(type="hidden" name="_csrf" value=csrfToken)
 
                 .comments__avatar.avatar
-                  - const userAvatar = user.avatar || 'avatar-1.png';
-                  img(src=`/img/${userAvatar}` alt='аватар пользователя')
+                  -
+                    const userAvatarPath = user
+                      ? `/img/${user.avatar}`
+                      : '';
+                  img(src=userAvatarPath alt='Аватар пользователя')
 
                 label
                   textarea(
@@ -70,4 +94,11 @@ block content
                   ) #{newComment}
                 button.comments__button.button.button--colored(type='submit').
                   Опубликовать
-                +insertErrorMessages(validationMessages)
+                +insertCommentErrorMessages(validationMessages)
+          else
+            .comments__footer.comments__footer--visitor
+              a.comments__button.button.button--colored(href="/login") Войти
+              .comments__registration
+                p.text.text--signature
+                  b.title.title--small Регистрация
+                  | Чтобы присоединиться к переписке, нужно зарегистрироваться

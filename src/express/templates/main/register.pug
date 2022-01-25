@@ -2,44 +2,39 @@ extends ../layout.pug
 
 block content
   main
-    h1.visually-hidden Регистрация пользователя
-    section
-  .popup.popup--registration.popup--anti
-    a.popup__button.button.button--popup-close(aria-label='Закрыть окно')
-      | Закрыть
-      | окно
-    h2.popup__title Регистрация
-    .popup__form.popup__form--active.form.form--register
-      form(action='/register' method='POST')
-        input(type="hidden" name="_csrf" value=csrfToken)
-        .form__field
-          label
-            input(type='email' name='email' placeholder='Электронная почта' required='' autofocus)
-        .form__field
-          label
-            input(type='text' name='name' placeholder='Имя' required='')
-        .form__field
-          label
-            input(type='text' name='surname' placeholder='Фамилия' required)
-        .form__field
-          label
-            input(type='password' name='password' placeholder='Пароль' required='')
-        .form__field
-          label
-            input(type='password' name='passwordRepeated' placeholder='Повтор пароля' required='')
+    section.popup.popup--registration.popup--anti
+      h1.popup__title Регистрация
+      .popup__form.popup__form--active.form.form--register
+        form(action='/register' method='POST')
+          input(type="hidden" name="_csrf" value=csrfToken)
+          .form__field
+            label
+              input(type='email' name='email' placeholder='Электронная почта' required='' autofocus)
+          .form__field
+            label
+              input(type='text' name='name' placeholder='Имя' required='')
+          .form__field
+            label
+              input(type='text' name='surname' placeholder='Фамилия' required)
+          .form__field
+            label
+              input(type='password' name='password' placeholder='Пароль' required='')
+          .form__field
+            label
+              input(type='password' name='passwordRepeated' placeholder='Повтор пароля' required='')
 
-        if validationMessages
-          .form__validation-error
-            p.form__error-message При регистрации произошли ошибки:
-            ul.form__errors
-              each message in validationMessages
-                li.form__error #{message}
+          if validationMessages
+            .form__validation-error
+              p.form__error-message При регистрации произошли ошибки:
+              ul.form__errors
+                each message in validationMessages
+                  li.form__error #{message}
 
-        .form__image-loader
-          a.form__avatar.avatar
-            img(src='img/icons/smile.svg' alt='аватар пользователя')
-          label
-            input.visually-hidden(type='file' name='avatar' required)
-            | Загрузить фото профиля
+          .form__image-loader
+            a.form__avatar.avatar
+              img(src='img/icons/smile.svg' alt='аватар пользователя')
+            label
+              input.visually-hidden(type='file' name='avatar' required)
+              | Загрузить фото профиля
 
-        button.form__submit-btn.form__submit-btn--register.button.button--colored(type='submit') Зарегистрироваться
+          button.form__submit-btn.form__submit-btn--register.button.button--colored(type='submit') Зарегистрироваться

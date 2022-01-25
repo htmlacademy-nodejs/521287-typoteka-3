@@ -3,10 +3,10 @@
 const {HttpCode} = require(`~/constants`);
 
 module.exports = (service) => async (req, res, next) => {
-  const {articleId} = req.params;
-  const {comments = false} = req.query;
+  const {articleId, userId} = req.params;
+  const {withComments = false} = req.query;
 
-  const article = await service.findOne(articleId, comments);
+  const article = await service.findOne({id: articleId, userId, withComments});
 
   if (!article) {
     return res

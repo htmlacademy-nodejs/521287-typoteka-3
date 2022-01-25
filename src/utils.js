@@ -26,6 +26,9 @@ const {
 const {
   prepareErrors,
 } = require(`~/utils/prepareErrors`);
+const {
+  isAdmin,
+} = require(`~/utils/isAdmin`);
 
 const MAX_ID_LENGTH = 6;
 
@@ -169,4 +172,5 @@ module.exports = {
   getArticleCategoriesIds,
   getCategoriesFromBody,
   prepareErrors,
+  isAdmin,
 };

@@ -1,0 +1,9 @@
+mixin comment(text, pClassName)
+  -
+    const textFormatted = text.replace(
+      /\r\n\r\n/g, '\r\n'
+    );
+  - const paragraphs = textFormatted.split('\r\n');
+
+  each item in paragraphs
+    p(class=pClassName) #{item}

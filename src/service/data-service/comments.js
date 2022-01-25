@@ -1,6 +1,8 @@
 
 'use strict';
 
+const Aliase = require(`~/service/models/aliase`);
+
 class CommentService {
   constructor(sequelize) {
     this._Article = sequelize.models.Article;
@@ -16,7 +18,17 @@ class CommentService {
     return newComment;
   }
 
-  async findAll(articleId) {
+  async findAll({limit}) {
+    const result = await this._Comment.findAll({
+      include: [Aliase.USERS],
+      limit,
+      order: [[`createdAt`, `DESC`]]
+    });
+
+    return result;
+  }
+
+  async findAllByArticleId(articleId) {
     const result = await this._Comment.findAll({
       where: {articleId},
       raw: true,
@@ -25,9 +37,22 @@ class CommentService {
     return result;
   }
 
-  async drop(id) {
+  async drop({articleId, commentId, userId}) {
+    const articleByUser = await this._Article.findOne({
+      where: {
+        id: articleId,
+        userId,
+      }
+    });
+
+    if (!articleByUser) {
+      return false;
+    }
+
     const deletedRows = await this._Comment.destroy({
-      where: {id}
+      where: {
+        id: commentId,
+      }
     });
 
     return Boolean(deletedRows);

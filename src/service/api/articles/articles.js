@@ -19,16 +19,27 @@ module.exports = (app, service, commentService) => {
    * Статья
    */
   route.get(`/`, async (req, res) => {
-    const {offset, limit, comments} = req.query;
+    const {userId, offset, limit, withComments} = req.query;
     let result;
 
     if (limit || offset) {
-      result = await service.findPage({limit, offset});
+      result = await service.findPage({limit, offset, withComments});
     } else {
-      result = await service.findAll(comments);
+      result = await service.findAll({
+        userId,
+        withComments,
+      });
     }
 
     return res.status(HttpCode.OK).json(result);
+  });
+
+  route.get(`/popular`, async (req, res) => {
+    const {limit} = req.query;
+
+    const articles = await service.findMostCommented({limit});
+
+    return res.status(HttpCode.OK).json(articles);
   });
 
   route.get(`/:articleId`,
@@ -70,14 +81,20 @@ module.exports = (app, service, commentService) => {
   route.delete(`/:articleId`,
       [routeParamsValidator, articleExist(service)],
       async (req, res) => {
-        const {articleId} = req.params;
+        const {params, body} = req;
 
-        const deletedOffer = await service.drop(articleId);
+        const {articleId: id} = params;
+        const {userId} = body;
+
+        const deletedOffer = await service.drop({
+          id,
+          userId,
+        });
 
         if (!deletedOffer) {
           return res
-        .status(HttpCode.NOT_FOUND)
-        .send(`Article #${articleId} wasn't found`);
+            .status(HttpCode.NOT_FOUND)
+            .send(`Article #${id} wasn't found`);
         }
 
         return res.status(HttpCode.OK).json(deletedOffer);
@@ -103,7 +120,9 @@ module.exports = (app, service, commentService) => {
       async (req, res) => {
         const {articleId} = req.params;
 
-        const comments = await commentService.findAll(articleId);
+        const comments = await commentService.findAllByArticleId(
+            articleId
+        );
 
         return res.status(HttpCode.OK).json(comments);
       });
@@ -112,9 +131,16 @@ module.exports = (app, service, commentService) => {
       `/:articleId/comments/:commentId`,
       [routeParamsValidator, articleExist(service)],
       async (req, res) => {
-        const {commentId} = req.params;
+        const {params, body} = req;
 
-        const deletedComment = await commentService.drop(commentId);
+        const {articleId, commentId} = params;
+        const {userId} = body;
+
+        const deletedComment = await commentService.drop({
+          articleId,
+          commentId,
+          userId,
+        });
 
         if (!deletedComment) {
           return res

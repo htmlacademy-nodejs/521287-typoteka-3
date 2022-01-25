@@ -59,6 +59,7 @@ describe(`POST /articles`, () => {
   describe(`+`, () => {
     const newArticleTitle = `Созидание интереснее потребления по мнению Павла Дурова`;
     const newArticle = {
+      userId: 1,
       title: newArticleTitle,
       createdAt: `2020-12-13T12:30:52.599Z`,
       categories: [1],
@@ -153,6 +154,7 @@ describe(`PUT /articles/{articleId}`, () => {
   describe(`+`, () => {
     const changedArticleTitle = `Изменённый заголовок очень интересной статьи`;
     const changedArticle = {
+      userId: 1,
       title: changedArticleTitle,
       createdAt: `2021-01-01T10:00:00.000Z`,
       categories: [2],
@@ -215,6 +217,8 @@ describe(`PUT /articles/{articleId}`, () => {
 });
 
 describe(`DELETE /articles/{articleId}`, () => {
+  const USER_ID = `1`;
+
   describe(`+`, () => {
     const ARTICLE_ID = `2`;
     let app;
@@ -222,7 +226,9 @@ describe(`DELETE /articles/{articleId}`, () => {
 
     beforeAll(async () => {
       app = await createAPI();
-      response = await request(app).delete(`/articles/${ARTICLE_ID}`);
+      response = await request(app)
+        .delete(`/articles/${ARTICLE_ID}`)
+        .send({userId: USER_ID});
     });
 
     it(`responds with 200 status code`, () => {
@@ -242,7 +248,9 @@ describe(`DELETE /articles/{articleId}`, () => {
   describe(`−`, () => {
     it(`responds with 404 status code when article doesn't exist`, async () => {
       const app = await createAPI();
-      const response = await request(app).delete(`/articles/NOEXIST`);
+      const response = await request(app)
+        .delete(`/articles/NOEXIST`)
+        .send({userId: USER_ID});
 
       expect(response.statusCode).toBe(HttpCode.BAD_REQUEST);
     });
@@ -370,6 +378,7 @@ describe(`POST /articles/{articleId}/comments`, () => {
 describe(`DELETE /articles/{articleId}/comments/{commentId}`, () => {
   const ARTICLE_ID = `1`;
   const COMMENT_ID = `1`;
+  const USER_ID = `1`;
 
   describe(`+`, () => {
     let app;
@@ -377,9 +386,9 @@ describe(`DELETE /articles/{articleId}/comments/{commentId}`, () => {
 
     beforeAll(async () => {
       app = await createAPI();
-      response = await request(app).delete(
-          `/articles/${ARTICLE_ID}/comments/${COMMENT_ID}`
-      );
+      response = await request(app)
+        .delete(`/articles/${ARTICLE_ID}/comments/${COMMENT_ID}`)
+        .send({userId: USER_ID});
     });
 
     it(`responds with 200 status code`, () => {
@@ -401,9 +410,9 @@ describe(`DELETE /articles/{articleId}/comments/{commentId}`, () => {
   describe(`−`, () => {
     it(`responds with 400 status code when article doesn't exist`, async () => {
       const app = await createAPI();
-      const response = await request(app).delete(
-          `/articles/NOEXIST/comments/${COMMENT_ID}`
-      );
+      const response = await request(app)
+        .delete(`/articles/NOEXIST/comments/${COMMENT_ID}`)
+        .send({userId: USER_ID});
 
       expect(response.statusCode).toBe(HttpCode.BAD_REQUEST);
     });

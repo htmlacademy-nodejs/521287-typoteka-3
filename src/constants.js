@@ -34,8 +34,8 @@ const AnnounceRestrict = {
 };
 
 const PictureRestrict = {
-  MIN: 1,
-  MAX: 16,
+  MIN: 0,
+  MAX: 2,
 };
 
 const DateRestrict = {
@@ -49,6 +49,8 @@ const API_PREFIX = `/api`;
 const ANNOUNCE_MAX_LENGTH = 100;
 const DESCRIPTION_MAX_LENGTH = 1000;
 const ARTICLES_PER_PAGE = 8;
+const POPULAR_ARTICLES_COUNT = 4;
+const LAST_COMMENTS_COUNT = 4;
 
 module.exports = {
   Env,
@@ -64,4 +66,6 @@ module.exports = {
   ANNOUNCE_MAX_LENGTH,
   DESCRIPTION_MAX_LENGTH,
   ARTICLES_PER_PAGE,
+  POPULAR_ARTICLES_COUNT,
+  LAST_COMMENTS_COUNT,
 };

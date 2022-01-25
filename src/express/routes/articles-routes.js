@@ -12,7 +12,7 @@ const {
   getArticleCategoriesIds,
   prepareErrors,
 } = require(`~/utils`);
-const {checkAuth} = require(`~/express/middlewares`);
+const {checkAuth, checkAdmin} = require(`~/express/middlewares`);
 
 const api = require(`~/express/api`).getAPI();
 
@@ -23,9 +23,9 @@ const articlesRouter = new Router();
 const csrfProtection = csrf();
 const uploadDirAbsolute = path.resolve(__dirname, UPLOAD_DIR);
 
-const getEditArticleData = async (articleId) => {
+const getEditArticleData = async (id, userId) => {
   const [article, categories] = await Promise.all([
-    api.getArticle(articleId, false),
+    api.getArticle({id, userId, withComments: true}),
     api.getCategories()
   ]);
 
@@ -51,6 +51,7 @@ const upload = multer({storage});
 articlesRouter.get(`/add`,
     [
       checkAuth,
+      checkAdmin,
       csrfProtection
     ], async (req, res) => {
       const {session, query} = req;
@@ -72,9 +73,11 @@ articlesRouter.get(`/add`,
 articlesRouter.post(`/add`,
     [
       checkAuth,
-      csrfProtection,
+      checkAdmin,
       upload.single(`picture`),
+      csrfProtection,
     ], async (req, res) => {
+      const {user} = req.session;
       const article = buildArticleData(req);
 
       try {
@@ -85,12 +88,15 @@ articlesRouter.post(`/add`,
         const articleCategories = article.categories;
         const categories = await getAddArticleCategories();
         const validationMessages = prepareErrors(error);
+        const csrfToken = req.csrfToken();
 
         return res.render(`${ROOT}/add`, {
+          user,
           article,
           articleCategories,
           categories,
           validationMessages,
+          csrfToken,
         });
       }
     });
@@ -98,15 +104,17 @@ articlesRouter.post(`/add`,
 articlesRouter.get(`/edit/:id`,
     [
       checkAuth,
+      checkAdmin,
       csrfProtection
     ], async (req, res) => {
       const {params, session} = req;
       const {id} = params;
       const {user} = session;
+      const userId = user.id;
       const csrfToken = req.csrfToken();
 
       try {
-        const [article, categories] = await getEditArticleData(Number(id));
+        const [article, categories] = await getEditArticleData(Number(id), userId);
         const articleCategories = getArticleCategoriesIds(article);
 
         res.render(`${ROOT}/add`, {
@@ -121,13 +129,15 @@ articlesRouter.get(`/edit/:id`,
       }
 
       return null;
-    });
+    }
+);
 articlesRouter.post(
     `/edit/:id`,
     [
       checkAuth,
-      csrfProtection,
+      checkAdmin,
       upload.single(`picture`),
+      csrfProtection,
     ],
     async (req, res) => {
       const {id} = req.params;
@@ -141,41 +151,81 @@ articlesRouter.post(
         const articleCategories = article.categories;
         const categories = await getAddArticleCategories();
         const validationMessages = prepareErrors(error);
+        const csrfToken = req.csrfToken();
 
         return res.render(`${ROOT}/add`, {
           article,
           articleCategories,
           categories,
           validationMessages,
+          csrfToken,
         });
       }
     });
+articlesRouter.post(
+    `/:id`,
+    [
+      checkAuth,
+      checkAdmin,
+    ],
+    async (req, res) => {
+      const {params, session} = req;
 
-articlesRouter.get(`/:id`, csrfProtection, async (req, res) => {
-  const {params, session} = req;
-  const {id} = params;
-  const {user} = session;
-  const csrfToken = req.csrfToken();
+      const {id} = params;
+      const {user} = session;
+      const userId = user.id;
 
-  const [article, categories] = await Promise.all([
-    api.getArticle(id, true),
-    api.getCategories(true),
-  ]);
-  const selectedCategoriesIds = getArticleCategoriesIds(article);
+      try {
+        await api.removeArticle({
+          id,
+          userId,
+        });
 
-  res.render(`${ROOT}/article`, {
-    user,
-    article,
-    categories,
-    selectedCategoriesIds,
-    csrfToken,
-  });
-});
+        return res.redirect(`/my`);
+      } catch (error) {
+        const {status, statusText} = error.response;
+
+        return res
+            .status(status)
+            .send(statusText);
+      }
+    }
+);
+
+articlesRouter.get(`/:id`,
+    csrfProtection, // Для коммментирования
+    async (req, res) => {
+      const {params, session} = req;
+      const {id} = params;
+      const {user} = session;
+      const userId = user ? user.id : null;
+      const csrfToken = req.csrfToken();
+
+      const [article, categories] = await Promise.all([
+        api.getArticle({id, userId, withComments: true}),
+        api.getCategories({withCount: true}),
+      ]);
+      const selectedCategoriesIds = getArticleCategoriesIds(article);
+
+      res.render(`${ROOT}/article`, {
+        user,
+        article,
+        categories,
+        selectedCategoriesIds,
+        csrfToken,
+      });
+    });
+
+articlesRouter.get(
+    `/:id/comments`,
+    (_, res) => res.redirect(`./`)
+);
 
 articlesRouter.post(
     `/:id/comments`,
     [
       checkAuth,
+      checkAdmin,
       csrfProtection,
     ],
     async (req, res) => {
@@ -183,9 +233,10 @@ articlesRouter.post(
       const {id} = params;
       const {text} = body;
       const {user} = session;
+      const userId = user.id;
 
       const commentData = {
-        userId: user.id,
+        userId,
         text,
       };
 
@@ -195,10 +246,11 @@ articlesRouter.post(
         return res.redirect(`/${ROOT}/${id}#${comment.id}`);
       } catch (error) {
         const [article, categories] = await Promise.all([
-          api.getArticle(id, true),
-          api.getCategories(true),
+          api.getArticle({id, userId, withComments: true}),
+          api.getCategories({withCount: true}),
         ]);
         const validationMessages = prepareErrors(error);
+        const csrfToken = req.csrfToken();
 
         return res.render(`${ROOT}/article`, {
           user,
@@ -206,7 +258,38 @@ articlesRouter.post(
           categories,
           newComment: text,
           validationMessages,
+          csrfToken,
         });
+      }
+    }
+);
+
+articlesRouter.post(
+    `/:articleId/comments/:commentId`,
+    [
+      checkAuth,
+      checkAdmin,
+    ],
+    async (req, res) => {
+      const {params, session} = req;
+      const {articleId, commentId} = params;
+      const {user} = session;
+      const userId = user.id;
+
+      try {
+        await api.removeComment({
+          articleId,
+          commentId,
+          userId,
+        });
+
+        return res.redirect(`/my/comments`);
+      } catch (error) {
+        const {status, statusText} = error.response;
+
+        return res
+          .status(status)
+          .send(statusText);
       }
     }
 );
@@ -215,11 +298,12 @@ articlesRouter.get(`/category/:id`, async (req, res) => {
   const {params, session} = req;
   const {id} = params;
   const {user} = session;
+  const userId = user ? user.id : null;
 
   const [selectedCategory, categories, articles] = await Promise.all([
     api.getCategory(id),
-    api.getCategories(true),
-    api.getArticles({comments: true}),
+    api.getCategories({withCount: true}),
+    api.getArticles({userId, withComments: true}),
   ]);
   const articlesWithCategory = articles.filter((article) =>
     article.categories.some((category) => category.id === selectedCategory.id)
