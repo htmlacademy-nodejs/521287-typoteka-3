@@ -225,7 +225,6 @@ articlesRouter.post(
     `/:id/comments`,
     [
       checkAuth,
-      checkAdmin,
       csrfProtection,
     ],
     async (req, res) => {
