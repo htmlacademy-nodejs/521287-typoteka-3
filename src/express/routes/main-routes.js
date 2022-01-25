@@ -102,8 +102,8 @@ mainRouter.get(`/register`, csrfProtection, (req, res) => {
 
 mainRouter.post(`/register`,
     [
-      csrfProtection,
       upload.single(`avatar`),
+      csrfProtection,
     ], async (req, res) => {
       const {body, file} = req;
       const {
