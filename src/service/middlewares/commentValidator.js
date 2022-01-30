@@ -9,15 +9,34 @@ const {
 
 const ErrorCommentMessage = {
   TEXT: `Комментарий содержит меньше 20 символов`,
-  USER_ID: `Некорректный идентификатор пользователя`
+
+  User: {
+    ID: `Некорректный идентификатор пользователя`,
+    ID_REQUIRED: `Идентификатор пользователя отсутствует`,
+    NAME_REQUIRED: `Имя пользователя отсутствует`,
+    SURNAME_REQUIRED: `Фамилия пользователя отсутствует`,
+    AVATAR_REQUIRED: `Аватар пользователя отсутствует`,
+  }
 };
 
 const schema = Joi.object({
   text: Joi.string().min(20).required().messages({
     'string.min': ErrorCommentMessage.TEXT,
   }),
-  userId: Joi.number().integer().positive().required().messages({
-    'number.base': ErrorCommentMessage.USER_ID,
+  user: Joi.object({
+    id: Joi.number().integer().positive().required().messages({
+      'number.empty': ErrorCommentMessage.User.ID_REQUIRED,
+      'number.base': ErrorCommentMessage.User.ID,
+    }),
+    name: Joi.string().required().messages({
+      'string.empty': ErrorCommentMessage.User.NAME_REQUIRED,
+    }),
+    surname: Joi.string().required().messages({
+      'string.empty': ErrorCommentMessage.User.SURNAME_REQUIRED,
+    }),
+    avatar: Joi.string().required().messages({
+      'string.empty': ErrorCommentMessage.User.AVATAR_REQUIRED,
+    }),
   })
 });
 

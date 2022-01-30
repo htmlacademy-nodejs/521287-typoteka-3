@@ -7,6 +7,7 @@ const HttpCode = require(`~/constants`);
 const {
   buildArticleData,
   getArticleCategoriesIds,
+  buildCommentData,
   prepareErrors,
 } = require(`~/utils`);
 const {
@@ -221,10 +222,7 @@ articlesRouter.post(
       const {user} = session;
       const userId = user.id;
 
-      const commentData = {
-        userId,
-        text,
-      };
+      const commentData = buildCommentData(text, user);
 
       try {
         const comment = await api.createComment(id, commentData);
