@@ -108,8 +108,14 @@ module.exports = (app, service, commentService) => {
       [articleExist(service), commentValidator],
       async (req, res) => {
         const {articleId} = req.params;
+        const io = req.app.locals.socketio;
+
+        console.log(`io ↓`);
+        console.log(io);
 
         const comment = await commentService.create(articleId, req.body);
+
+        io.emit(`comment:create`, comment);
 
         return res.status(HttpCode.CREATED).json(comment);
       }
