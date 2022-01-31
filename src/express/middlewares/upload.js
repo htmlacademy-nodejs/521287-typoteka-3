@@ -24,9 +24,9 @@ const storage = multer.diskStorage({
 const fileFilter = (_req, file, cb) => {
   if (FILE_TYPES.includes(file.mimetype)) {
     cb(null, true);
-  } else {
-    cb(null, false);
   }
+
+  return cb(null, false);
 };
 
 const upload = multer({
