@@ -60,7 +60,10 @@ block content
                   id=comment.id
                 )
                   .comments__avatar.avatar
-                    img(src=authorAvatarPath alt='Аватар пользователя')
+                    img.avatar__picture(
+                      src=authorAvatarPath
+                      alt='Аватар пользователя'
+                    )
                   .comments__text
                     .comments__head
                       p #{author.name} #{author.surname} •
@@ -84,7 +87,10 @@ block content
                     const userAvatarPath = user
                       ? `/img/${user.avatar}`
                       : '';
-                  img(src=userAvatarPath alt='Аватар пользователя')
+                  img.avatar__picture(
+                    src=userAvatarPath
+                    alt='Аватар пользователя'
+                  )
 
                 label
                   textarea(

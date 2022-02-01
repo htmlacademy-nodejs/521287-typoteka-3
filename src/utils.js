@@ -18,6 +18,9 @@ const {
   buildArticleData,
 } = require(`~/utils/buildArticleData`);
 const {
+  buildCommentData,
+} = require(`~/utils/buildCommentData`);
+const {
   getCategoriesFromBody,
 } = require(`~/utils/getCategoriesFromBody`);
 const {
@@ -169,6 +172,7 @@ module.exports = {
   readContent,
   buildValidationErrorMessage,
   buildArticleData,
+  buildCommentData,
   getArticleCategoriesIds,
   getCategoriesFromBody,
   prepareErrors,

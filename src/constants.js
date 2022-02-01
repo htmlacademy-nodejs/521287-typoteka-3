@@ -1,5 +1,10 @@
 'use strict';
 
+const DefaultPort = {
+  SERVICE: 3000,
+  EXPRESS: 8080,
+};
+
 const Env = {
   DEVELOPMENT: `development`,
   PRODUCTION: `production`,
@@ -53,6 +58,7 @@ const POPULAR_ARTICLES_COUNT = 4;
 const LAST_COMMENTS_COUNT = 4;
 
 module.exports = {
+  DefaultPort,
   Env,
   ExitCode,
   HttpMethod,

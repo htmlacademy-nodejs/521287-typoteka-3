@@ -38,9 +38,6 @@ block content
                       value=createdAt)
                       
               button.new-publication__button.button.button--colored(type='submit') Опубликовать
-            a.popup__button.button.button--popup-close(aria-label='Закрыть окно')
-              | Закрыть
-              | окно
 
             +insertErrorMessages(validationMessages)
 
@@ -71,7 +68,11 @@ block content
                       readonly)
                   .form__image-loader.form__image-loader--publication
                     label
-                      input.visually-hidden(type='file' name='picture')
+                      input.visually-hidden(
+                        type='file'
+                        name='picture'
+                        accept='.jpg, .png'
+                      )
                       | Обзор
 
                 .new-publication__category-wrapper

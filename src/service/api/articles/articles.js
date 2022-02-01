@@ -107,9 +107,23 @@ module.exports = (app, service, commentService) => {
       `/:articleId/comments`,
       [articleExist(service), commentValidator],
       async (req, res) => {
-        const {articleId} = req.params;
+        const {params, body} = req;
 
-        const comment = await commentService.create(articleId, req.body);
+        const {articleId} = params;
+        const {user, text} = body;
+        const io = req.app.locals.socketio;
+
+        const comment = await commentService.create(articleId, {
+          userId: user.id,
+          text,
+        });
+
+        io.emit(`comment:create`, {
+          id: comment.id,
+          text,
+          articleId,
+          user,
+        });
 
         return res.status(HttpCode.CREATED).json(comment);
       }

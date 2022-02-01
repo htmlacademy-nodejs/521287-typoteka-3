@@ -8,11 +8,13 @@ const path = require(`path`);
 const SequelizeStore = require(`connect-session-sequelize`)(session.Store);
 require(`module-alias/register`);
 
-const {HttpCode} = require(`~/constants`);
+const {
+  DefaultPort,
+  HttpCode,
+} = require(`~/constants`);
 const router = require(`~/express/routes`);
 const sequelize = require(`~/service/lib/sequelize`);
 
-const DEFAULT_PORT = 8080;
 const PUBLIC_DIR = `public`;
 const UPLOAD_DIR = `upload`;
 const EXP_SESSION = 180000;
@@ -49,6 +51,17 @@ app.use(express.static(path.resolve(__dirname, PUBLIC_DIR)));
 app.use(express.static(path.resolve(__dirname, UPLOAD_DIR)));
 
 app.use(helmet());
+app.use(
+    helmet({
+      contentSecurityPolicy: {
+        directives: {
+          "default-src": `*`,
+          "script-src": [`'self'`, `'unsafe-inline'`, `'unsafe-eval'`, `cdn.socket.io`],
+          "style-src": [`'self'`, `'unsafe-inline'`],
+        },
+      },
+    })
+);
 app.use(router);
 
 app.set(`views`, path.resolve(__dirname, `templates`));
@@ -69,4 +82,4 @@ app.use((_req, res) => {
   );
 });
 
-app.listen(DEFAULT_PORT);
+app.listen(DefaultPort.EXPRESS);

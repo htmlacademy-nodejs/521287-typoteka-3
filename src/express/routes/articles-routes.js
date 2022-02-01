@@ -2,26 +2,26 @@
 
 const {Router} = require(`express`);
 const csrf = require(`csurf`);
-const multer = require(`multer`);
-const path = require(`path`);
-const {nanoid} = require(`nanoid`);
 
 const HttpCode = require(`~/constants`);
 const {
   buildArticleData,
   getArticleCategoriesIds,
+  buildCommentData,
   prepareErrors,
 } = require(`~/utils`);
-const {checkAuth, checkAdmin} = require(`~/express/middlewares`);
+const {
+  checkAuth,
+  checkAdmin,
+  upload,
+} = require(`~/express/middlewares`);
 
 const api = require(`~/express/api`).getAPI();
 
 const ROOT = `articles`;
-const UPLOAD_DIR = `../upload/img`;
 
 const articlesRouter = new Router();
 const csrfProtection = csrf();
-const uploadDirAbsolute = path.resolve(__dirname, UPLOAD_DIR);
 
 const getEditArticleData = async (id, userId) => {
   const [article, categories] = await Promise.all([
@@ -35,18 +35,6 @@ const getEditArticleData = async (id, userId) => {
 const getAddArticleCategories = () => {
   return api.getCategories({withCount: false});
 };
-
-const storage = multer.diskStorage({
-  destination: uploadDirAbsolute,
-  filename: (req, file, cb) => {
-    const uniqueName = nanoid(10);
-    const extension = file.originalname.split(`.`).pop();
-
-    cb(null, `${uniqueName}.${extension}`);
-  },
-});
-
-const upload = multer({storage});
 
 articlesRouter.get(`/add`,
     [
@@ -218,14 +206,13 @@ articlesRouter.get(`/:id`,
 
 articlesRouter.get(
     `/:id/comments`,
-    (_, res) => res.redirect(`./`)
+    (_req, res) => res.redirect(`./`)
 );
 
 articlesRouter.post(
     `/:id/comments`,
     [
       checkAuth,
-      checkAdmin,
       csrfProtection,
     ],
     async (req, res) => {
@@ -235,10 +222,7 @@ articlesRouter.post(
       const {user} = session;
       const userId = user.id;
 
-      const commentData = {
-        userId,
-        text,
-      };
+      const commentData = buildCommentData(text, user);
 
       try {
         const comment = await api.createComment(id, commentData);

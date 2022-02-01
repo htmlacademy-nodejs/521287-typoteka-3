@@ -27,6 +27,14 @@ html(lang='ru')
       include ./partials/header.pug
       block content
       include ./partials/footer.pug
+      include ./partials/main/templates/hot-article-template.pug
+      include ./partials/main/templates/last-comment-template.pug
 
     script(src='/js/vendor.js')
     script(src='/js/main.js')
+    script(
+      src="https://cdn.socket.io/4.4.1/socket.io.min.js"
+      integrity="sha384-fKnu0iswBIqkjxrhQCTZ7qlLHOFEgNkRmK2vaO/LbTZSXdJfAu6ewRBdwHPhBo/H"
+      crossorigin="anonymous"
+    )
+    script(src='/js/socket.js')

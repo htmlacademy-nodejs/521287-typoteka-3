@@ -2,8 +2,13 @@
 
 const express = require(`express`);
 const helmet = require(`helmet`);
+const cors = require(`cors`);
 
-const {HttpCode, API_PREFIX} = require(`~/constants`);
+const {
+  DefaultPort,
+  HttpCode,
+  API_PREFIX,
+} = require(`~/constants`);
 const {getLogger} = require(`~/service/lib/logger`);
 const routes = require(`~/service/api`);
 
@@ -11,6 +16,9 @@ const app = express();
 const logger = getLogger({name: `api`});
 
 app.use(helmet());
+app.use(cors({
+  origin: `http://localhost:${DefaultPort.EXPRESS}`,
+}));
 app.use(express.json());
 
 app.use((req, res, next) => {

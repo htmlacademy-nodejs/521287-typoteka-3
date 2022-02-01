@@ -5,12 +5,17 @@ section.main-page__hot.hot
   
   if popularArticles
     ul.hot__list
-      each article in popularArticles
-        li.hot__list-item
+      each article, i in popularArticles
+        - const isLastItem = i === popularArticles.length - 1;
+        li(
+          class={
+            'hot__list-item': true,
+            'hot__list-item--end': isLastItem,
+          }
+          data-id=article.id
+        )
           a.hot__list-link(href=`/articles/${article.id}`)
             | #{article.announce}
             sup.hot__link-sup #{article.count}
-        // li.hot__list-item.hot__list-item--margin
-        // li.hot__list-item.hot__list-item--end
   else
     p Здесь пока ничего нет
