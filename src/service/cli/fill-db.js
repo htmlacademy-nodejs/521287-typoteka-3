@@ -11,6 +11,7 @@ const {getLogger} = require(`~/service/lib/logger`);
 const sequelize = require(`~/service/lib/sequelize`);
 const initDatabase = require(`~/service/lib/init-db`);
 const {
+  mockRoles,
   mockUsers,
 } = require(`~/service/api/users/users.mocks`);
 
@@ -94,6 +95,7 @@ module.exports = {
 
     const [count] = args;
     const countOffer = Number.parseInt(count, 10) || DEFAULT_COUNT;
+    const roles = mockRoles;
     const users = mockUsers;
     const articles = generateArticles(
         countOffer,
@@ -104,6 +106,11 @@ module.exports = {
         users,
     );
 
-    return initDatabase(sequelize, {articles, categories, users});
+    return initDatabase(sequelize, {
+      articles,
+      categories,
+      roles,
+      users,
+    });
   },
 };

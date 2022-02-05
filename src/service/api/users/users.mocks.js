@@ -21,6 +21,8 @@ const AuthValidUserData = {
   password: PASSWORD,
 };
 
+const mockRoles = [`admin`, `subscriber`];
+
 const mockUsers = [
   {
     name: NAME,
@@ -28,6 +30,7 @@ const mockUsers = [
     email: EMAIL,
     passwordHash: passwordUtils.hashSync(PASSWORD),
     avatar: `avatar-1.png`,
+    // roleId: 0,
   },
   {
     name: `Пётр`,
@@ -35,6 +38,7 @@ const mockUsers = [
     email: `petrov@example.com`,
     passwordHash: passwordUtils.hashSync(`petrov`),
     avatar: `avatar-5.png`,
+    // roleId: 1,
   },
 ];
 
@@ -43,5 +47,6 @@ module.exports = {
   SURNAME,
   ValidUserData,
   AuthValidUserData,
+  mockRoles,
   mockUsers,
 };

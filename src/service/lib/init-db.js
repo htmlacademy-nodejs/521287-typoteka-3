@@ -6,17 +6,21 @@ const defineModels = require(`~/service/models`);
 module.exports = async (sequelize, {
   categories,
   articles,
+  roles,
   users,
 }) => {
-  const {Category, Article, User} = defineModels(sequelize);
+  const {Category, Article, Role, User} = defineModels(sequelize);
   await sequelize.sync({force: true});
 
   const categoryModels = await Category.bulkCreate(
       categories.map((item) => ({name: item}))
   );
 
+  await Role.bulkCreate(
+      roles.map((item) => ({name: item}))
+  );
   const userModels = await User.bulkCreate(users, {
-    include: [Aliase.ARTICLES, Aliase.COMMENTS],
+    include: [Aliase.ROLES, Aliase.ARTICLES, Aliase.COMMENTS],
   });
 
   const userIdByEmail = userModels.reduce((acc, next) => ({
