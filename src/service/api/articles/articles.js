@@ -118,12 +118,14 @@ module.exports = (app, service, commentService) => {
           text,
         });
 
-        io.emit(`comment:create`, {
-          id: comment.id,
-          text,
-          articleId,
-          user,
-        });
+        if (io) {
+          io.emit(`comment:create`, {
+            id: comment.id,
+            text,
+            articleId,
+            user,
+          });
+        }
 
         return res.status(HttpCode.CREATED).json(comment);
       }

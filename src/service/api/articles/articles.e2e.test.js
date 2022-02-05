@@ -6,6 +6,9 @@ const {HttpCode} = require(`~/constants`);
 
 const {createAPI} = require(`./utils`);
 const {
+  mockUsers,
+} = require(`../users/users.mocks`);
+const {
   mockArticles,
 } = require(`../mockData`);
 
@@ -306,10 +309,22 @@ describe(`POST /articles/{articleId}/comments`, () => {
   const ARTICLE_ID = `2`;
 
   describe(`+`, () => {
+    const {
+      id = `1`,
+      name,
+      surname,
+      avatar,
+    } = mockUsers[1];
+
     const newCommentText = `Валидному комментарию достаточно этого поля`;
     const newComment = {
-      userId: 1,
       text: newCommentText,
+      user: {
+        id,
+        name,
+        surname,
+        avatar,
+      }
     };
     let app;
     let response;
