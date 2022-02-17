@@ -68,7 +68,7 @@ myRouter.post(
 
         const {id} = newCategory;
 
-        return res.redirect(`/categories#category${id}`);
+        return res.redirect(`/${ROOT}/categories#category${id}`);
       } catch (error) {
         const {user} = req.session;
         const csrfToken = req.csrfToken();
@@ -112,7 +112,7 @@ myRouter.post(
 
           await api.editCategory({id, name});
 
-          return res.redirect(`/categories#category${id}`);
+          return res.redirect(`/${ROOT}/categories#category${id}`);
         } catch (error) {
           const {user} = req.session;
           const csrfToken = req.csrfToken();
@@ -134,7 +134,7 @@ myRouter.post(
         try {
           await api.removeCategory({id});
 
-          return res.redirect(`/categories`);
+          return res.redirect(`/${ROOT}/categories`);
         } catch (error) {
           const {status, statusText} = error.response;
 
@@ -142,7 +142,7 @@ myRouter.post(
         }
       }
 
-      return res.redirect(`/categories`);
+      return res.redirect(`/${ROOT}/categories`);
     }
 );
 
