@@ -2,7 +2,7 @@
 
 const {
   getCategoriesFromBody,
-} = require(`./get-categories-from-body`);
+} = require(`.`);
 
 const buildArticleData = (req) => {
   const {body, file, session} = req;
