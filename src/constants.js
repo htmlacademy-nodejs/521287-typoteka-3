@@ -1,5 +1,14 @@
 'use strict';
 
+const DEFAULT_COMMAND = `--help`;
+const USER_ARGV_INDEX = 2;
+const API_PREFIX = `/api`;
+const ANNOUNCE_MAX_LENGTH = 100;
+const DESCRIPTION_MAX_LENGTH = 1000;
+const ARTICLES_PER_PAGE = 8;
+const POPULAR_ARTICLES_COUNT = 4;
+const LAST_COMMENTS_COUNT = 4;
+
 const DefaultPort = {
   SERVICE: 3000,
   EXPRESS: 8080,
@@ -48,24 +57,7 @@ const DateRestrict = {
   MAX: 3,
 };
 
-const DEFAULT_COMMAND = `--help`;
-const USER_ARGV_INDEX = 2;
-const API_PREFIX = `/api`;
-const ANNOUNCE_MAX_LENGTH = 100;
-const DESCRIPTION_MAX_LENGTH = 1000;
-const ARTICLES_PER_PAGE = 8;
-const POPULAR_ARTICLES_COUNT = 4;
-const LAST_COMMENTS_COUNT = 4;
-
 module.exports = {
-  DefaultPort,
-  Env,
-  ExitCode,
-  HttpMethod,
-  HttpCode,
-  AnnounceRestrict,
-  PictureRestrict,
-  DateRestrict,
   DEFAULT_COMMAND,
   USER_ARGV_INDEX,
   API_PREFIX,
@@ -74,4 +66,12 @@ module.exports = {
   ARTICLES_PER_PAGE,
   POPULAR_ARTICLES_COUNT,
   LAST_COMMENTS_COUNT,
+  DefaultPort,
+  Env,
+  ExitCode,
+  HttpMethod,
+  HttpCode,
+  AnnounceRestrict,
+  PictureRestrict,
+  DateRestrict,
 };
