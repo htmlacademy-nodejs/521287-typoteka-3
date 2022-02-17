@@ -9,29 +9,29 @@
 const {nanoid} = require(`nanoid`);
 
 const {DateRestrict} = require(`~/constants`);
-const {getPictureFileName} = require(`~/utils/getPictureFileName`);
-const {readContent} = require(`~/utils/readContent`);
+const {getPictureFileName} = require(`~/utils/get-picture-file-name`);
+const {readContent} = require(`~/utils/read-content`);
 const {
   buildValidationErrorMessage,
-} = require(`~/utils/buildValidationErrorMessage`);
+} = require(`~/utils/build-validation-error-message`);
 const {
   buildArticleData,
-} = require(`~/utils/buildArticleData`);
+} = require(`~/utils/build-article-data`);
 const {
   buildCommentData,
-} = require(`~/utils/buildCommentData`);
+} = require(`~/utils/build-comment-data`);
 const {
   getCategoriesFromBody,
-} = require(`~/utils/getCategoriesFromBody`);
+} = require(`~/utils/get-categories-from-body`);
 const {
   getArticleCategoriesIds,
-} = require(`~/utils/getArticleCategoriesIds`);
+} = require(`~/utils/get-article-categoriesIds`);
 const {
   prepareErrors,
-} = require(`~/utils/prepareErrors`);
+} = require(`~/utils/prepare-errors`);
 const {
   isAdmin,
-} = require(`~/utils/isAdmin`);
+} = require(`~/utils/is-admin`);
 
 const MAX_ID_LENGTH = 6;
 

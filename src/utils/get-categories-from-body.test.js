@@ -1,6 +1,6 @@
 'use strict';
 
-const {getCategoriesFromBody} = require(`./getCategoriesFromBody`);
+const {getCategoriesFromBody} = require(`./get-categories-from-body`);
 
 describe(`getCategoriesFromBody`, () => {
   it(`returns empty array when categories aren't chosen`, () => {
