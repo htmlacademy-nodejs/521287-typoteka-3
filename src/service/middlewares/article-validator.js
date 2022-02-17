@@ -33,7 +33,7 @@ const schema = Joi.object({
     'string.min': ErrorArticleMessage.TITLE_MIN,
     'string.max': ErrorArticleMessage.TITLE_MAX
   }),
-  picture: Joi.string().pattern(/\.(?:jpg|png)$/i).allow(null).messages({
+  picture: Joi.string().pattern(/\.(?:jpg|png)$/i).allow(``).messages({
     'string.pattern.base': ErrorArticleMessage.PICTURE
   }),
   createdAt: Joi.string().isoDate().required().messages({

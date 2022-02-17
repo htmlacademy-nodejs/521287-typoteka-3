@@ -11,7 +11,7 @@ const user = require(`./users`);
 const {
   mockCategories,
   mockArticles,
-} = require(`../mockData`);
+} = require(`../mock-data`);
 const {mockUsers} = require(`./users.mocks`);
 
 const createAPI = async () => {

@@ -7,7 +7,7 @@ const {HttpCode} = require(`~/constants`);
 const {createAPI} = require(`./utils`);
 const {
   mockArticles,
-} = require(`../mockData`);
+} = require(`../mock-data`);
 
 describe(`GET /articles`, () => {
   let response;

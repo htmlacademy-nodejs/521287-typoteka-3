@@ -11,7 +11,7 @@ const articles = require(`./articles`);
 const {
   mockCategories,
   mockArticles,
-} = require(`../mockData`);
+} = require(`../mock-data`);
 const {
   mockUsers,
 } = require(`../users/users.mocks`);

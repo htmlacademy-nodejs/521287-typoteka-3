@@ -12,7 +12,7 @@ const {
   mockArticles,
   mockCategories,
   foundArticlesWithSecondCategory,
-} = require(`../mockData`);
+} = require(`../mock-data`);
 const {
   mockUsers,
 } = require(`../users/users.mocks`);
