@@ -37,13 +37,15 @@ module.exports = (app, service) => {
 
     const {passwordHash} = user;
     const isPasswordCorrect = await passwordUtils.compare(password, passwordHash);
+
     if (isPasswordCorrect) {
       delete user.passwordHash;
+
       return res.status(HttpCode.OK).json(user);
-    } else {
-      return res
-        .status(HttpCode.UNAUTHORIZED)
-        .send(ErrorAuthMessage.PASSWORD);
     }
+
+    return res
+      .status(HttpCode.UNAUTHORIZED)
+      .send(ErrorAuthMessage.PASSWORD);
   });
 };
