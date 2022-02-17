@@ -14,12 +14,12 @@ const buildQueryString = (o) => {
     let arrayString = ``;
     if (Array.isArray(value)) {
       value.forEach((arrayValue) => {
-        arrayString = `${arrayString}${key}=${arrayValue}&`;
+        arrayString += key + `=` + arrayValue + `&`;
       });
-      queryString = `${queryString}${arrayString}`;
+      queryString += arrayString;
       return;
     }
-    queryString = `${queryString}${key}=${value}&`;
+    queryString += key + `=` + value + `&`;
   });
 
   return queryString.slice(0, -1);
